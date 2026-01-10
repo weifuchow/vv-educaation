@@ -66,7 +66,21 @@ export type ActionType =
   | 'addScore'
   | 'toast'
   | 'modal'
-  | 'resetNode';
+  | 'resetNode'
+  // 新增动作类型
+  | 'playAnimation'
+  | 'stopAnimation'
+  | 'setStyle'
+  | 'addClass'
+  | 'removeClass'
+  | 'setTheme'
+  | 'showNode'
+  | 'hideNode'
+  | 'parallel'
+  | 'sequence'
+  | 'delay'
+  | 'sound'
+  | 'haptic';
 
 export interface Action {
   action: ActionType;
@@ -76,6 +90,7 @@ export interface Action {
 export interface GotoSceneAction extends Action {
   action: 'gotoScene';
   sceneId: string;
+  transition?: any; // SceneTransition
 }
 
 export interface SetVarAction extends Action {
