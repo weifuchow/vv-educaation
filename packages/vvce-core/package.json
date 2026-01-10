@@ -1,0 +1,44 @@
+{
+  "name": "@vv-education/vvce-core",
+  "version": "0.1.0",
+  "description": "VVCE 交互式课件场景渲染引擎 - 核心运行时",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "vvce",
+    "courseware",
+    "engine",
+    "runtime",
+    "education"
+  ],
+  "author": "VV Education",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@vv-education/vvce-schema": "workspace:*"
+  }
+}
