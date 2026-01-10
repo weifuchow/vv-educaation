@@ -1,0 +1,119 @@
+{
+  "schema": "vvce.dsl.v1",
+  "meta": {
+    "id": "demo-lesson-001",
+    "version": "0.1.0",
+    "title": "VV课堂示例课程",
+    "description": "一个简单的数学问答课程"
+  },
+  "globals": {
+    "vars": {
+      "score": 0,
+      "attempt": 0
+    }
+  },
+  "startSceneId": "s1",
+  "scenes": [
+    {
+      "id": "s1",
+      "title": "问题场景",
+      "layout": {
+        "type": "stack",
+        "padding": 16,
+        "gap": 12
+      },
+      "vars": {},
+      "nodes": [
+        {
+          "id": "d1",
+          "type": "Dialog",
+          "props": {
+            "text": "欢迎来到VV课堂！让我们开始一个简单的数学问题。",
+            "speaker": "VV老师"
+          }
+        },
+        {
+          "id": "q1",
+          "type": "QuizSingle",
+          "props": {
+            "question": "1 + 1 等于多少？",
+            "options": ["1", "2", "3"],
+            "answerKey": "2"
+          }
+        },
+        {
+          "id": "b1",
+          "type": "Button",
+          "props": {
+            "text": "提交答案",
+            "variant": "primary"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "b1"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "q1.state.selected" },
+              "right": "2"
+            }
+          ],
+          "then": [
+            { "action": "addScore", "value": 10 },
+            { "action": "toast", "text": "回答正确！" },
+            { "action": "gotoScene", "sceneId": "s2" }
+          ],
+          "else": [
+            { "action": "incVar", "path": "globals.vars.attempt", "by": 1 },
+            { "action": "toast", "text": "再试一次～" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "完成场景",
+      "layout": {
+        "type": "stack",
+        "padding": 16,
+        "gap": 12
+      },
+      "nodes": [
+        {
+          "id": "d2",
+          "type": "Dialog",
+          "props": {
+            "text": "太棒了！你完成了课程。你的分数是 {{globals.vars.score}}",
+            "speaker": "VV老师"
+          }
+        },
+        {
+          "id": "b2",
+          "type": "Button",
+          "props": {
+            "text": "再来一次",
+            "variant": "secondary"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "b2"
+          },
+          "then": [
+            { "action": "setVar", "path": "globals.vars.score", "value": 0 },
+            { "action": "setVar", "path": "globals.vars.attempt", "value": 0 },
+            { "action": "gotoScene", "sceneId": "s1" }
+          ]
+        }
+      ]
+    }
+  ]
+}

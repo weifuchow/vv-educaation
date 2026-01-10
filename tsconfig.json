@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020"],
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@vv-education/vvce-core": ["./packages/vvce-core/src"],
+      "@vv-education/vvce-schema": ["./packages/vvce-schema/src"],
+      "@vv-education/vvce-components": ["./packages/vvce-components/src"],
+      "@vv-education/contracts": ["./packages/contracts/src"],
+      "@vv-education/shared": ["./packages/shared/src"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "**/dist", "**/node_modules"]
+}
