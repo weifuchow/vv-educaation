@@ -25,9 +25,6 @@ export { ActionExecutor } from './executor/ActionExecutor';
 export type {
   ActionExecutorCallbacks,
   ActionExecutorOptions,
-  UIAction,
-  ToastUIAction,
-  ModalUIAction,
   AnimationAction,
   StyleAction,
   SoundAction,
@@ -107,4 +104,8 @@ export type {
   RuntimeOptions,
   StartOptions,
   IStore,
+  // UI 动作回调类型
+  UIAction,
+  ToastUIAction,
+  ModalUIAction,
 } from './types';

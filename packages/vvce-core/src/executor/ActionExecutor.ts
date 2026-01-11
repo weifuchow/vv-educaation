@@ -5,12 +5,10 @@
  * v1.1 增强: 支持动画、样式、主题等新动作类型
  */
 
-import type { Action, ToastAction, ModalAction } from '../types';
+import type { Action, UIAction } from '../types';
 import type { Store } from '../store/Store';
 import type { ReferenceResolver } from '../interpreter/ReferenceResolver';
 import type { AnimationEngine } from '../animation/AnimationEngine';
-import type { TransitionEngine } from '../animation/TransitionEngine';
-import type { StyleManager } from '../style/StyleManager';
 import type { ThemeProvider } from '../style/ThemeProvider';
 import type {
   SceneTransition,
@@ -28,31 +26,8 @@ export interface ActionExecutorCallbacks {
   onHapticAction?: (action: HapticAction) => void;
 }
 
-/** UI 动作 */
-export type UIAction =
-  | ToastUIAction
-  | ModalUIAction;
-
-export interface ToastUIAction {
-  type: 'toast';
-  text: string;
-  duration?: number;
-  position?: 'top' | 'center' | 'bottom';
-  variant?: 'info' | 'success' | 'warning' | 'error';
-  icon?: string;
-}
-
-export interface ModalUIAction {
-  type: 'modal';
-  text: string;
-  title?: string;
-  buttons?: Array<{
-    text: string;
-    variant?: 'primary' | 'secondary' | 'danger';
-    onClick?: () => void;
-  }>;
-  style?: StyleProperties;
-}
+// UIAction, ToastUIAction, ModalUIAction 从 '../types' 导入
+export type { UIAction, ToastUIAction, ModalUIAction } from '../types';
 
 /** 动画动作 */
 export interface AnimationAction {
@@ -95,8 +70,6 @@ export interface ActionExecutorOptions {
   resolver: ReferenceResolver;
   callbacks?: ActionExecutorCallbacks;
   animationEngine?: AnimationEngine;
-  transitionEngine?: TransitionEngine;
-  styleManager?: StyleManager;
   themeProvider?: ThemeProvider;
 }
 
@@ -105,8 +78,6 @@ export class ActionExecutor {
   private resolver: ReferenceResolver;
   private callbacks: ActionExecutorCallbacks;
   private animationEngine?: AnimationEngine;
-  private transitionEngine?: TransitionEngine;
-  private styleManager?: StyleManager;
   private themeProvider?: ThemeProvider;
 
   constructor(options: ActionExecutorOptions);
@@ -126,8 +97,6 @@ export class ActionExecutor {
       this.resolver = storeOrOptions.resolver;
       this.callbacks = storeOrOptions.callbacks || {};
       this.animationEngine = storeOrOptions.animationEngine;
-      this.transitionEngine = storeOrOptions.transitionEngine;
-      this.styleManager = storeOrOptions.styleManager;
       this.themeProvider = storeOrOptions.themeProvider;
     } else {
       // 兼容旧的构造函数签名
@@ -142,13 +111,9 @@ export class ActionExecutor {
    */
   setEngines(engines: {
     animationEngine?: AnimationEngine;
-    transitionEngine?: TransitionEngine;
-    styleManager?: StyleManager;
     themeProvider?: ThemeProvider;
   }): void {
     if (engines.animationEngine) this.animationEngine = engines.animationEngine;
-    if (engines.transitionEngine) this.transitionEngine = engines.transitionEngine;
-    if (engines.styleManager) this.styleManager = engines.styleManager;
     if (engines.themeProvider) this.themeProvider = engines.themeProvider;
   }
 
@@ -356,7 +321,7 @@ export class ActionExecutor {
     });
   }
 
-  private executeSetTheme(theme: BuiltinTheme | string, duration?: number): void {
+  private executeSetTheme(theme: BuiltinTheme | string, _duration?: number): void {
     if (this.themeProvider) {
       this.themeProvider.setTheme(theme as BuiltinTheme);
     }

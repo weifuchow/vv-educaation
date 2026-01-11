@@ -143,10 +143,35 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LogEntry {
   level: LogLevel;
-  type: 'event' | 'condition' | 'action' | 'state' | 'scene';
+  type: 'event' | 'condition' | 'action' | 'state' | 'scene' | 'trigger';
   message: string;
   data?: any;
   ts: number;
+}
+
+// ============ UI 动作类型（用于回调） ============
+
+export type UIAction = ToastUIAction | ModalUIAction;
+
+export interface ToastUIAction {
+  type: 'toast';
+  text: string;
+  duration?: number;
+  position?: 'top' | 'center' | 'bottom';
+  variant?: 'info' | 'success' | 'warning' | 'error';
+  icon?: string;
+}
+
+export interface ModalUIAction {
+  type: 'modal';
+  text: string;
+  title?: string;
+  buttons?: Array<{
+    text: string;
+    variant?: 'primary' | 'secondary' | 'danger';
+    onClick?: () => void;
+  }>;
+  style?: Record<string, any>;
 }
 
 // ============ 运行时选项 ============
@@ -154,7 +179,7 @@ export interface LogEntry {
 export interface RuntimeOptions {
   onSceneChange?: (sceneId: string) => void;
   onStateChange?: (state: RuntimeState) => void;
-  onUIAction?: (action: ToastAction | ModalAction) => void;
+  onUIAction?: (action: UIAction) => void;
   debug?: boolean;
 }
 

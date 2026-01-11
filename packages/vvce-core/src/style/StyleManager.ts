@@ -33,7 +33,7 @@ export class StyleManager {
   private variables: StyleVariables = {};
   private styles: Record<string, StyleDefinition> = {};
   private currentBreakpoint: Breakpoint = 'md';
-  private baseFontSize: number = 16;
+  private baseFontSizeValue: number = 16;
   private computedCache: Map<string, StyleProperties> = new Map();
 
   constructor(options: StyleManagerOptions = {}) {
@@ -44,8 +44,23 @@ export class StyleManager {
       this.currentBreakpoint = options.breakpoint;
     }
     if (options.baseFontSize) {
-      this.baseFontSize = options.baseFontSize;
+      this.baseFontSizeValue = options.baseFontSize;
     }
+  }
+
+  /**
+   * 获取基础字体大小
+   */
+  getBaseFontSize(): number {
+    return this.baseFontSizeValue;
+  }
+
+  /**
+   * 设置基础字体大小
+   */
+  setBaseFontSize(size: number): void {
+    this.baseFontSizeValue = size;
+    this.computedCache.clear();
   }
 
   /**
