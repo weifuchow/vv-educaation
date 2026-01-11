@@ -398,7 +398,7 @@
               if: [
                 {
                   op: 'equals',
-                  left: { ref: 'q1.state.selected' },
+                  left: { ref: 'nodes.q1.selected' },
                   right: '2'
                 }
               ],
@@ -449,7 +449,7 @@
               if: [
                 {
                   op: 'equals',
-                  left: { ref: 'q2.state.selected' },
+                  left: { ref: 'nodes.q2.selected' },
                   right: '15'
                 }
               ],
@@ -592,7 +592,7 @@
           // Handle button clicks
           if (target.classList.contains('button')) {
             const nodeId = target.dataset.nodeId;
-            this.runtime.emitEvent({
+            this.runtime.emit({
               type: 'click',
               target: nodeId,
               payload: null,
@@ -614,10 +614,10 @@
 
             // Update runtime state
             this.renderer.nodeStates.set(nodeId, option);
-            this.runtime.store.set(`${nodeId}.state.selected`, option);
+            this.runtime.updateNodeState(nodeId, { selected: option });
 
             // Emit change event
-            this.runtime.emitEvent({
+            this.runtime.emit({
               type: 'change',
               target: nodeId,
               payload: option,
