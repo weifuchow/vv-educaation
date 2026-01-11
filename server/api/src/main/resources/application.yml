@@ -44,7 +44,7 @@ server:
 # JWT 配置
 jwt:
   secret: vv-education-secret-key-please-change-in-production
-  expiration: 86400000  # 24 小时
+  expiration: 86400000 # 24 小时
 
 # API 文档配置
 springdoc:
@@ -61,5 +61,5 @@ logging:
     org.springframework.web: INFO
     org.hibernate: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'

@@ -44,10 +44,7 @@ export type {
 } from './types/dsl';
 
 // ============ 主题类型 ============
-export type {
-  ThemeConfig,
-  BuiltinTheme,
-} from './types/dsl';
+export type { ThemeConfig, BuiltinTheme } from './types/dsl';
 
 // ============ 场景和节点扩展类型 ============
 export type {
@@ -86,11 +83,7 @@ export type {
 } from './types/dsl';
 
 // ============ 组件属性类型 ============
-export type {
-  DialogProps,
-  QuizSingleProps,
-  ButtonProps,
-} from './types/dsl';
+export type { DialogProps, QuizSingleProps, ButtonProps } from './types/dsl';
 
 // ============ 校验器 ============
 export { Validator, validateCourse } from './validator/Validator';

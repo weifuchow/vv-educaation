@@ -2,7 +2,7 @@
 
 VV课堂（`vv-education`）是一个基于 AI 的教育平台，面向学生与家长，通过 **交互式课件渲染引擎（VVCE）** 将课程内容以结构化 DSL（JSON）运行在多端，并逐步叠加学习主线、上下文进度、项目制验收与运营增长。
 
-------
+---
 
 ## 1. 背景（Background）
 
@@ -12,7 +12,7 @@ VV课堂（`vv-education`）是一个基于 AI 的教育平台，面向学生与
 - **可规模化的内容生产**：AI 持续生成结构化课件 DSL（JSON），引擎负责稳定渲染与交互执行。
 - **可验收的学习成果**：最终通过任务/项目产出、证据链与 rubric 评价体系实现“看得见的成长”。
 
-------
+---
 
 ## 2. 目标（Goals）
 
@@ -38,7 +38,7 @@ VV课堂（`vv-education`）是一个基于 AI 的教育平台，面向学生与
   - 事件日志与回放（调试/验收）
 - 后端采用 Java（Spring Boot）提供课程、进度、用户、资源等 API
 
-------
+---
 
 ## 3. 仓库策略（Repo Strategy）
 
@@ -46,7 +46,7 @@ VV课堂（`vv-education`）是一个基于 AI 的教育平台，面向学生与
 - ✅ 单后端服务（模块化单体），内部按领域模块划分
 - ✅ 引擎与 DSL 作为共享包沉淀，供小程序 WebView、PC Web、管理端预览复用
 
-------
+---
 
 ## 4. 模块划分（Module Layout）
 
@@ -74,7 +74,7 @@ vv-education/
   infra/                # docker-compose/部署脚本（可选）
 ```
 
-------
+---
 
 ## 5. 方案选型（Tech Choices）
 
@@ -97,12 +97,12 @@ vv-education/
 
 - ✅ `packages/contracts` 统一维护 OpenAPI/错误码/类型，避免前后端漂移
 
-------
+---
 
 ## 6. MVP 优先级：先做 VVCE M0（课件场景渲染引擎）
 
 > 一人团队 MVP 第一性工程：**先把“课件场景能跑起来”**。
->  管理端、AI生成流水线、项目制验收都建立在这个引擎之上。
+> 管理端、AI生成流水线、项目制验收都建立在这个引擎之上。
 
 ### 6.1 VVCE M0 必须做到什么（Definition of Done）
 
@@ -122,7 +122,7 @@ vv-education/
 - 项目制/组队/反作弊（后续 M2/M3）
 - AI 生成流水线（先手写 DSL 验证引擎）
 
-------
+---
 
 ## 7. VVCE M0：最小 DSL（vvce.dsl.v1）
 
@@ -185,7 +185,7 @@ vv-education/
   - `node.state.*`（如 `q1.state.selected`）
 - 文本支持最小插值：`{{globals.vars.score}}`
 
-------
+---
 
 ## 8. VVCE M0：运行时架构（Runtime）
 
@@ -232,7 +232,7 @@ type VVEvent = {
   - 最近 N 条日志
   - 重置/回放（可选）
 
-------
+---
 
 ## 9. VVCE M0：组件协议（Component Contract）
 
@@ -262,7 +262,7 @@ type VVEvent = {
 - props：`text`
 - events：`click`
 
-------
+---
 
 ## 10. 后端（Java / Spring Boot）M0 支撑范围
 
@@ -279,7 +279,7 @@ M0 阶段后端只需要最小能力：
 
 > 其他模块（assessment/project/billing）在 VVCE M0 之后再叠加。
 
-------
+---
 
 ## 11. MVP 里程碑（Milestones）
 
@@ -298,7 +298,7 @@ M0 阶段后端只需要最小能力：
 
 ### M3：项目制验收（rubric + 证据链 + AI追问）
 
-------
+---
 
 ## 12. 开始开发（Getting Started）
 

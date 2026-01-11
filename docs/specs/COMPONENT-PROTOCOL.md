@@ -36,11 +36,11 @@ interface VVCEComponent {
 interface RenderContext {
   props: Record<string, any>;
   state: Record<string, any>;
-  style: ComputedStyle;          // 计算后的样式
-  styleClass: string[];          // 应用的样式类
-  animation: AnimationState;     // 动画状态
+  style: ComputedStyle; // 计算后的样式
+  styleClass: string[]; // 应用的样式类
+  animation: AnimationState; // 动画状态
   emit: EventEmitter;
-  theme: ThemeContext;           // 主题上下文
+  theme: ThemeContext; // 主题上下文
 }
 ```
 
@@ -119,6 +119,7 @@ componentRegistry.register({
 ```
 
 支持的交互类型：
+
 - `hover` - 鼠标悬停
 - `click` - 点击
 - `focus` - 获得焦点
@@ -134,11 +135,12 @@ componentRegistry.register({
 **类型标识**: `Dialog`
 
 **属性**:
+
 ```typescript
 interface DialogProps {
-  text: string;        // 对话文本
-  speaker?: string;    // 说话者名称
-  avatar?: string;     // 头像 URL
+  text: string; // 对话文本
+  speaker?: string; // 说话者名称
+  avatar?: string; // 头像 URL
 }
 ```
 
@@ -147,6 +149,7 @@ interface DialogProps {
 **事件**: 无
 
 **默认样式**:
+
 ```typescript
 {
   base: {
@@ -163,25 +166,29 @@ interface DialogProps {
 **类型标识**: `QuizSingle`
 
 **属性**:
+
 ```typescript
 interface QuizSingleProps {
-  question: string;       // 问题
-  options: string[];      // 选项数组
-  answerKey?: string;     // 正确答案（M0 可用，后续移到后端）
+  question: string; // 问题
+  options: string[]; // 选项数组
+  answerKey?: string; // 正确答案（M0 可用，后续移到后端）
 }
 ```
 
 **状态**:
+
 ```typescript
 {
-  selected: string | null;  // 当前选中项
+  selected: string | null; // 当前选中项
 }
 ```
 
 **事件**:
+
 - `change` - 选项变更时触发
 
 **默认样式**:
+
 ```typescript
 {
   base: {
@@ -199,20 +206,23 @@ interface QuizSingleProps {
 **类型标识**: `Button`
 
 **属性**:
+
 ```typescript
 interface ButtonProps {
-  text: string;                              // 按钮文本
+  text: string; // 按钮文本
   variant?: 'primary' | 'secondary' | 'text'; // 样式变体
-  disabled?: boolean;                         // 禁用状态
+  disabled?: boolean; // 禁用状态
 }
 ```
 
 **状态**: 无
 
 **事件**:
+
 - `click` - 点击时触发
 
 **默认样式**:
+
 ```typescript
 {
   base: {
@@ -237,8 +247,9 @@ interface ButtonProps {
 ```
 
 **交互动画**:
+
 ```typescript
-interactions: ['hover', 'click', 'active']
+interactions: ['hover', 'click', 'active'];
 ```
 
 ---
@@ -278,13 +289,13 @@ componentRegistry.register({
     type: 'object',
     properties: {
       seconds: { type: 'number' },
-      showProgress: { type: 'boolean' }
+      showProgress: { type: 'boolean' },
     },
-    required: ['seconds']
+    required: ['seconds'],
   },
   stateShape: {
     remaining: 0,
-    isRunning: false
+    isRunning: false,
   },
   events: ['timeout', 'tick'],
   defaultStyle: {
@@ -292,14 +303,14 @@ componentRegistry.register({
       fontSize: 48,
       fontWeight: 700,
       textAlign: 'center',
-      color: '$colors.primary'
-    }
+      color: '$colors.primary',
+    },
   },
   interactions: ['visible'],
   render: (context) => {
     const { props, state, style } = context;
     // 渲染逻辑
-  }
+  },
 });
 ```
 
@@ -314,8 +325,8 @@ componentRegistry.register({
       title: { type: 'string' },
       content: { type: 'string' },
       image: { type: 'string' },
-      clickable: { type: 'boolean' }
-    }
+      clickable: { type: 'boolean' },
+    },
   },
   stateShape: {},
   events: ['click'],
@@ -326,20 +337,20 @@ componentRegistry.register({
       backgroundColor: '$colors.background',
       boxShadow: '$shadows.md',
       overflow: 'hidden',
-      transition: { property: 'all', duration: 300 }
+      transition: { property: 'all', duration: 300 },
     },
     hover: {
       boxShadow: '$shadows.lg',
-      transform: { translateY: -4 }
+      transform: { translateY: -4 },
     },
     active: {
-      transform: { scale: 0.98 }
-    }
+      transform: { scale: 0.98 },
+    },
   },
   interactions: ['hover', 'click'],
   render: (context) => {
     // 渲染逻辑
-  }
+  },
 });
 ```
 
@@ -353,17 +364,17 @@ componentRegistry.register({
     properties: {
       enterAnimation: { type: 'string' },
       exitAnimation: { type: 'string' },
-      stagger: { type: 'number' }
-    }
+      stagger: { type: 'number' },
+    },
   },
   stateShape: {
-    isVisible: true
+    isVisible: true,
   },
   events: ['animationEnd'],
   defaultStyle: {
     base: {
-      position: 'relative'
-    }
+      position: 'relative',
+    },
   },
   interactions: ['visible'],
   render: (context) => {
@@ -372,11 +383,11 @@ componentRegistry.register({
     // 应用动画帧样式
     const containerStyle = {
       ...context.style.properties,
-      ...animation.frameStyle
+      ...animation.frameStyle,
     };
 
     // 渲染逻辑
-  }
+  },
 });
 ```
 
@@ -429,6 +440,7 @@ defaultStyle: {
 ```
 
 断点定义：
+
 - `sm`: < 640px
 - `md`: 640px - 1024px
 - `lg`: 1024px - 1280px

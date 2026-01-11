@@ -30,9 +30,7 @@ const quizCourse: CourseDSL = {
       triggers: [
         {
           on: { event: 'click', target: 'startBtn' },
-          then: [
-            { action: 'gotoScene', sceneId: 'question1' },
-          ],
+          then: [{ action: 'gotoScene', sceneId: 'question1' }],
         },
       ],
     },
@@ -43,9 +41,7 @@ const quizCourse: CourseDSL = {
       triggers: [
         {
           on: { event: 'submit', target: 'answer' },
-          if: [
-            { op: 'equals', left: { ref: 'globals.vars.userAnswer' }, right: '2' },
-          ],
+          if: [{ op: 'equals', left: { ref: 'globals.vars.userAnswer' }, right: '2' }],
           then: [
             { action: 'addScore', value: 10 },
             { action: 'toast', text: '正确！加10分' },
@@ -65,9 +61,7 @@ const quizCourse: CourseDSL = {
       triggers: [
         {
           on: { event: 'submit', target: 'answer' },
-          if: [
-            { op: 'equals', left: { ref: 'globals.vars.userAnswer' }, right: '6' },
-          ],
+          if: [{ op: 'equals', left: { ref: 'globals.vars.userAnswer' }, right: '6' }],
           then: [
             { action: 'addScore', value: 10 },
             { action: 'toast', text: '正确！加10分' },
@@ -86,15 +80,9 @@ const quizCourse: CourseDSL = {
       triggers: [
         {
           on: { event: 'sceneEnter', target: 'result' },
-          if: [
-            { op: 'gte', left: { ref: 'globals.vars.score' }, right: 20 },
-          ],
-          then: [
-            { action: 'toast', text: '恭喜！满分通过！' },
-          ],
-          else: [
-            { action: 'toast', text: '测验结束，继续加油！' },
-          ],
+          if: [{ op: 'gte', left: { ref: 'globals.vars.score' }, right: 20 }],
+          then: [{ action: 'toast', text: '恭喜！满分通过！' }],
+          else: [{ action: 'toast', text: '测验结束，继续加油！' }],
         },
         {
           on: { event: 'click', target: 'restartBtn' },
@@ -158,17 +146,23 @@ function main() {
 
   // 回答问题1（错误答案）
   console.log('\n   [用户提交答案: 3 (错误)]');
-  runtime.setState({ globals: { vars: { ...runtime.getState().globals.vars, userAnswer: '3' } } });
+  runtime.setState({
+    globals: { vars: { ...runtime.getState().globals.vars, userAnswer: '3' } },
+  });
   runtime.emit({ type: 'submit', target: 'answer', ts: Date.now() });
 
   // 回答问题1（正确答案）
   console.log('\n   [用户提交答案: 2 (正确)]');
-  runtime.setState({ globals: { vars: { ...runtime.getState().globals.vars, userAnswer: '2' } } });
+  runtime.setState({
+    globals: { vars: { ...runtime.getState().globals.vars, userAnswer: '2' } },
+  });
   runtime.emit({ type: 'submit', target: 'answer', ts: Date.now() });
 
   // 回答问题2（正确答案）
   console.log('\n   [用户提交答案: 6 (正确)]');
-  runtime.setState({ globals: { vars: { ...runtime.getState().globals.vars, userAnswer: '6' } } });
+  runtime.setState({
+    globals: { vars: { ...runtime.getState().globals.vars, userAnswer: '6' } },
+  });
   runtime.emit({ type: 'submit', target: 'answer', ts: Date.now() });
 
   // 打印最终状态

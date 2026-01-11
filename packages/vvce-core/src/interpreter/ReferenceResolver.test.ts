@@ -92,7 +92,9 @@ describe('ReferenceResolver', () => {
       store.set('globals.vars.name', 'Alice');
       store.set('globals.vars.score', 95);
 
-      const result = resolver.interpolate('{{globals.vars.name}} 得了 {{globals.vars.score}} 分');
+      const result = resolver.interpolate(
+        '{{globals.vars.name}} 得了 {{globals.vars.score}} 分'
+      );
       expect(result).toBe('Alice 得了 95 分');
     });
 
@@ -161,11 +163,7 @@ describe('ReferenceResolver', () => {
       store.set('globals.vars.b', 2);
 
       const obj = {
-        values: [
-          { ref: 'globals.vars.a' },
-          { ref: 'globals.vars.b' },
-          3,
-        ],
+        values: [{ ref: 'globals.vars.a' }, { ref: 'globals.vars.b' }, 3],
       };
 
       const result = resolver.resolveObject(obj);

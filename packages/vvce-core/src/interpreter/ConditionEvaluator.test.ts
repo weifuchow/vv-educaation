@@ -111,17 +111,21 @@ describe('ConditionEvaluator', () => {
     it('should return false when left <= right', () => {
       store.set('globals.vars.score', 50);
 
-      expect(evaluator.evaluate({
-        op: 'gt',
-        left: { ref: 'globals.vars.score' },
-        right: 50,
-      })).toBe(false);
+      expect(
+        evaluator.evaluate({
+          op: 'gt',
+          left: { ref: 'globals.vars.score' },
+          right: 50,
+        })
+      ).toBe(false);
 
-      expect(evaluator.evaluate({
-        op: 'gt',
-        left: { ref: 'globals.vars.score' },
-        right: 100,
-      })).toBe(false);
+      expect(
+        evaluator.evaluate({
+          op: 'gt',
+          left: { ref: 'globals.vars.score' },
+          right: 100,
+        })
+      ).toBe(false);
     });
 
     it('should handle string numbers', () => {
@@ -158,17 +162,21 @@ describe('ConditionEvaluator', () => {
     it('should return true when left >= right', () => {
       store.set('globals.vars.score', 100);
 
-      expect(evaluator.evaluate({
-        op: 'gte',
-        left: { ref: 'globals.vars.score' },
-        right: 100,
-      })).toBe(true);
+      expect(
+        evaluator.evaluate({
+          op: 'gte',
+          left: { ref: 'globals.vars.score' },
+          right: 100,
+        })
+      ).toBe(true);
 
-      expect(evaluator.evaluate({
-        op: 'gte',
-        left: { ref: 'globals.vars.score' },
-        right: 50,
-      })).toBe(true);
+      expect(
+        evaluator.evaluate({
+          op: 'gte',
+          left: { ref: 'globals.vars.score' },
+          right: 50,
+        })
+      ).toBe(true);
     });
 
     it('should return false when left < right', () => {
@@ -200,17 +208,21 @@ describe('ConditionEvaluator', () => {
     it('should return false when left >= right', () => {
       store.set('globals.vars.score', 100);
 
-      expect(evaluator.evaluate({
-        op: 'lt',
-        left: { ref: 'globals.vars.score' },
-        right: 100,
-      })).toBe(false);
+      expect(
+        evaluator.evaluate({
+          op: 'lt',
+          left: { ref: 'globals.vars.score' },
+          right: 100,
+        })
+      ).toBe(false);
 
-      expect(evaluator.evaluate({
-        op: 'lt',
-        left: { ref: 'globals.vars.score' },
-        right: 50,
-      })).toBe(false);
+      expect(
+        evaluator.evaluate({
+          op: 'lt',
+          left: { ref: 'globals.vars.score' },
+          right: 50,
+        })
+      ).toBe(false);
     });
   });
 
@@ -218,17 +230,21 @@ describe('ConditionEvaluator', () => {
     it('should return true when left <= right', () => {
       store.set('globals.vars.score', 100);
 
-      expect(evaluator.evaluate({
-        op: 'lte',
-        left: { ref: 'globals.vars.score' },
-        right: 100,
-      })).toBe(true);
+      expect(
+        evaluator.evaluate({
+          op: 'lte',
+          left: { ref: 'globals.vars.score' },
+          right: 100,
+        })
+      ).toBe(true);
 
-      expect(evaluator.evaluate({
-        op: 'lte',
-        left: { ref: 'globals.vars.score' },
-        right: 150,
-      })).toBe(true);
+      expect(
+        evaluator.evaluate({
+          op: 'lte',
+          left: { ref: 'globals.vars.score' },
+          right: 150,
+        })
+      ).toBe(true);
     });
 
     it('should return false when left > right', () => {
@@ -340,9 +356,7 @@ describe('ConditionEvaluator', () => {
 
       const condition: Condition = {
         op: 'not',
-        conditions: [
-          { op: 'equals', left: { ref: 'globals.vars.score' }, right: 100 },
-        ],
+        conditions: [{ op: 'equals', left: { ref: 'globals.vars.score' }, right: 100 }],
       };
 
       expect(evaluator.evaluate(condition)).toBe(false);
@@ -353,9 +367,7 @@ describe('ConditionEvaluator', () => {
 
       const condition: Condition = {
         op: 'not',
-        conditions: [
-          { op: 'equals', left: { ref: 'globals.vars.score' }, right: 200 },
-        ],
+        conditions: [{ op: 'equals', left: { ref: 'globals.vars.score' }, right: 200 }],
       };
 
       expect(evaluator.evaluate(condition)).toBe(true);
@@ -382,7 +394,9 @@ describe('ConditionEvaluator', () => {
       };
 
       expect(evaluator.evaluate(condition)).toBe(false);
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Unknown condition operator'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Unknown condition operator')
+      );
 
       consoleSpy.mockRestore();
     });

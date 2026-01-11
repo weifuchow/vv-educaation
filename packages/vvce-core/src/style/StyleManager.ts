@@ -220,10 +220,7 @@ export class StyleManager {
   /**
    * 合并样式对象
    */
-  private mergeStyles(
-    base: StyleProperties,
-    override: StyleProperties
-  ): StyleProperties {
+  private mergeStyles(base: StyleProperties, override: StyleProperties): StyleProperties {
     return {
       ...base,
       ...override,

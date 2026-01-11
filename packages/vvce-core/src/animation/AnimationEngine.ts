@@ -12,7 +12,9 @@ import type {
 import { BUILTIN_ANIMATIONS } from '../presets/animations';
 
 // requestAnimationFrame polyfill for non-browser environments
-declare const requestAnimationFrame: ((callback: (time: number) => void) => number) | undefined;
+declare const requestAnimationFrame:
+  | ((callback: (time: number) => void) => number)
+  | undefined;
 
 const now = (): number =>
   typeof performance !== 'undefined' && typeof performance.now === 'function'
@@ -121,7 +123,8 @@ export class AnimationEngine {
       animDef = this.getAnimationDefinition(animation) || this.createFadeAnimation();
     } else if ('type' in animation) {
       animName = animation.type;
-      const baseDef = this.getAnimationDefinition(animation.type) || this.createFadeAnimation();
+      const baseDef =
+        this.getAnimationDefinition(animation.type) || this.createFadeAnimation();
       animDef = {
         ...baseDef,
         duration: animation.duration ?? baseDef.duration,
@@ -320,7 +323,10 @@ export class AnimationEngine {
     let toFrame = keyframes[keyframes.length - 1];
 
     for (let i = 0; i < keyframes.length - 1; i++) {
-      if (keyframes[i].offset <= progressPercent && keyframes[i + 1].offset >= progressPercent) {
+      if (
+        keyframes[i].offset <= progressPercent &&
+        keyframes[i + 1].offset >= progressPercent
+      ) {
         fromFrame = keyframes[i];
         toFrame = keyframes[i + 1];
         break;
@@ -434,10 +440,16 @@ export class AnimationEngine {
 
   private elastic(t: number): number {
     if (t === 0 || t === 1) return t;
-    return Math.pow(2, -10 * t) * Math.sin((t - 0.075) * (2 * Math.PI) / 0.3) + 1;
+    return Math.pow(2, -10 * t) * Math.sin(((t - 0.075) * (2 * Math.PI)) / 0.3) + 1;
   }
 
-  private cubicBezier(_x1: number, y1: number, _x2: number, y2: number, t: number): number {
+  private cubicBezier(
+    _x1: number,
+    y1: number,
+    _x2: number,
+    y2: number,
+    t: number
+  ): number {
     // 简化的三次贝塞尔计算 (仅使用 Y 分量计算缓动值)
     const cy = 3 * y1;
     const by = 3 * (y2 - y1) - cy;
