@@ -18,6 +18,7 @@
   "author": "VV Education",
   "license": "MIT",
   "devDependencies": {
+    "@vv-education/vvce-schema": "workspace:*",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0"
   },

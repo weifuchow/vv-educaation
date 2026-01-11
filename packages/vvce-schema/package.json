@@ -21,7 +21,7 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "test": "vitest --passWithNoTests",
-    "test:ci": "vitest run --passWithNoTests",
+    "test:ci": "vitest run --passWithNoTests --coverage",
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit"
   },
