@@ -14,10 +14,15 @@ import type {
 // requestAnimationFrame polyfill for non-browser environments
 declare const requestAnimationFrame: ((callback: (time: number) => void) => number) | undefined;
 
+const now = (): number =>
+  typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
+
 const raf: (callback: (time: number) => void) => number | ReturnType<typeof setTimeout> =
   typeof requestAnimationFrame !== 'undefined'
     ? requestAnimationFrame
-    : (callback: (time: number) => void) => setTimeout(() => callback(Date.now()), 16);
+    : (callback: (time: number) => void) => setTimeout(() => callback(now()), 16);
 
 export interface TransitionState {
   /** 过渡是否进行中 */
@@ -431,7 +436,7 @@ export class TransitionEngine {
       direction,
     };
 
-    const startTime = performance.now();
+    const startTime = now();
     let cancelled = false;
 
     const animate = (currentTime: number) => {
