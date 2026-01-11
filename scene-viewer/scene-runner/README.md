@@ -20,7 +20,7 @@
 python3 -m http.server 8080
 
 # 或使用启动脚本
-./demo/start-demo.sh
+./scene-viewer/start-demo.sh
 ```
 
 ### 2. 访问场景运行器
@@ -28,7 +28,7 @@ python3 -m http.server 8080
 在浏览器打开：
 
 ```
-http://localhost:8080/demo/scene-runner/
+http://localhost:8080/scene-viewer/scene-runner/
 ```
 
 ### 3. 选择场景
@@ -47,10 +47,10 @@ http://localhost:8080/demo/scene-runner/
 
 ## 场景文件结构
 
-所有场景定义存储在 `demo/scenes/` 目录：
+所有场景定义存储在 `scene-viewer/scenes/` 目录：
 
 ```
-demo/scenes/
+scene-viewer/scenes/
 ├── math-quiz.json        # 数学测验场景
 ├── pisa-tower.json       # 比萨斜塔实验场景
 └── earth-system.json     # 地球系统场景
@@ -60,7 +60,7 @@ demo/scenes/
 
 ### 步骤 1: 创建场景 JSON
 
-在 `demo/scenes/` 目录创建新的 JSON 文件，例如 `my-scene.json`：
+在 `scene-viewer/scenes/` 目录创建新的 JSON 文件，例如 `my-scene.json`：
 
 ```json
 {
@@ -99,7 +99,7 @@ demo/scenes/
 
 ### 步骤 2: 添加场景卡片
 
-编辑 `demo/scene-runner/index.html`，在场景选择器中添加新卡片：
+编辑 `scene-viewer/scene-runner/index.html`，在场景选择器中添加新卡片：
 
 ```html
 <div class="scene-card" data-scene="my-scene">

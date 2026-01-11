@@ -258,7 +258,7 @@
         transform: translateY(0);
       }
 
-      /* Animation component */
+      /* Generic Animation component */
       .animation-container {
         background: linear-gradient(180deg, #87ceeb 0%, #e0f7ff 100%);
         border-radius: 12px;
@@ -268,242 +268,6 @@
         position: relative;
         overflow: hidden;
         box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-
-      /* Pisa Tower Animation */
-      .pisa-tower {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%) rotate(4deg);
-        transform-origin: bottom center;
-        width: 120px;
-        height: 350px;
-        background: linear-gradient(to right, #d4a574 0%, #c89666 50%, #b88858 100%);
-        border-radius: 8px 8px 0 0;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-      }
-
-      .tower-level {
-        position: absolute;
-        width: 100%;
-        height: 60px;
-        border-bottom: 3px solid #996633;
-        border-top: 2px solid #edc9a3;
-      }
-
-      .tower-level:nth-child(1) {
-        top: 0;
-      }
-      .tower-level:nth-child(2) {
-        top: 60px;
-      }
-      .tower-level:nth-child(3) {
-        top: 120px;
-      }
-      .tower-level:nth-child(4) {
-        top: 180px;
-      }
-      .tower-level:nth-child(5) {
-        top: 240px;
-      }
-
-      .ball {
-        position: absolute;
-        border-radius: 50%;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      }
-
-      .ball.heavy {
-        width: 40px;
-        height: 40px;
-        background: radial-gradient(circle at 30% 30%, #999, #333);
-        left: calc(50% - 80px);
-        top: 50px;
-      }
-
-      .ball.light {
-        width: 40px;
-        height: 40px;
-        background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
-        left: calc(50% + 40px);
-        top: 50px;
-      }
-
-      @keyframes fallDown {
-        0% {
-          top: 50px;
-          opacity: 1;
-        }
-        100% {
-          top: 350px;
-          opacity: 0.8;
-        }
-      }
-
-      .ball.falling {
-        animation: fallDown 1.5s ease-in forwards;
-      }
-
-      .galileo {
-        position: absolute;
-        top: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 40px;
-        z-index: 10;
-      }
-
-      /* Earth System Animation */
-      .earth-system {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .animation-container.space {
-        background: linear-gradient(180deg, #000428 0%, #004e92 100%);
-      }
-
-      .sun {
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(circle, #ffeb3b 0%, #ff9800 100%);
-        border-radius: 50%;
-        box-shadow: 0 0 50px #ff9800, 0 0 100px #ff9800;
-        animation: sunGlow 3s ease-in-out infinite;
-      }
-
-      @keyframes sunGlow {
-        0%,
-        100% {
-          box-shadow: 0 0 50px #ff9800, 0 0 100px #ff9800;
-        }
-        50% {
-          box-shadow: 0 0 80px #ff9800, 0 0 130px #ff9800;
-        }
-      }
-
-      .orbit {
-        position: absolute;
-        width: 350px;
-        height: 350px;
-        border: 2px dashed rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-      }
-
-      .earth-container {
-        position: absolute;
-        width: 80px;
-        height: 80px;
-        animation: revolution 10s linear infinite paused;
-        transform-origin: 175px center;
-        left: calc(50% - 40px);
-        top: calc(50% - 215px);
-      }
-
-      .earth-container.rotating {
-        animation-play-state: running;
-      }
-
-      @keyframes revolution {
-        from {
-          transform: rotate(0deg) translateX(175px) rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg) translateX(175px) rotate(-360deg);
-        }
-      }
-
-      .earth {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #4a90e2 0%, #2e7d32 50%, #1565c0 100%);
-        border-radius: 50%;
-        position: relative;
-        box-shadow: 0 0 30px rgba(66, 165, 245, 0.5);
-        animation: rotation 4s linear infinite paused;
-      }
-
-      .earth.rotating {
-        animation-play-state: running;
-      }
-
-      @keyframes rotation {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .earth::after {
-        content: '';
-        position: absolute;
-        top: 10%;
-        left: 10%;
-        width: 80%;
-        height: 80%;
-        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent);
-        border-radius: 50%;
-      }
-
-      .earth-axis {
-        position: absolute;
-        width: 2px;
-        height: 100px;
-        background: rgba(255, 255, 255, 0.6);
-        top: -10px;
-        left: 39px;
-        transform: rotate(23.5deg);
-        transform-origin: center;
-      }
-
-      .axis-label {
-        position: absolute;
-        top: -25px;
-        left: -30px;
-        color: white;
-        font-size: 12px;
-        white-space: nowrap;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 2px 6px;
-        border-radius: 4px;
-      }
-
-      .moon {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background: radial-gradient(circle, #ddd, #999);
-        border-radius: 50%;
-        top: -30px;
-        left: 30px;
-      }
-
-      .info-label {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.95);
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        max-width: 200px;
-      }
-
-      .label-revolution {
-        bottom: 50px;
-        left: 50px;
-      }
-
-      .label-rotation {
-        bottom: 50px;
-        right: 50px;
       }
 
       /* Conclusion & Thinking */
@@ -686,6 +450,9 @@
         font-size: 14px;
       }
     </style>
+
+    <!-- Animation-specific styles loaded dynamically -->
+    <link rel="stylesheet" href="./animations.css" />
   </head>
   <body>
     <!-- Scene Selector -->
@@ -748,6 +515,7 @@
 
     <script type="module">
       import { VVCERuntime } from '../../packages/vvce-core/dist/index.mjs';
+      import { AnimationRegistry } from './animations.js';
 
       // Scene loader
       async function loadScene(sceneName) {
@@ -760,8 +528,9 @@
 
       // Component Renderer
       class ComponentRenderer {
-        constructor(runtime) {
+        constructor(runtime, animationRegistry) {
           this.runtime = runtime;
+          this.animationRegistry = animationRegistry;
           this.nodeStates = new Map();
         }
 
@@ -818,52 +587,16 @@
         renderAnimation(node) {
           const { type, autoplay } = node.props;
 
-          if (type === 'pisa-tower') {
-            return `
-            <div class="node anim-component" data-node-id="${node.id}">
-              <div class="animation-container" id="pisa-container">
-                <div class="pisa-tower">
-                  <div class="tower-level"></div>
-                  <div class="tower-level"></div>
-                  <div class="tower-level"></div>
-                  <div class="tower-level"></div>
-                  <div class="tower-level"></div>
-                </div>
-                <div class="galileo">🧑‍🔬</div>
-                <div class="ball heavy" id="heavy-ball"></div>
-                <div class="ball light" id="light-ball"></div>
+          // Get animation HTML from registry
+          const animationHtml = this.animationRegistry.getAnimationHtml(type);
+
+          return `
+            <div class="node anim-component" data-node-id="${node.id}" data-animation-type="${type}" data-autoplay="${autoplay}">
+              <div class="animation-container" id="animation-${node.id}">
+                ${animationHtml}
               </div>
             </div>
           `;
-          } else if (type === 'earth-system') {
-            return `
-            <div class="node anim-component" data-node-id="${node.id}">
-              <div class="animation-container space">
-                <div class="earth-system">
-                  <div class="sun"></div>
-                  <div class="orbit"></div>
-                  <div class="earth-container" id="earth-orbit">
-                    <div class="earth" id="earth-rotate">
-                      <div class="earth-axis">
-                        <div class="axis-label">23.5°</div>
-                      </div>
-                      <div class="moon"></div>
-                    </div>
-                  </div>
-                  <div class="info-label label-revolution">
-                    <strong>公转</strong><br>
-                    周期：365天
-                  </div>
-                  <div class="info-label label-rotation">
-                    <strong>自转</strong><br>
-                    周期：24小时
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-          }
-          return '';
         }
 
         renderControls(node) {
@@ -942,9 +675,10 @@
 
       // UI Manager
       class UIManager {
-        constructor(runtime, renderer) {
+        constructor(runtime, renderer, animationRegistry) {
           this.runtime = runtime;
           this.renderer = renderer;
+          this.animationRegistry = animationRegistry;
           this.sceneContainer = document.getElementById('scene-container');
           this.setupEventListeners();
         }
@@ -986,36 +720,16 @@
               });
             }
 
-            // Handle control buttons
+            // Handle control buttons - delegate to animation registry
             if (target.classList.contains('control-button')) {
               const controlId = target.dataset.control;
+              const nodeId = target.dataset.nodeId;
 
-              const allButtons = this.sceneContainer.querySelectorAll('.control-button');
-              allButtons.forEach((btn) => btn.classList.remove('active'));
-              target.classList.add('active');
-
-              const earthOrbit = document.getElementById('earth-orbit');
-              const earthRotate = document.getElementById('earth-rotate');
-
-              if (earthOrbit && earthRotate) {
-                switch (controlId) {
-                  case 'btn-rotation':
-                    earthOrbit.classList.remove('rotating');
-                    earthRotate.classList.add('rotating');
-                    break;
-                  case 'btn-revolution':
-                    earthOrbit.classList.add('rotating');
-                    earthRotate.classList.remove('rotating');
-                    break;
-                  case 'btn-both':
-                    earthOrbit.classList.add('rotating');
-                    earthRotate.classList.add('rotating');
-                    break;
-                  case 'btn-stop':
-                    earthOrbit.classList.remove('rotating');
-                    earthRotate.classList.remove('rotating');
-                    break;
-                }
+              // Find the animation node
+              const animNode = this.sceneContainer.querySelector('.anim-component');
+              if (animNode) {
+                const animType = animNode.dataset.animationType;
+                this.animationRegistry.handleControl(animType, controlId, target);
               }
             }
           });
@@ -1034,34 +748,10 @@
           setTimeout(() => {
             scene.nodes.forEach((node) => {
               if (node.type === 'Animation' && node.props.autoplay) {
-                if (node.props.type === 'pisa-tower') {
-                  this.playPisaAnimation();
-                } else if (node.props.type === 'earth-system') {
-                  const earthOrbit = document.getElementById('earth-orbit');
-                  const earthRotate = document.getElementById('earth-rotate');
-                  if (earthOrbit && earthRotate) {
-                    earthOrbit.classList.add('rotating');
-                    earthRotate.classList.add('rotating');
-                  }
-                }
+                this.animationRegistry.startAnimation(node.props.type);
               }
             });
           }, 100);
-        }
-
-        playPisaAnimation() {
-          const heavyBall = document.getElementById('heavy-ball');
-          const lightBall = document.getElementById('light-ball');
-
-          if (heavyBall && lightBall) {
-            heavyBall.classList.remove('falling');
-            lightBall.classList.remove('falling');
-
-            setTimeout(() => {
-              heavyBall.classList.add('falling');
-              lightBall.classList.add('falling');
-            }, 500);
-          }
         }
 
         showToast(text) {
@@ -1112,6 +802,7 @@
       let runtime = null;
       let renderer = null;
       let uiManager = null;
+      const animationRegistry = new AnimationRegistry();
 
       // Load and run scene
       async function runScene(sceneName) {
@@ -1149,8 +840,8 @@
             },
           });
 
-          renderer = new ComponentRenderer(runtime);
-          uiManager = new UIManager(runtime, renderer);
+          renderer = new ComponentRenderer(runtime, animationRegistry);
+          uiManager = new UIManager(runtime, renderer, animationRegistry);
 
           runtime.loadCourse(courseDSL);
           runtime.start();
