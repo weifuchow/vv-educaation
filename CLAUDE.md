@@ -138,7 +138,7 @@ apps/web-admin, apps/miniapp, apps/web-student
 **Package Management:**
 
 - **pnpm 8.14.0** (REQUIRED - do not use npm/yarn)
-- **Node.js >= 18.0.0**
+- **Node.js >= 20.17.0**
 
 **Build & Tooling:**
 
