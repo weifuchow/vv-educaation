@@ -14,10 +14,15 @@ import { BUILTIN_ANIMATIONS } from '../presets/animations';
 // requestAnimationFrame polyfill for non-browser environments
 declare const requestAnimationFrame: ((callback: (time: number) => void) => number) | undefined;
 
+const now = (): number =>
+  typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
+
 const raf: (callback: (time: number) => void) => number | ReturnType<typeof setTimeout> =
   typeof requestAnimationFrame !== 'undefined'
     ? requestAnimationFrame
-    : (callback: (time: number) => void) => setTimeout(() => callback(Date.now()), 16);
+    : (callback: (time: number) => void) => setTimeout(() => callback(now()), 16);
 
 export interface AnimationState {
   /** 是否正在播放 */
@@ -233,7 +238,7 @@ export class AnimationEngine {
       resume: () => {
         if (paused) {
           paused = false;
-          startTime += performance.now() - pausedAt;
+          startTime += now() - pausedAt;
           raf(animate);
         }
       },
