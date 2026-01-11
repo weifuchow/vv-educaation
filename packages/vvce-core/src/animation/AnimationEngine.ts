@@ -5,12 +5,19 @@
 
 import type {
   AnimationDefinition,
-  AnimationConfig,
   BuiltinAnimation,
   EasingFunction,
   NodeAnimation,
 } from '@vv-education/vvce-schema';
 import { BUILTIN_ANIMATIONS } from '../presets/animations';
+
+// requestAnimationFrame polyfill for non-browser environments
+declare const requestAnimationFrame: ((callback: (time: number) => void) => number) | undefined;
+
+const raf: (callback: (time: number) => void) => number | ReturnType<typeof setTimeout> =
+  typeof requestAnimationFrame !== 'undefined'
+    ? requestAnimationFrame
+    : (callback: (time: number) => void) => setTimeout(() => callback(Date.now()), 16);
 
 export interface AnimationState {
   /** 是否正在播放 */
@@ -165,7 +172,7 @@ export class AnimationEngine {
       }
 
       if (currentTime < startTime) {
-        requestAnimationFrame(animate);
+        raf(animate);
         return;
       }
 
@@ -202,7 +209,7 @@ export class AnimationEngine {
       onFrame?.(easedProgress, properties);
 
       if (overallProgress < 1) {
-        requestAnimationFrame(animate);
+        raf(animate);
       } else {
         state.isPlaying = false;
         this.activeAnimations.delete(instanceId);
@@ -227,13 +234,13 @@ export class AnimationEngine {
         if (paused) {
           paused = false;
           startTime += performance.now() - pausedAt;
-          requestAnimationFrame(animate);
+          raf(animate);
         }
       },
     };
 
     this.activeAnimations.set(instanceId, instance);
-    requestAnimationFrame(animate);
+    raf(animate);
 
     return instance;
   }
@@ -242,7 +249,7 @@ export class AnimationEngine {
    * 停止节点上的所有动画
    */
   stopAnimationOnNode(nodeId: string): void {
-    for (const [id, instance] of this.activeAnimations) {
+    for (const [, instance] of this.activeAnimations) {
       if (instance.nodeId === nodeId) {
         instance.cancel();
       }
@@ -253,7 +260,7 @@ export class AnimationEngine {
    * 停止所有动画
    */
   stopAllAnimations(): void {
-    for (const [id, instance] of this.activeAnimations) {
+    for (const [, instance] of this.activeAnimations) {
       instance.cancel();
     }
   }
@@ -262,7 +269,7 @@ export class AnimationEngine {
    * 暂停节点上的动画
    */
   pauseAnimationOnNode(nodeId: string): void {
-    for (const [id, instance] of this.activeAnimations) {
+    for (const [, instance] of this.activeAnimations) {
       if (instance.nodeId === nodeId) {
         instance.pause();
       }
@@ -273,7 +280,7 @@ export class AnimationEngine {
    * 恢复节点上的动画
    */
   resumeAnimationOnNode(nodeId: string): void {
-    for (const [id, instance] of this.activeAnimations) {
+    for (const [, instance] of this.activeAnimations) {
       if (instance.nodeId === nodeId) {
         instance.resume();
       }
@@ -284,7 +291,7 @@ export class AnimationEngine {
    * 获取节点的动画状态
    */
   getAnimationState(nodeId: string): AnimationState | undefined {
-    for (const [id, instance] of this.activeAnimations) {
+    for (const [, instance] of this.activeAnimations) {
       if (instance.nodeId === nodeId) {
         return instance.state;
       }
@@ -425,12 +432,8 @@ export class AnimationEngine {
     return Math.pow(2, -10 * t) * Math.sin((t - 0.075) * (2 * Math.PI) / 0.3) + 1;
   }
 
-  private cubicBezier(x1: number, y1: number, x2: number, y2: number, t: number): number {
-    // 简化的三次贝塞尔计算
-    const cx = 3 * x1;
-    const bx = 3 * (x2 - x1) - cx;
-    const ax = 1 - cx - bx;
-
+  private cubicBezier(_x1: number, y1: number, _x2: number, y2: number, t: number): number {
+    // 简化的三次贝塞尔计算 (仅使用 Y 分量计算缓动值)
     const cy = 3 * y1;
     const by = 3 * (y2 - y1) - cy;
     const ay = 1 - cy - by;

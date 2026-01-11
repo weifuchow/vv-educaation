@@ -11,6 +11,14 @@ import type {
   TransitionDefinition,
 } from '@vv-education/vvce-schema';
 
+// requestAnimationFrame polyfill for non-browser environments
+declare const requestAnimationFrame: ((callback: (time: number) => void) => number) | undefined;
+
+const raf: (callback: (time: number) => void) => number | ReturnType<typeof setTimeout> =
+  typeof requestAnimationFrame !== 'undefined'
+    ? requestAnimationFrame
+    : (callback: (time: number) => void) => setTimeout(() => callback(Date.now()), 16);
+
 export interface TransitionState {
   /** 过渡是否进行中 */
   isTransitioning: boolean;
@@ -205,7 +213,7 @@ export class TransitionEngine {
   }
 
   private calculateRotateStyle(
-    direction: TransitionDirection,
+    _direction: TransitionDirection,
     progress: number,
     isEntering: boolean
   ): TransitionStyle {
@@ -248,7 +256,7 @@ export class TransitionEngine {
 
   private calculateBlurStyle(
     progress: number,
-    isEntering: boolean
+    _isEntering: boolean
   ): TransitionStyle {
     const blur = (1 - progress) * 20;
 
@@ -333,7 +341,7 @@ export class TransitionEngine {
   }
 
   private calculateCarouselStyle(
-    direction: TransitionDirection,
+    _direction: TransitionDirection,
     progress: number,
     isEntering: boolean
   ): TransitionStyle {
@@ -348,13 +356,12 @@ export class TransitionEngine {
   }
 
   private calculateStackStyle(
-    direction: TransitionDirection,
+    _direction: TransitionDirection,
     progress: number,
     isEntering: boolean
   ): TransitionStyle {
     const scale = isEntering ? 0.9 + progress * 0.1 : 1;
     const translateY = isEntering ? (1 - progress) * 30 : 0;
-    const zIndex = isEntering ? 1 : 0;
 
     return {
       transform: `translateY(${translateY}px) scale(${scale})`,
@@ -439,7 +446,7 @@ export class TransitionEngine {
       onProgress?.(progress);
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        raf(animate);
       } else {
         state.isTransitioning = false;
         this.activeTransitions.delete(id);
@@ -455,7 +462,7 @@ export class TransitionEngine {
     };
 
     this.activeTransitions.set(id, { cancel, state });
-    requestAnimationFrame(animate);
+    raf(animate);
 
     return state;
   }
