@@ -249,12 +249,14 @@ describe('EventBus', () => {
 
       eventBus.emit(event);
 
-      expect(listener).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'click',
-        target: 'button1',
-        payload: { x: 100, y: 200 },
-        ts: 1234567890,
-      }));
+      expect(listener).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'click',
+          target: 'button1',
+          payload: { x: 100, y: 200 },
+          ts: 1234567890,
+        })
+      );
     });
   });
 });

@@ -6,9 +6,14 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts"
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "test": "echo \"No tests yet\" && exit 0",
+    "test:ci": "echo \"No tests yet\" && exit 0"
   },
-  "keywords": ["api", "contracts"],
+  "keywords": [
+    "api",
+    "contracts"
+  ],
   "author": "VV Education",
   "license": "MIT",
   "devDependencies": {

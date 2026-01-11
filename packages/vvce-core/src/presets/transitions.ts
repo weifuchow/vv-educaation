@@ -158,74 +158,158 @@ export const SCENE_TRANSITION_MODES = {
 
   /** 渐变切换 - 淡入淡出 */
   crossfade: {
-    enterTransition: { type: 'fade' as TransitionType, duration: 300, easing: 'ease-out' as const },
-    exitTransition: { type: 'fade' as TransitionType, duration: 300, easing: 'ease-in' as const },
+    enterTransition: {
+      type: 'fade' as TransitionType,
+      duration: 300,
+      easing: 'ease-out' as const,
+    },
+    exitTransition: {
+      type: 'fade' as TransitionType,
+      duration: 300,
+      easing: 'ease-in' as const,
+    },
   },
 
   /** 滑动切换 - 左右滑动 */
   slideHorizontal: {
-    enterTransition: { type: 'slide' as TransitionType, direction: 'left' as const, duration: 400 },
-    exitTransition: { type: 'slide' as TransitionType, direction: 'left' as const, duration: 400 },
+    enterTransition: {
+      type: 'slide' as TransitionType,
+      direction: 'left' as const,
+      duration: 400,
+    },
+    exitTransition: {
+      type: 'slide' as TransitionType,
+      direction: 'left' as const,
+      duration: 400,
+    },
   },
 
   /** 滑动切换 - 上下滑动 */
   slideVertical: {
-    enterTransition: { type: 'slide' as TransitionType, direction: 'up' as const, duration: 400 },
-    exitTransition: { type: 'slide' as TransitionType, direction: 'up' as const, duration: 400 },
+    enterTransition: {
+      type: 'slide' as TransitionType,
+      direction: 'up' as const,
+      duration: 400,
+    },
+    exitTransition: {
+      type: 'slide' as TransitionType,
+      direction: 'up' as const,
+      duration: 400,
+    },
   },
 
   /** 缩放切换 */
   zoomTransition: {
-    enterTransition: { type: 'zoom' as TransitionType, duration: 400, easing: 'ease-out' as const },
-    exitTransition: { type: 'zoom' as TransitionType, duration: 300, easing: 'ease-in' as const },
+    enterTransition: {
+      type: 'zoom' as TransitionType,
+      duration: 400,
+      easing: 'ease-out' as const,
+    },
+    exitTransition: {
+      type: 'zoom' as TransitionType,
+      duration: 300,
+      easing: 'ease-in' as const,
+    },
   },
 
   /** 翻页切换 */
   pageFlip: {
-    enterTransition: { type: 'flip' as TransitionType, direction: 'left' as const, duration: 600 },
-    exitTransition: { type: 'flip' as TransitionType, direction: 'left' as const, duration: 600 },
+    enterTransition: {
+      type: 'flip' as TransitionType,
+      direction: 'left' as const,
+      duration: 600,
+    },
+    exitTransition: {
+      type: 'flip' as TransitionType,
+      direction: 'left' as const,
+      duration: 600,
+    },
   },
 
   /** 3D 立方体 */
   cube3d: {
-    enterTransition: { type: 'cube' as TransitionType, direction: 'left' as const, duration: 700 },
-    exitTransition: { type: 'cube' as TransitionType, direction: 'left' as const, duration: 700 },
+    enterTransition: {
+      type: 'cube' as TransitionType,
+      direction: 'left' as const,
+      duration: 700,
+    },
+    exitTransition: {
+      type: 'cube' as TransitionType,
+      direction: 'left' as const,
+      duration: 700,
+    },
   },
 
   /** 旋转木马 */
   carousel: {
-    enterTransition: { type: 'carousel' as TransitionType, direction: 'left' as const, duration: 600 },
-    exitTransition: { type: 'carousel' as TransitionType, direction: 'left' as const, duration: 600 },
+    enterTransition: {
+      type: 'carousel' as TransitionType,
+      direction: 'left' as const,
+      duration: 600,
+    },
+    exitTransition: {
+      type: 'carousel' as TransitionType,
+      direction: 'left' as const,
+      duration: 600,
+    },
   },
 
   /** 堆叠卡片 */
   cardStack: {
-    enterTransition: { type: 'stack' as TransitionType, direction: 'up' as const, duration: 400 },
+    enterTransition: {
+      type: 'stack' as TransitionType,
+      direction: 'up' as const,
+      duration: 400,
+    },
     exitTransition: { type: 'scale' as TransitionType, duration: 300 },
   },
 
   /** 揭示效果 */
   circleReveal: {
-    enterTransition: { type: 'reveal' as TransitionType, direction: 'center' as const, duration: 600 },
+    enterTransition: {
+      type: 'reveal' as TransitionType,
+      direction: 'center' as const,
+      duration: 600,
+    },
     exitTransition: { type: 'fade' as TransitionType, duration: 200 },
   },
 
   /** 擦除效果 */
   wipeRight: {
-    enterTransition: { type: 'wipe' as TransitionType, direction: 'right' as const, duration: 500 },
-    exitTransition: { type: 'wipe' as TransitionType, direction: 'left' as const, duration: 500 },
+    enterTransition: {
+      type: 'wipe' as TransitionType,
+      direction: 'right' as const,
+      duration: 500,
+    },
+    exitTransition: {
+      type: 'wipe' as TransitionType,
+      direction: 'left' as const,
+      duration: 500,
+    },
   },
 
   /** 弹跳效果 */
   bouncy: {
-    enterTransition: { type: 'bounce' as TransitionType, duration: 600, easing: 'bounce' as const },
+    enterTransition: {
+      type: 'bounce' as TransitionType,
+      duration: 600,
+      easing: 'bounce' as const,
+    },
     exitTransition: { type: 'scale' as TransitionType, duration: 300 },
   },
 
   /** 模糊过渡 */
   blurFade: {
-    enterTransition: { type: 'blur' as TransitionType, duration: 400, easing: 'ease-out' as const },
-    exitTransition: { type: 'blur' as TransitionType, duration: 300, easing: 'ease-in' as const },
+    enterTransition: {
+      type: 'blur' as TransitionType,
+      duration: 400,
+      easing: 'ease-out' as const,
+    },
+    exitTransition: {
+      type: 'blur' as TransitionType,
+      duration: 300,
+      easing: 'ease-in' as const,
+    },
   },
 
   /** 洗牌效果 */

@@ -306,9 +306,7 @@ describe('VVCERuntime', () => {
             triggers: [
               {
                 on: { event: 'click', target: 'addBtn' },
-                then: [
-                  { action: 'addScore', value: 10 },
-                ],
+                then: [{ action: 'addScore', value: 10 }],
               },
             ],
           },

@@ -76,20 +76,20 @@ packages/vvce-core/
 
 ### File Purpose Summary
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `Runtime.ts` | 275 | Main orchestrator, integrates all subsystems |
-| `Store.ts` | 144 | Three-layer state: globals, scene, nodes |
-| `EventBus.ts` | 101 | Event pub-sub with type-specific and global listeners |
-| `ActionExecutor.ts` | 423 | Executes 23+ action types (flow, state, UI, animation, style) |
-| `TriggerInterpreter.ts` | 81 | Implements ECA pattern for event handling |
-| `ConditionEvaluator.ts` | 98 | Evaluates 9 condition operators |
-| `ReferenceResolver.ts` | 67 | Resolves references and interpolates templates |
-| `Logger.ts` | 141 | Records all runtime operations for debug/replay |
-| `AnimationEngine.ts` | 469 | Keyframe animation with 8 easing functions |
-| `TransitionEngine.ts` | 523 | 16 scene transition effects |
-| `StyleManager.ts` | 324 | Computes styles with variables, responsive, states |
-| `ThemeProvider.ts` | 287 | Manages theme switching and inheritance |
+| File                    | Lines | Purpose                                                       |
+| ----------------------- | ----- | ------------------------------------------------------------- |
+| `Runtime.ts`            | 275   | Main orchestrator, integrates all subsystems                  |
+| `Store.ts`              | 144   | Three-layer state: globals, scene, nodes                      |
+| `EventBus.ts`           | 101   | Event pub-sub with type-specific and global listeners         |
+| `ActionExecutor.ts`     | 423   | Executes 23+ action types (flow, state, UI, animation, style) |
+| `TriggerInterpreter.ts` | 81    | Implements ECA pattern for event handling                     |
+| `ConditionEvaluator.ts` | 98    | Evaluates 9 condition operators                               |
+| `ReferenceResolver.ts`  | 67    | Resolves references and interpolates templates                |
+| `Logger.ts`             | 141   | Records all runtime operations for debug/replay               |
+| `AnimationEngine.ts`    | 469   | Keyframe animation with 8 easing functions                    |
+| `TransitionEngine.ts`   | 523   | 16 scene transition effects                                   |
+| `StyleManager.ts`       | 324   | Computes styles with variables, responsive, states            |
+| `ThemeProvider.ts`      | 287   | Manages theme switching and inheritance                       |
 
 ---
 
@@ -102,6 +102,7 @@ packages/vvce-core/
 **Responsibility:** Central coordinator that owns and connects all subsystems.
 
 **Key Properties:**
+
 ```typescript
 private store: Store;                    // State management
 private eventBus: EventBus;              // Event dispatch
@@ -117,6 +118,7 @@ private currentTriggers: Trigger[];      // Active triggers
 ```
 
 **Key Methods:**
+
 ```typescript
 constructor(options: RuntimeOptions)
 loadCourse(dsl: CourseDSL): void
@@ -133,6 +135,7 @@ destroy(): void
 ```
 
 **Initialization Flow:**
+
 1. Create logger (with debug mode)
 2. Create store
 3. Create event bus
@@ -153,24 +156,27 @@ destroy(): void
 **Responsibility:** Manages three-layer state architecture with path-based access.
 
 **State Structure:**
+
 ```typescript
 interface RuntimeState {
   globals: {
-    vars: Record<string, any>;  // Cross-scene persistent state
+    vars: Record<string, any>; // Cross-scene persistent state
   };
   scene: {
-    vars: Record<string, any>;  // Current scene temporary vars
+    vars: Record<string, any>; // Current scene temporary vars
   };
-  nodes: Record<string, NodeState>;  // Component states
+  nodes: Record<string, NodeState>; // Component states
 }
 ```
 
 **Path Patterns:**
+
 - `globals.vars.score` → Global variable
 - `scene.vars.temp` → Scene variable
 - `q1.state.selected` → Node state (component ID = q1)
 
 **Key Methods:**
+
 ```typescript
 get(path: string): any                   // Navigate path, return value
 set(path: string, value: any): void      // Set at path (creates intermediate objects)
@@ -187,6 +193,7 @@ restore(snapshot: RuntimeState): void    // Restore from snapshot
 ```
 
 **Important Patterns:**
+
 - **Path-based access:** All reads/writes use dot-notation paths
 - **Auto-creation:** Missing intermediate objects are created on `set()`
 - **No direct mutation:** Always use `set()`, never mutate state directly
@@ -202,16 +209,17 @@ restore(snapshot: RuntimeState): void    // Restore from snapshot
 
 **Action Categories:**
 
-| Category | Actions | Count |
-|----------|---------|-------|
-| **Flow Control** | gotoScene, parallel, sequence, delay | 4 |
-| **State Manipulation** | setVar, incVar, addScore, resetNode | 4 |
-| **UI Feedback** | toast, modal, showNode, hideNode | 4 |
-| **Animation** | playAnimation, stopAnimation | 2 |
-| **Style** | setStyle, addClass, removeClass, setTheme | 4 |
-| **Media** | sound, haptic | 2 |
+| Category               | Actions                                   | Count |
+| ---------------------- | ----------------------------------------- | ----- |
+| **Flow Control**       | gotoScene, parallel, sequence, delay      | 4     |
+| **State Manipulation** | setVar, incVar, addScore, resetNode       | 4     |
+| **UI Feedback**        | toast, modal, showNode, hideNode          | 4     |
+| **Animation**          | playAnimation, stopAnimation              | 2     |
+| **Style**              | setStyle, addClass, removeClass, setTheme | 4     |
+| **Media**              | sound, haptic                             | 2     |
 
 **Constructor Signature:**
+
 ```typescript
 // New signature (v1.1, supports engines)
 constructor(options: ActionExecutorOptions)
@@ -228,6 +236,7 @@ interface ActionExecutorOptions {
 ```
 
 **Key Methods:**
+
 ```typescript
 execute(action: Action): Promise<void>       // Execute single action
 executeAll(actions: Action[]): Promise<void> // Execute sequentially
@@ -237,28 +246,31 @@ setEngines({...}): void                      // Inject engines (v1.1)
 **Critical Implementation Details:**
 
 1. **Flow Control:**
+
    ```typescript
-   executeGotoScene(sceneId, transition)  // Delegates to onSceneChange callback
-   executeParallel(actions)               // Promise.all()
-   executeSequence(actions)               // Sequential await
-   executeDelay(duration)                 // new Promise with setTimeout
+   executeGotoScene(sceneId, transition); // Delegates to onSceneChange callback
+   executeParallel(actions); // Promise.all()
+   executeSequence(actions); // Sequential await
+   executeDelay(duration); // new Promise with setTimeout
    ```
 
 2. **State Manipulation:**
+
    ```typescript
-   executeSetVar(path, value)    // Resolves value, then store.set()
-   executeIncVar(path, by)       // Gets current, adds by, sets
-   executeAddScore(value)        // Shortcut for incVar('globals.vars.score')
-   executeResetNode(nodeId)      // store.setNodeState(nodeId, {})
+   executeSetVar(path, value); // Resolves value, then store.set()
+   executeIncVar(path, by); // Gets current, adds by, sets
+   executeAddScore(value); // Shortcut for incVar('globals.vars.score')
+   executeResetNode(nodeId); // store.setNodeState(nodeId, {})
    ```
 
 3. **Animation (v1.1):**
    ```typescript
-   executePlayAnimation(action)  // Uses animationEngine if available
-   executeStopAnimation(target)  // Stops all animations on node
+   executePlayAnimation(action); // Uses animationEngine if available
+   executeStopAnimation(target); // Stops all animations on node
    ```
 
 **Important Patterns:**
+
 - All actions are async (return Promise<void>)
 - References are resolved before execution
 - Text interpolation happens in executeToast/Modal
@@ -274,22 +286,25 @@ setEngines({...}): void                      // Inject engines (v1.1)
 **Responsibility:** Pub-sub event system with type-specific and global listeners.
 
 **Data Structures:**
+
 ```typescript
 private listeners: Map<string, Set<EventListener>>;  // Type-specific
 private allListeners: Set<EventListener>;             // Global (all events)
 ```
 
 **Event Format:**
+
 ```typescript
 interface VVEvent {
-  type: string;      // 'click', 'change', 'sceneEnter', etc.
-  target?: string;   // Node ID (e.g., 'b1', 'q1')
-  payload?: any;     // Event-specific data
-  ts: number;        // Timestamp
+  type: string; // 'click', 'change', 'sceneEnter', etc.
+  target?: string; // Node ID (e.g., 'b1', 'q1')
+  payload?: any; // Event-specific data
+  ts: number; // Timestamp
 }
 ```
 
 **Key Methods:**
+
 ```typescript
 on(eventType: string, listener: EventListener): () => void  // Returns unsubscribe
 onAll(listener: EventListener): () => void                  // Listen to all events
@@ -301,6 +316,7 @@ getListenerCount(eventType?: string): number                // Debug helper
 ```
 
 **Critical Pattern:**
+
 - Both type-specific and global listeners are called on emit
 - Errors in listeners are caught and logged (don't stop propagation)
 - Unsubscribe function pattern: `const unsub = bus.on('click', handler); unsub();`
@@ -314,19 +330,21 @@ getListenerCount(eventType?: string): number                // Debug helper
 **Responsibility:** Implements Event-Condition-Action pattern.
 
 **Trigger Structure:**
+
 ```typescript
 interface Trigger {
   on: {
-    event: string;     // Event type to match
-    target?: string;   // Optional target node ID
+    event: string; // Event type to match
+    target?: string; // Optional target node ID
   };
-  if?: Condition[];    // Optional conditions (AND)
-  then: Action[];      // Actions if conditions pass
-  else?: Action[];     // Actions if conditions fail
+  if?: Condition[]; // Optional conditions (AND)
+  then: Action[]; // Actions if conditions pass
+  else?: Action[]; // Actions if conditions fail
 }
 ```
 
 **Execution Flow:**
+
 1. `handleEvent()` called by Runtime (via EventBus)
 2. For each trigger:
    - Check if `event.type` matches `trigger.on.event`
@@ -345,6 +363,7 @@ interface Trigger {
 **Responsibility:** Resolves `{ref: "path"}` expressions and `{{path}}` template strings.
 
 **Key Methods:**
+
 ```typescript
 isRef(value: any): value is RefExpression        // Type guard for {ref: ...}
 resolve(value: ValueOrRef): any                  // Resolve single value or ref
@@ -353,6 +372,7 @@ resolveObject<T>(obj: T): T                      // Deep resolve all refs in obj
 ```
 
 **Examples:**
+
 ```typescript
 // Direct reference
 { "ref": "globals.vars.score" }  → Store.get("globals.vars.score")
@@ -368,14 +388,22 @@ resolveObject<T>(obj: T): T                      // Deep resolve all refs in obj
 **Location:** `src/interpreter/ConditionEvaluator.ts`
 
 **Supported Operators:**
+
 ```typescript
 type ConditionOperator =
-  | 'equals' | 'notEquals'           // Value comparison
-  | 'gt' | 'gte' | 'lt' | 'lte'      // Numeric comparison
-  | 'and' | 'or' | 'not';            // Logical operators
+  | 'equals'
+  | 'notEquals' // Value comparison
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte' // Numeric comparison
+  | 'and'
+  | 'or'
+  | 'not'; // Logical operators
 ```
 
 **Evaluation Details:**
+
 - **equals/notEquals:** Uses `===` after resolving refs
 - **Comparisons:** Converts to Number, warns if NaN
 - **and:** Returns true if all conditions true (empty = true)
@@ -389,6 +417,7 @@ type ConditionOperator =
 **Location:** `src/logger/Logger.ts`
 
 **Log Entry Structure:**
+
 ```typescript
 interface LogEntry {
   level: 'debug' | 'info' | 'warn' | 'error';
@@ -400,6 +429,7 @@ interface LogEntry {
 ```
 
 **Key Methods:**
+
 ```typescript
 log(level, type, message, data?): void
 debug(type, message, data?): void
@@ -413,6 +443,7 @@ import(logsJson): void   // JSON.parse
 ```
 
 **Critical Pattern:**
+
 - Every significant operation must be logged
 - Logs are essential for replay functionality
 - Use appropriate type and level
@@ -425,20 +456,22 @@ import(logsJson): void   // JSON.parse
 **Location:** `src/animation/AnimationEngine.ts`
 
 **Key Concepts:**
+
 ```typescript
 interface AnimationDefinition {
   keyframes: Array<{
-    offset: number;      // 0-100 (percentage)
-    properties: Record<string, any>;  // CSS-like properties
+    offset: number; // 0-100 (percentage)
+    properties: Record<string, any>; // CSS-like properties
   }>;
-  duration?: number;     // Milliseconds
+  duration?: number; // Milliseconds
   easing?: EasingFunction;
   delay?: number;
-  iterations?: number;   // -1 = infinite
+  iterations?: number; // -1 = infinite
 }
 ```
 
 **Built-in Animations (30+):**
+
 - Fade: fadeIn, fadeOut
 - Slide: slideInLeft, slideInRight, slideInUp, slideInDown
 - Zoom: zoomIn, zoomOut
@@ -456,6 +489,7 @@ interface AnimationDefinition {
 **Location:** `src/style/StyleManager.ts`
 
 **Key Concepts:**
+
 ```typescript
 interface StyleVariables {
   colors?: Record<string, string>;
@@ -468,6 +502,7 @@ interface StyleVariables {
 ```
 
 **Style Computation Order:**
+
 1. Apply base styles from class
 2. Apply state styles (hover/active/disabled/focus)
 3. Apply responsive styles for current breakpoint
@@ -481,6 +516,7 @@ interface StyleVariables {
 ### 3.1 Constructor Patterns
 
 **Simple Constructor:**
+
 ```typescript
 export class Store {
   constructor(initialState?: Partial<RuntimeState>) {
@@ -488,13 +524,14 @@ export class Store {
       globals: { vars: {} },
       scene: { vars: {} },
       nodes: {},
-      ...initialState
+      ...initialState,
     };
   }
 }
 ```
 
 **Constructor with Options:**
+
 ```typescript
 export class Logger {
   constructor(options: { maxLogs?: number; debug?: boolean } = {}) {
@@ -506,28 +543,30 @@ export class Logger {
 
 ### 3.2 Method Naming Conventions
 
-| Pattern | Example | Purpose |
-|---------|---------|---------|
-| `execute*` | `executeGotoScene()` | Action execution |
-| `evaluate*` | `evaluateEquals()` | Condition evaluation |
-| `get*` | `getState()` | Getter |
-| `set*` | `setState()` | Setter |
-| `on*` | `onSceneChange()` | Event callback |
-| `handle*` | `handleEvent()` | Event handler |
-| `is*` | `isRef()` | Type guard |
+| Pattern     | Example              | Purpose              |
+| ----------- | -------------------- | -------------------- |
+| `execute*`  | `executeGotoScene()` | Action execution     |
+| `evaluate*` | `evaluateEquals()`   | Condition evaluation |
+| `get*`      | `getState()`         | Getter               |
+| `set*`      | `setState()`         | Setter               |
+| `on*`       | `onSceneChange()`    | Event callback       |
+| `handle*`   | `handleEvent()`      | Event handler        |
+| `is*`       | `isRef()`            | Type guard           |
 
 ### 3.3 Error Handling
 
 **Console Warnings (Not Errors):**
+
 ```typescript
 // For recoverable issues
 if (!this.isValidOperator(op)) {
   console.warn(`Unknown operator: ${op}`);
-  return false;  // Safe fallback
+  return false; // Safe fallback
 }
 ```
 
 **Thrown Errors:**
+
 ```typescript
 // For critical failures
 if (!this.course) {
@@ -600,6 +639,7 @@ this.logger?.info('scene', `Entering: ${sceneId}`);
 **Steps:**
 
 1. **Define action type in vvce-schema:**
+
    ```typescript
    // packages/vvce-schema/src/types/dsl.ts
    export interface MyCustomAction {
@@ -610,6 +650,7 @@ this.logger?.info('scene', `Entering: ${sceneId}`);
    ```
 
 2. **Add to ActionExecutor switch:**
+
    ```typescript
    // src/executor/ActionExecutor.ts
    private executeAction(action: ActionDSL): void {
@@ -634,6 +675,7 @@ this.logger?.info('scene', `Entering: ${sceneId}`);
 **Steps:**
 
 1. **Add to schema type:**
+
    ```typescript
    export type ConditionOperator = 'equals' | 'myOperator' | ...;
    ```
@@ -649,6 +691,7 @@ this.logger?.info('scene', `Entering: ${sceneId}`);
 **Steps:**
 
 1. **Add to schema:**
+
    ```typescript
    export type BuiltinAnimation = 'fadeIn' | 'myAnimation' | ...;
    ```
@@ -659,11 +702,11 @@ this.logger?.info('scene', `Entering: ${sceneId}`);
      myAnimation: {
        keyframes: [
          { offset: 0, properties: { opacity: 0 } },
-         { offset: 100, properties: { opacity: 1 } }
+         { offset: 100, properties: { opacity: 1 } },
        ],
        duration: 400,
-       easing: 'ease-out'
-     }
+       easing: 'ease-out',
+     },
    };
    ```
 
@@ -713,7 +756,7 @@ describe('ActionExecutor', () => {
     await executor.execute({
       action: 'setVar',
       path: 'globals.vars.score',
-      value: 100
+      value: 100,
     });
     // Assert state changed
   });
@@ -727,6 +770,7 @@ describe('ActionExecutor', () => {
 ### 7.1 Debugging a Trigger Not Firing
 
 **Checklist:**
+
 1. Enable debug mode: `new VVCERuntime({ debug: true })`
 2. Check logs: `runtime.getLogs()`
 3. Verify event type matches
@@ -736,12 +780,14 @@ describe('ActionExecutor', () => {
 ### 7.2 State Not Updating
 
 **Common Causes:**
+
 1. Incorrect path
 2. Direct mutation instead of `store.set()`
 3. Scene state cleared on scene change
 4. Reference not resolved
 
 **Debugging:**
+
 ```typescript
 console.log('Before:', store.get('globals.vars.score'));
 await executor.execute({ action: 'addScore', value: 10 });
@@ -824,6 +870,7 @@ export type { VVEvent, RuntimeState, LogEntry } from './types';
 ### 9.4 When Adding New Code
 
 **Checklist:**
+
 - [ ] Types defined in vvce-schema or local file
 - [ ] Implementation added to appropriate subsystem
 - [ ] References resolved where needed

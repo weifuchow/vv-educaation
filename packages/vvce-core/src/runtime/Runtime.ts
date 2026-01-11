@@ -3,7 +3,13 @@
  * 整合所有组件，提供完整的课件执行环境
  */
 
-import type { VVEvent, RuntimeOptions, StartOptions, RuntimeState, Trigger } from '../types';
+import type {
+  VVEvent,
+  RuntimeOptions,
+  StartOptions,
+  RuntimeState,
+  Trigger,
+} from '../types';
 import { Store } from '../store/Store';
 import { EventBus } from '../event-bus/EventBus';
 import { ReferenceResolver } from '../interpreter/ReferenceResolver';
@@ -70,11 +76,7 @@ export class VVCERuntime {
       onSceneChange: (sceneId) => this.gotoScene(sceneId),
       onUIAction: options.onUIAction,
     });
-    this.interpreter = new TriggerInterpreter(
-      this.evaluator,
-      this.executor,
-      this.logger
-    );
+    this.interpreter = new TriggerInterpreter(this.evaluator, this.executor, this.logger);
 
     // 监听所有事件用于日志记录
     this.eventBus.onAll((event) => {

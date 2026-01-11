@@ -12,7 +12,9 @@ import type {
 } from '@vv-education/vvce-schema';
 
 // requestAnimationFrame polyfill for non-browser environments
-declare const requestAnimationFrame: ((callback: (time: number) => void) => number) | undefined;
+declare const requestAnimationFrame:
+  | ((callback: (time: number) => void) => number)
+  | undefined;
 
 const now = (): number =>
   typeof performance !== 'undefined' && typeof performance.now === 'function'
@@ -63,21 +65,24 @@ export interface TransitionStyle {
 
 /** 缓动函数映射 */
 const EASING_FUNCTIONS: Record<string, string> = {
-  'linear': 'linear',
-  'ease': 'ease',
+  linear: 'linear',
+  ease: 'ease',
   'ease-in': 'ease-in',
   'ease-out': 'ease-out',
   'ease-in-out': 'ease-in-out',
-  'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-  'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-  'elastic': 'cubic-bezier(0.68, -0.6, 0.32, 1.6)',
+  spring: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+  elastic: 'cubic-bezier(0.68, -0.6, 0.32, 1.6)',
 };
 
 export class TransitionEngine {
-  private activeTransitions: Map<string, {
-    cancel: () => void;
-    state: TransitionState;
-  }> = new Map();
+  private activeTransitions: Map<
+    string,
+    {
+      cancel: () => void;
+      state: TransitionState;
+    }
+  > = new Map();
 
   private customTransitions: Map<string, TransitionDefinition> = new Map();
 
@@ -192,10 +197,7 @@ export class TransitionEngine {
     return { transform, opacity: progress };
   }
 
-  private calculateScaleStyle(
-    progress: number,
-    isEntering: boolean
-  ): TransitionStyle {
+  private calculateScaleStyle(progress: number, isEntering: boolean): TransitionStyle {
     const scale = isEntering ? 0.8 + progress * 0.2 : 1 - (1 - progress) * 0.2;
     return {
       transform: `scale(${scale})`,
@@ -231,10 +233,7 @@ export class TransitionEngine {
     };
   }
 
-  private calculateZoomStyle(
-    progress: number,
-    isEntering: boolean
-  ): TransitionStyle {
+  private calculateZoomStyle(progress: number, isEntering: boolean): TransitionStyle {
     const scale = isEntering ? progress : 1 + (1 - progress) * 0.5;
 
     return {
@@ -243,10 +242,7 @@ export class TransitionEngine {
     };
   }
 
-  private calculateBounceStyle(
-    progress: number,
-    isEntering: boolean
-  ): TransitionStyle {
+  private calculateBounceStyle(progress: number, isEntering: boolean): TransitionStyle {
     // 弹性效果
     const bounceProgress = this.bounceEasing(progress);
     const scale = isEntering
@@ -259,10 +255,7 @@ export class TransitionEngine {
     };
   }
 
-  private calculateBlurStyle(
-    progress: number,
-    _isEntering: boolean
-  ): TransitionStyle {
+  private calculateBlurStyle(progress: number, _isEntering: boolean): TransitionStyle {
     const blur = (1 - progress) * 20;
 
     return {
@@ -374,10 +367,7 @@ export class TransitionEngine {
     };
   }
 
-  private calculateShuffleStyle(
-    progress: number,
-    isEntering: boolean
-  ): TransitionStyle {
+  private calculateShuffleStyle(progress: number, isEntering: boolean): TransitionStyle {
     const rotate = (1 - progress) * (isEntering ? 15 : -15);
     const translateX = (1 - progress) * (isEntering ? 50 : -50);
     const scale = 0.9 + progress * 0.1;
@@ -388,10 +378,7 @@ export class TransitionEngine {
     };
   }
 
-  private calculateMorphStyle(
-    progress: number,
-    _isEntering: boolean
-  ): TransitionStyle {
+  private calculateMorphStyle(progress: number, _isEntering: boolean): TransitionStyle {
     // 形变效果 - 结合多种变换
     const scale = 0.95 + progress * 0.05;
     const blur = (1 - progress) * 5;
@@ -417,10 +404,7 @@ export class TransitionEngine {
   /**
    * 启动过渡动画
    */
-  startTransition(
-    id: string,
-    options: TransitionOptions
-  ): TransitionState {
+  startTransition(id: string, options: TransitionOptions): TransitionState {
     // 取消已有的同 ID 过渡
     this.cancelTransition(id);
 
@@ -518,9 +502,7 @@ export class TransitionEngine {
     const duration = transition.duration || 300;
     const easing = this.getEasingCSS(transition.easing);
 
-    return properties
-      .map((prop) => `${prop} ${duration}ms ${easing}`)
-      .join(', ');
+    return properties.map((prop) => `${prop} ${duration}ms ${easing}`).join(', ');
   }
 
   /**

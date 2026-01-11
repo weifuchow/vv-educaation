@@ -135,9 +135,11 @@ const course: CourseDSL = {
 校验完整的课程 DSL。
 
 **参数：**
+
 - `dsl: any` - 课程 DSL 对象
 
 **返回：**
+
 ```typescript
 interface ValidationResult {
   valid: boolean;
@@ -155,6 +157,7 @@ interface ValidationResult {
 执行 Dry Run 模拟。
 
 **返回：**
+
 ```typescript
 interface DryRunReport {
   reachableScenes: string[];
@@ -237,9 +240,7 @@ interface DryRunReport {
     { "action": "addScore", "value": 10 },
     { "action": "gotoScene", "sceneId": "s2" }
   ],
-  "else": [
-    { "action": "toast", "text": "再试一次" }
-  ]
+  "else": [{ "action": "toast", "text": "再试一次" }]
 }
 ```
 

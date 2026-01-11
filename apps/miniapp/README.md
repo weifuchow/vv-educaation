@@ -9,16 +9,19 @@
 ## 核心功能
 
 ### 学生入口
+
 - 课程学习（WebView 承载 VVCE）
 - 学习进度查看
 - 学习记录
 
 ### 家长入口
+
 - 查看孩子学习进度
 - 学习报告
 - 课程推荐
 
 ### 小程序原生能力
+
 - 用户登录/授权
 - 分享功能
 - 消息通知
@@ -57,16 +60,19 @@ miniapp/
 ## 开发指南
 
 ### 安装依赖
+
 ```bash
 npm install
 ```
 
 ### 启动开发
+
 ```bash
 npm run dev
 ```
 
 ### 构建
+
 ```bash
 npm run build
 ```
@@ -79,7 +85,7 @@ npm run build
 // 小程序 -> WebView
 wx.miniProgram.postMessage({
   type: 'loadCourse',
-  courseId: 'xxx'
+  courseId: 'xxx',
 });
 
 // WebView -> 小程序

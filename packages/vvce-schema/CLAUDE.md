@@ -42,6 +42,7 @@ Total: 3 TypeScript files, ~1092 lines of code
 ```
 
 **Organization Philosophy:**
+
 - **Monolithic types file**: All DSL types in single `dsl.ts` (756 lines)
 - **Validation separated**: Validator logic isolated from type definitions
 - **Centralized exports**: All public types re-exported through `index.ts`
@@ -78,26 +79,28 @@ CourseDSL (Root)
 ### 2.2 Core Type Definitions
 
 **CourseDSL (Root Object):**
+
 ```typescript
 export interface CourseDSL {
-  schema: 'vvce.dsl.v1';              // Version identifier (literal type)
+  schema: 'vvce.dsl.v1'; // Version identifier (literal type)
   meta: CourseMeta;
   globals?: CourseGlobals;
-  resources?: CourseResources;        // v1.1
-  theme?: ThemeConfig | string;       // v1.1
+  resources?: CourseResources; // v1.1
+  theme?: ThemeConfig | string; // v1.1
   startSceneId: string;
   scenes: SceneDSL[];
 }
 ```
 
 **SceneDSL:**
+
 ```typescript
 export interface SceneDSL {
-  id: string;                         // Unique scene ID
+  id: string; // Unique scene ID
   layout?: LayoutConfig;
-  style?: StyleProperties;            // v1.1
-  enterTransition?: SceneTransition;  // v1.1
-  exitTransition?: SceneTransition;   // v1.1
+  style?: StyleProperties; // v1.1
+  enterTransition?: SceneTransition; // v1.1
+  exitTransition?: SceneTransition; // v1.1
   vars?: Record<string, any>;
   nodes?: NodeDSL[];
   triggers?: TriggerDSL[];
@@ -107,22 +110,24 @@ export interface SceneDSL {
 ```
 
 **NodeDSL:**
+
 ```typescript
 export interface NodeDSL {
-  id: string;                         // Unique in scene
-  type: string;                       // Component type
-  props?: Record<string, any>;        // Component-specific props
-  style?: StyleProperties;            // v1.1
-  styleClass?: string | string[];     // v1.1
-  enterAnimation?: NodeAnimation;     // v1.1
-  exitAnimation?: NodeAnimation;      // v1.1
-  visible?: boolean | ConditionDSL;   // v1.1
+  id: string; // Unique in scene
+  type: string; // Component type
+  props?: Record<string, any>; // Component-specific props
+  style?: StyleProperties; // v1.1
+  styleClass?: string | string[]; // v1.1
+  enterAnimation?: NodeAnimation; // v1.1
+  exitAnimation?: NodeAnimation; // v1.1
+  visible?: boolean | ConditionDSL; // v1.1
 }
 ```
 
 ### 2.3 Action Types (23 Total)
 
 **ActionDSL Union:**
+
 ```typescript
 export type ActionDSL =
   // Flow Control (4)
@@ -155,6 +160,7 @@ export type ActionDSL =
 ```
 
 **Example Action Types:**
+
 ```typescript
 export interface GotoSceneAction {
   action: 'gotoScene';
@@ -164,7 +170,7 @@ export interface GotoSceneAction {
 
 export interface SetVarAction {
   action: 'setVar';
-  path: string;                       // e.g., "globals.vars.score"
+  path: string; // e.g., "globals.vars.score"
   value: ValueOrRef;
 }
 
@@ -178,13 +184,13 @@ export interface ToastAction {
 ### 2.4 Condition Types
 
 **ConditionDSL Union:**
+
 ```typescript
-export type ConditionDSL =
-  | ComparisonCondition
-  | LogicalCondition;
+export type ConditionDSL = ComparisonCondition | LogicalCondition;
 ```
 
 **ComparisonCondition:**
+
 ```typescript
 export interface ComparisonCondition {
   op: 'equals' | 'notEquals' | 'gt' | 'gte' | 'lt' | 'lte';
@@ -194,6 +200,7 @@ export interface ComparisonCondition {
 ```
 
 **LogicalCondition:**
+
 ```typescript
 export interface LogicalCondition {
   op: 'and' | 'or' | 'not';
@@ -204,17 +211,19 @@ export interface LogicalCondition {
 ### 2.5 Reference System
 
 **ValueOrRef:**
+
 ```typescript
 export type ValueOrRef = any | RefExpression;
 
 export interface RefExpression {
-  ref: string;  // Path to state: "globals.vars.score", "q1.state.selected"
+  ref: string; // Path to state: "globals.vars.score", "q1.state.selected"
 }
 ```
 
 ### 2.6 Style System (v1.1)
 
 **StyleVariables:**
+
 ```typescript
 export interface StyleVariables {
   colors?: Record<string, string>;
@@ -227,6 +236,7 @@ export interface StyleVariables {
 ```
 
 **StyleProperties:**
+
 ```typescript
 export interface StyleProperties {
   backgroundColor?: string;
@@ -242,38 +252,56 @@ export interface StyleProperties {
 ### 2.7 Animation System (v1.1)
 
 **BuiltinAnimation (30+ types):**
+
 ```typescript
 export type BuiltinAnimation =
   // Fade
-  | 'fadeIn' | 'fadeOut'
+  | 'fadeIn'
+  | 'fadeOut'
   // Slide
-  | 'slideInLeft' | 'slideInRight' | 'slideInUp' | 'slideInDown'
-  | 'slideOutLeft' | 'slideOutRight' | 'slideOutUp' | 'slideOutDown'
+  | 'slideInLeft'
+  | 'slideInRight'
+  | 'slideInUp'
+  | 'slideInDown'
+  | 'slideOutLeft'
+  | 'slideOutRight'
+  | 'slideOutUp'
+  | 'slideOutDown'
   // Zoom
-  | 'zoomIn' | 'zoomOut'
+  | 'zoomIn'
+  | 'zoomOut'
   // Bounce
-  | 'bounceIn' | 'bounceOut'
+  | 'bounceIn'
+  | 'bounceOut'
   // Shake
-  | 'shake' | 'shakeX' | 'shakeY'
+  | 'shake'
+  | 'shakeX'
+  | 'shakeY'
   // Pulse
-  | 'pulse' | 'heartbeat'
+  | 'pulse'
+  | 'heartbeat'
   // Flip
-  | 'flipInX' | 'flipInY' | 'flipOutX' | 'flipOutY'
+  | 'flipInX'
+  | 'flipInY'
+  | 'flipOutX'
+  | 'flipOutY'
   // Rotate
-  | 'rotateIn' | 'rotateOut';
+  | 'rotateIn'
+  | 'rotateOut';
 ```
 
 **AnimationDefinition:**
+
 ```typescript
 export interface AnimationDefinition {
   keyframes: Array<{
-    offset: number;                   // 0-100
+    offset: number; // 0-100
     properties: Record<string, any>;
   }>;
-  duration?: number;                  // Milliseconds
+  duration?: number; // Milliseconds
   easing?: EasingFunction;
   delay?: number;
-  iterations?: number;                // -1 = infinite
+  iterations?: number; // -1 = infinite
   direction?: 'normal' | 'reverse' | 'alternate' | 'alternate-reverse';
   fillMode?: 'none' | 'forwards' | 'backwards' | 'both';
 }
@@ -282,6 +310,7 @@ export interface AnimationDefinition {
 ### 2.8 Theme System (v1.1)
 
 **BuiltinTheme (9 types):**
+
 ```typescript
 export type BuiltinTheme =
   | 'default'
@@ -296,10 +325,11 @@ export type BuiltinTheme =
 ```
 
 **ThemeConfig:**
+
 ```typescript
 export interface ThemeConfig {
   name: string;
-  extends?: string;                   // Inherit from another theme
+  extends?: string; // Inherit from another theme
   variables?: StyleVariables;
   components?: Record<string, StyleDefinition>;
 }
@@ -314,21 +344,23 @@ export interface ThemeConfig {
 **Location:** `src/validator/Validator.ts`
 
 **Validation Result:**
+
 ```typescript
 export interface ValidationResult {
   valid: boolean;
-  errors: ValidationError[];          // Blocking issues
-  warnings: ValidationError[];        // Non-blocking issues
+  errors: ValidationError[]; // Blocking issues
+  warnings: ValidationError[]; // Non-blocking issues
 }
 
 export interface ValidationError {
-  path: string;                       // JSONPath-style location
-  message: string;                    // Human-readable error
+  path: string; // JSONPath-style location
+  message: string; // Human-readable error
   severity: 'error' | 'warning';
 }
 ```
 
 **Main API:**
+
 ```typescript
 export function validateCourse(dsl: any): ValidationResult {
   const errors: ValidationError[] = [];
@@ -345,7 +377,7 @@ export function validateCourse(dsl: any): ValidationResult {
   return {
     valid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 ```
@@ -354,25 +386,26 @@ export function validateCourse(dsl: any): ValidationResult {
 
 **Structural Validation:**
 
-| Rule | Check | Error Message |
-|------|-------|---------------|
-| Schema version | `schema === 'vvce.dsl.v1'` | "schema must be 'vvce.dsl.v1'" |
-| Meta required | `meta && meta.id && meta.version` | "meta.id is required" |
-| Start scene required | `startSceneId` exists | "startSceneId is required" |
-| Scenes array | `Array.isArray(scenes)` | "scenes must be array" |
-| Scene IDs unique | No duplicate scene IDs | "Scene ID 'X' duplicated" |
-| Node IDs unique | No duplicate node IDs per scene | "Node ID 'X' duplicated in scene 'Y'" |
+| Rule                 | Check                             | Error Message                         |
+| -------------------- | --------------------------------- | ------------------------------------- |
+| Schema version       | `schema === 'vvce.dsl.v1'`        | "schema must be 'vvce.dsl.v1'"        |
+| Meta required        | `meta && meta.id && meta.version` | "meta.id is required"                 |
+| Start scene required | `startSceneId` exists             | "startSceneId is required"            |
+| Scenes array         | `Array.isArray(scenes)`           | "scenes must be array"                |
+| Scene IDs unique     | No duplicate scene IDs            | "Scene ID 'X' duplicated"             |
+| Node IDs unique      | No duplicate node IDs per scene   | "Node ID 'X' duplicated in scene 'Y'" |
 
 **Semantic Validation:**
 
-| Rule | Check | Error Type |
-|------|-------|------------|
-| Start scene exists | `startSceneId` in scene IDs | Error |
-| Trigger target exists | `trigger.on.target` in node IDs | Error |
-| GotoScene target exists | `action.sceneId` in scene IDs | Error |
-| Unreachable scenes | Scene not referenced anywhere | Warning ⚠️ |
+| Rule                    | Check                           | Error Type |
+| ----------------------- | ------------------------------- | ---------- |
+| Start scene exists      | `startSceneId` in scene IDs     | Error      |
+| Trigger target exists   | `trigger.on.target` in node IDs | Error      |
+| GotoScene target exists | `action.sceneId` in scene IDs   | Error      |
+| Unreachable scenes      | Scene not referenced anywhere   | Warning ⚠️ |
 
 **Validation Flow:**
+
 ```typescript
 function validateCourse(dsl: any): ValidationResult {
   // Phase 1: Structure
@@ -387,12 +420,12 @@ function validateCourse(dsl: any): ValidationResult {
   // ... traverse all gotoScene actions ...
 
   // Warn about unreachable scenes
-  dsl.scenes.forEach(scene => {
+  dsl.scenes.forEach((scene) => {
     if (!reachableScenes.has(scene.id)) {
       warnings.push({
         path: `scenes[${index}]`,
         message: `Scene '${scene.id}' is unreachable`,
-        severity: 'warning'
+        severity: 'warning',
       });
     }
   });
@@ -404,6 +437,7 @@ function validateCourse(dsl: any): ValidationResult {
 ### 3.3 Important Notes
 
 **No JSON Schema Yet:**
+
 - Despite `package.json` listing `ajv` as dependency, no JSON Schema files exist
 - Current implementation uses programmatic TypeScript validation
 - JSON Schema integration is planned but not implemented
@@ -421,19 +455,17 @@ function validateCourse(dsl: any): ValidationResult {
 ```typescript
 // 1. Define the interface
 export interface MyCustomAction {
-  action: 'myCustomAction';  // Discriminator
+  action: 'myCustomAction'; // Discriminator
   param1: string;
   param2?: number;
 }
 
 // 2. Add to union
-export type ActionDSL =
-  | GotoSceneAction
-  | SetVarAction
-  | MyCustomAction;  // ← Add here
+export type ActionDSL = GotoSceneAction | SetVarAction | MyCustomAction; // ← Add here
 ```
 
 **Why this works:**
+
 - TypeScript discriminated unions provide exhaustive checking
 - Switch statements on `action` field are type-safe
 - Adding new types doesn't break existing code
@@ -476,9 +508,9 @@ export interface NodeDSL {
   props?: Record<string, any>;
 
   // Enhanced fields (v1.1) - all optional
-  style?: StyleProperties;            // ← Optional
-  styleClass?: string | string[];     // ← Optional
-  enterAnimation?: NodeAnimation;     // ← Optional
+  style?: StyleProperties; // ← Optional
+  styleClass?: string | string[]; // ← Optional
+  enterAnimation?: NodeAnimation; // ← Optional
 }
 ```
 
@@ -493,9 +525,10 @@ export interface NodeDSL {
 **Current Version:** `vvce.dsl.v1`
 
 **Version Definition:**
+
 ```typescript
 export interface CourseDSL {
-  schema: 'vvce.dsl.v1';  // ← Hard-coded literal type
+  schema: 'vvce.dsl.v1'; // ← Hard-coded literal type
   // ...
 }
 ```
@@ -504,11 +537,11 @@ export interface CourseDSL {
 
 ### 5.2 Version Evolution
 
-| Version | Changes | Breaking? | Identifier |
-|---------|---------|-----------|------------|
-| v1.0 (M0) | Initial DSL | N/A | `vvce.dsl.v1` |
-| v1.1 (Current) | +Style, +Themes, +Animations | ❌ No | `vvce.dsl.v1` (same) |
-| v2.0 (Future) | Would require new types | ✅ Yes | `vvce.dsl.v2` |
+| Version        | Changes                      | Breaking? | Identifier           |
+| -------------- | ---------------------------- | --------- | -------------------- |
+| v1.0 (M0)      | Initial DSL                  | N/A       | `vvce.dsl.v1`        |
+| v1.1 (Current) | +Style, +Themes, +Animations | ❌ No     | `vvce.dsl.v1` (same) |
+| v2.0 (Future)  | Would require new types      | ✅ Yes    | `vvce.dsl.v2`        |
 
 ### 5.3 Backward Compatibility Rules
 
@@ -518,6 +551,7 @@ export interface CourseDSL {
 4. **Validator adapts** - Validator doesn't enforce v1.1 fields for v1.0 DSL
 
 **Example of backward compatibility:**
+
 ```typescript
 // v1.0 DSL (still valid)
 {
@@ -546,23 +580,26 @@ export interface CourseDSL {
 **Complete Workflow:**
 
 1. **Define interface** (`src/types/dsl.ts`):
+
    ```typescript
    export interface CopyVarAction {
      action: 'copyVar';
-     from: string;  // Source path
-     to: string;    // Destination path
+     from: string; // Source path
+     to: string; // Destination path
    }
    ```
 
 2. **Add to union**:
+
    ```typescript
    export type ActionDSL =
      | GotoSceneAction
      // ... existing ...
-     | CopyVarAction;  // ← Add here
+     | CopyVarAction; // ← Add here
    ```
 
 3. **Export** (`src/index.ts`):
+
    ```typescript
    export type {
      // ... existing ...
@@ -571,16 +608,16 @@ export interface CourseDSL {
    ```
 
 4. **Add validation** (`src/validator/Validator.ts`):
+
    ```typescript
    // In validateSemantics
    if (action.action === 'copyVar') {
      // Validate paths are valid
-     if (!action.from.startsWith('globals.') &&
-         !action.from.startsWith('scene.')) {
+     if (!action.from.startsWith('globals.') && !action.from.startsWith('scene.')) {
        errors.push({
          path: `scenes[${index}].triggers[${triggerIndex}]`,
          message: `Invalid source path: ${action.from}`,
-         severity: 'error'
+         severity: 'error',
        });
      }
    }
@@ -598,15 +635,17 @@ export interface CourseDSL {
 **Workflow:**
 
 1. **Define props interface**:
+
    ```typescript
    export interface RatingProps {
      maxStars?: number;
      value?: number;
-     onChange?: string;  // Event handler
+     onChange?: string; // Event handler
    }
    ```
 
 2. **Export**:
+
    ```typescript
    export type { RatingProps } from './types/dsl';
    ```
@@ -614,6 +653,7 @@ export interface CourseDSL {
 3. **No NodeDSL change needed** - NodeDSL already uses `type: string`
 
 4. **Implement component** in `vvce-components`:
+
    ```typescript
    import type { RatingProps } from '@vv-education/vvce-schema';
 
@@ -627,6 +667,7 @@ export interface CourseDSL {
 **Workflow:**
 
 1. **Extend ComparisonCondition**:
+
    ```typescript
    export interface ComparisonCondition {
      op: 'equals' | 'notEquals' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains';
@@ -646,11 +687,12 @@ export interface CourseDSL {
 **Workflow:**
 
 1. **Add to union**:
+
    ```typescript
    export type BuiltinAnimation =
      | 'fadeIn'
      // ... existing ...
-     | 'myAnimation';  // ← Add here
+     | 'myAnimation'; // ← Add here
    ```
 
 2. **Define animation** in `vvce-core/src/presets/animations.ts`:
@@ -659,11 +701,11 @@ export interface CourseDSL {
      myAnimation: {
        keyframes: [
          { offset: 0, properties: { opacity: 0, scale: 0.8 } },
-         { offset: 100, properties: { opacity: 1, scale: 1 } }
+         { offset: 100, properties: { opacity: 1, scale: 1 } },
        ],
        duration: 400,
-       easing: 'ease-out'
-     }
+       easing: 'ease-out',
+     },
    };
    ```
 
@@ -678,6 +720,7 @@ export interface CourseDSL {
 ### 7.2 Recommended Test Structure
 
 **Level 1: Type-Level Tests**
+
 ```typescript
 // types.test.ts
 import type { CourseDSL, ActionDSL } from '@vv-education/vvce-schema';
@@ -687,17 +730,18 @@ const validCourse: CourseDSL = {
   schema: 'vvce.dsl.v1',
   meta: { id: 'test', version: '1.0.0' },
   startSceneId: 's1',
-  scenes: []
+  scenes: [],
 };
 
 // Invalid schema should fail at compile time
 const invalid: CourseDSL = {
-  schema: 'vvce.dsl.v2',  // ← Type error
+  schema: 'vvce.dsl.v2', // ← Type error
   // ...
 };
 ```
 
 **Level 2: Validation Logic Tests**
+
 ```typescript
 // validator.test.ts
 import { describe, it, expect } from 'vitest';
@@ -711,7 +755,7 @@ describe('Validator - Structure', () => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         path: 'schema',
-        message: expect.stringContaining('vvce.dsl.v1')
+        message: expect.stringContaining('vvce.dsl.v1'),
       })
     );
   });
@@ -723,11 +767,11 @@ describe('Validator - Structure', () => {
       startSceneId: 's1',
       scenes: [
         { id: 's1', nodes: [] },
-        { id: 's1', nodes: [] }  // ← Duplicate
-      ]
+        { id: 's1', nodes: [] }, // ← Duplicate
+      ],
     };
     const result = validateCourse(dsl);
-    expect(result.errors.some(e => e.message.includes('duplicate'))).toBe(true);
+    expect(result.errors.some((e) => e.message.includes('duplicate'))).toBe(true);
   });
 });
 
@@ -737,22 +781,27 @@ describe('Validator - Semantics', () => {
       schema: 'vvce.dsl.v1',
       meta: { id: 'test', version: '1.0.0' },
       startSceneId: 's1',
-      scenes: [{
-        id: 's1',
-        nodes: [{ id: 'b1', type: 'Button' }],
-        triggers: [{
-          on: { event: 'click', target: 'b1' },
-          then: [{ action: 'gotoScene', sceneId: 's999' }]  // ← Missing
-        }]
-      }]
+      scenes: [
+        {
+          id: 's1',
+          nodes: [{ id: 'b1', type: 'Button' }],
+          triggers: [
+            {
+              on: { event: 'click', target: 'b1' },
+              then: [{ action: 'gotoScene', sceneId: 's999' }], // ← Missing
+            },
+          ],
+        },
+      ],
     };
     const result = validateCourse(dsl);
-    expect(result.errors.some(e => e.message.includes('s999'))).toBe(true);
+    expect(result.errors.some((e) => e.message.includes('s999'))).toBe(true);
   });
 });
 ```
 
 **Level 3: Fixture Tests**
+
 ```typescript
 // fixtures.test.ts
 import { readdirSync, readFileSync } from 'fs';
@@ -760,9 +809,9 @@ import { join } from 'path';
 
 describe('DSL Examples', () => {
   const fixturesDir = join(__dirname, '../examples');
-  const files = readdirSync(fixturesDir).filter(f => f.endsWith('.json'));
+  const files = readdirSync(fixturesDir).filter((f) => f.endsWith('.json'));
 
-  files.forEach(file => {
+  files.forEach((file) => {
     it(`should validate ${file}`, () => {
       const dsl = JSON.parse(readFileSync(join(fixturesDir, file), 'utf-8'));
       const result = validateCourse(dsl);
@@ -804,6 +853,7 @@ describe('DSL Examples', () => {
 ### 8.4 Type Import Patterns
 
 **In vvce-core:**
+
 ```typescript
 // ✅ CORRECT: Import types from schema package
 import type {
@@ -819,21 +869,21 @@ interface ActionDSL { ... }  // Duplicate definition
 
 ### 8.5 Files to Watch
 
-| Operation | Files to Modify | Order |
-|-----------|-----------------|-------|
-| Add new action | 1. `types/dsl.ts`<br>2. `index.ts`<br>3. `validator/Validator.ts` | Sequential |
-| Add component props | 1. `types/dsl.ts`<br>2. `index.ts` | Sequential |
-| Add validation rule | 1. `validator/Validator.ts` | Single file |
-| Add style properties | 1. `types/dsl.ts`<br>2. `index.ts` | Sequential |
+| Operation            | Files to Modify                                                   | Order       |
+| -------------------- | ----------------------------------------------------------------- | ----------- |
+| Add new action       | 1. `types/dsl.ts`<br>2. `index.ts`<br>3. `validator/Validator.ts` | Sequential  |
+| Add component props  | 1. `types/dsl.ts`<br>2. `index.ts`                                | Sequential  |
+| Add validation rule  | 1. `validator/Validator.ts`                                       | Single file |
+| Add style properties | 1. `types/dsl.ts`<br>2. `index.ts`                                | Sequential  |
 
 ### 8.6 Missing Features (Planned)
 
-| Feature | Status | Priority |
-|---------|--------|----------|
-| JSON Schema files | ❌ Not implemented | Medium |
-| Ajv integration | ❌ Not implemented | Medium |
-| Unit tests | ❌ Not implemented | **High** |
-| Migration tools | ❌ Not implemented | Low |
+| Feature           | Status             | Priority |
+| ----------------- | ------------------ | -------- |
+| JSON Schema files | ❌ Not implemented | Medium   |
+| Ajv integration   | ❌ Not implemented | Medium   |
+| Unit tests        | ❌ Not implemented | **High** |
+| Migration tools   | ❌ Not implemented | Low      |
 
 ---
 
@@ -843,39 +893,46 @@ interface ActionDSL { ... }  // Duplicate definition
 
 ```typescript
 // Flow Control
-'gotoScene', 'parallel', 'sequence', 'delay'
+('gotoScene', 'parallel', 'sequence', 'delay');
 
 // State
-'setVar', 'incVar', 'addScore', 'resetNode'
+('setVar', 'incVar', 'addScore', 'resetNode');
 
 // UI
-'toast', 'modal', 'showNode', 'hideNode'
+('toast', 'modal', 'showNode', 'hideNode');
 
 // Animation
-'playAnimation', 'stopAnimation'
+('playAnimation', 'stopAnimation');
 
 // Style
-'setStyle', 'addClass', 'removeClass', 'setTheme'
+('setStyle', 'addClass', 'removeClass', 'setTheme');
 
 // Media
-'sound', 'haptic'
+('sound', 'haptic');
 ```
 
 ### Condition Operators
 
 ```typescript
 // Comparison
-'equals', 'notEquals', 'gt', 'gte', 'lt', 'lte'
+('equals', 'notEquals', 'gt', 'gte', 'lt', 'lte');
 
 // Logical
-'and', 'or', 'not'
+('and', 'or', 'not');
 ```
 
 ### Built-in Themes
 
 ```typescript
-'default', 'playful', 'academic', 'minimal', 'vibrant',
-'dark', 'nature', 'tech', 'retro'
+('default',
+  'playful',
+  'academic',
+  'minimal',
+  'vibrant',
+  'dark',
+  'nature',
+  'tech',
+  'retro');
 ```
 
 ---

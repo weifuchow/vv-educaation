@@ -78,7 +78,9 @@ describe('TriggerInterpreter', () => {
 
       interpreter.handleEvent(createEvent('click', 'button1'), triggers);
 
-      expect(executeAllSpy).toHaveBeenCalledWith([{ action: 'toast', text: 'Button 1 clicked!' }]);
+      expect(executeAllSpy).toHaveBeenCalledWith([
+        { action: 'toast', text: 'Button 1 clicked!' },
+      ]);
     });
 
     it('should not execute trigger when target does not match', () => {
@@ -203,7 +205,9 @@ describe('TriggerInterpreter', () => {
 
       interpreter.handleEvent(createEvent('click'), triggers);
 
-      expect(executeAllSpy).toHaveBeenCalledWith([{ action: 'toast', text: 'Both conditions met!' }]);
+      expect(executeAllSpy).toHaveBeenCalledWith([
+        { action: 'toast', text: 'Both conditions met!' },
+      ]);
     });
   });
 
@@ -220,11 +224,18 @@ describe('TriggerInterpreter', () => {
 
       interpreter.handleEvent(createEvent('click'), triggers);
 
-      expect(debugSpy).toHaveBeenCalledWith('event', expect.any(String), expect.any(Object));
+      expect(debugSpy).toHaveBeenCalledWith(
+        'event',
+        expect.any(String),
+        expect.any(Object)
+      );
     });
 
     it('should work without logger', () => {
-      const interpreterNoLogger = new TriggerInterpreter(conditionEvaluator, actionExecutor);
+      const interpreterNoLogger = new TriggerInterpreter(
+        conditionEvaluator,
+        actionExecutor
+      );
       const executeAllSpy = vi.spyOn(actionExecutor, 'executeAll');
 
       const triggers: Trigger[] = [
@@ -268,16 +279,12 @@ describe('TriggerInterpreter', () => {
       const triggers: Trigger[] = [
         {
           on: { event: 'click', target: 'submitBtn' },
-          if: [
-            { op: 'equals', left: { ref: 'nodes.q1.selected' }, right: 'B' },
-          ],
+          if: [{ op: 'equals', left: { ref: 'nodes.q1.selected' }, right: 'B' }],
           then: [
             { action: 'addScore', value: 10 },
             { action: 'toast', text: '正确！' },
           ],
-          else: [
-            { action: 'toast', text: '错误，请重试' },
-          ],
+          else: [{ action: 'toast', text: '错误，请重试' }],
         },
       ];
 

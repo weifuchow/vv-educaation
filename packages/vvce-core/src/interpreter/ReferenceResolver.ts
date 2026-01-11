@@ -52,9 +52,7 @@ export class ReferenceResolver {
       } else if (typeof value === 'string') {
         result[key] = this.interpolate(value);
       } else if (Array.isArray(value)) {
-        result[key] = value.map((item) =>
-          this.isRef(item) ? this.resolve(item) : item
-        );
+        result[key] = value.map((item) => (this.isRef(item) ? this.resolve(item) : item));
       } else if (value && typeof value === 'object') {
         result[key] = this.resolveObject(value);
       } else {

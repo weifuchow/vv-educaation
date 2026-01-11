@@ -34,17 +34,19 @@ VVCE DSL（Domain Specific Language）是 VV 课堂交互式课件的声明式�
 ### 字段说明
 
 #### schema（必需）
+
 - 类型：`string`
 - 值：`"vvce.dsl.v1"`
 - 说明：DSL 版本标识
 
 #### meta（必需）
+
 课程元数据
 
 ```json
 {
-  "id": "course-001",           // 课程唯一标识
-  "version": "1.0.0",            // 课程版本
+  "id": "course-001", // 课程唯一标识
+  "version": "1.0.0", // 课程版本
   "title": "课程标题",
   "description": "课程描述",
   "author": "作者",
@@ -54,6 +56,7 @@ VVCE DSL（Domain Specific Language）是 VV 课堂交互式课件的声明式�
 ```
 
 #### globals（可选）
+
 全局变量定义
 
 ```json
@@ -67,16 +70,20 @@ VVCE DSL（Domain Specific Language）是 VV 课堂交互式课件的声明式�
 ```
 
 #### resources（可选）v1.1 新增
+
 样式资源定义，详见 [样式资源](#样式资源resources)
 
 #### theme（可选）v1.1 新增
+
 主题配置，详见 [主题系统](#主题系统)
 
 #### startSceneId（必需）
+
 - 类型：`string`
 - 说明：起始场景 ID，必须在 scenes 中存在
 
 #### scenes（必需）
+
 - 类型：`SceneDSL[]`
 - 说明：场景数组，至少包含一个场景
 
@@ -255,6 +262,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```
 
 内置主题列表：
+
 - `default` - 清新教育风格（默认）
 - `playful` - 童趣风格，适合低龄学习者
 - `academic` - 学术风格，适合专业学习
@@ -311,27 +319,30 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ### 字段说明
 
 #### id（必需）
+
 - 类型：`string`
 - 说明：场景唯一标识
 
 #### layout（可选）
+
 布局配置
 
 ```json
 {
-  "type": "stack",        // stack | grid | flex | absolute | masonry
-  "padding": 16,          // 内边距（支持数组 [top, right, bottom, left]）
-  "gap": 12,              // 间距
-  "columns": 2,           // grid 列数
-  "rows": 3,              // grid 行数
-  "align": "center",      // start | center | end | stretch
-  "justify": "between",   // start | center | end | between | around | evenly
-  "reverse": false,       // 反向排列
-  "wrap": true            // 换行
+  "type": "stack", // stack | grid | flex | absolute | masonry
+  "padding": 16, // 内边距（支持数组 [top, right, bottom, left]）
+  "gap": 12, // 间距
+  "columns": 2, // grid 列数
+  "rows": 3, // grid 行数
+  "align": "center", // start | center | end | stretch
+  "justify": "between", // start | center | end | between | around | evenly
+  "reverse": false, // 反向排列
+  "wrap": true // 换行
 }
 ```
 
 #### style（可选）v1.1 新增
+
 场景样式定义
 
 ```json
@@ -344,6 +355,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```
 
 #### enterTransition（可选）v1.1 新增
+
 场景进入过渡效果
 
 ```json
@@ -358,6 +370,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```
 
 过渡类型：
+
 - `none` - 无过渡
 - `fade` - 淡入淡出
 - `slide` - 滑动
@@ -375,9 +388,11 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 - `shuffle` - 洗牌
 
 #### exitTransition（可选）v1.1 新增
+
 场景退出过渡效果，结构同 enterTransition
 
 #### background（可选）v1.1 新增
+
 背景配置
 
 ```json
@@ -403,12 +418,15 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```
 
 #### vars（可选）
+
 场景局部变量
 
 #### nodes（可选）
+
 节点（组件）数组
 
 #### triggers（可选）
+
 触发器数组
 
 ---
@@ -432,18 +450,22 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ### 字段说明
 
 #### id（必需）
+
 - 类型：`string`
 - 说明：节点唯一标识（在场景内唯一）
 
 #### type（必需）
+
 - 类型：`string`
 - 说明：组件类型（如 `Dialog`, `QuizSingle`, `Button`）
 
 #### props（可选）
+
 - 类型：`object`
 - 说明：组件属性，具体结构由组件类型决定
 
 #### style（可选）v1.1 增强
+
 内联样式定义
 
 ```json
@@ -463,6 +485,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```
 
 #### styleClass（可选）v1.1 新增
+
 引用样式类
 
 ```json
@@ -473,29 +496,33 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```
 
 #### enterAnimation（可选）v1.1 新增
+
 节点进入动画
 
 ```json
 {
   "enterAnimation": {
-    "type": "fadeIn",       // 动画类型
-    "duration": 300,        // 持续时间(ms)
-    "easing": "ease-out",   // 缓动函数
-    "delay": 100            // 延迟(ms)
+    "type": "fadeIn", // 动画类型
+    "duration": 300, // 持续时间(ms)
+    "easing": "ease-out", // 缓动函数
+    "delay": 100 // 延迟(ms)
   }
 }
 ```
 
 内置动画类型：
+
 - 进入动画：`fadeIn`, `slideInLeft`, `slideInRight`, `slideInUp`, `slideInDown`, `scaleIn`, `rotateIn`, `bounceIn`, `flipInX`, `flipInY`, `zoomIn`
 - 退出动画：`fadeOut`, `slideOutLeft`, `slideOutRight`, `slideOutUp`, `slideOutDown`, `scaleOut`, `rotateOut`, `bounceOut`, `flipOutX`, `flipOutY`, `zoomOut`
 - 注意力动画：`pulse`, `shake`, `wobble`, `swing`, `tada`, `heartbeat`, `rubber`, `jello`
 - 循环动画：`float`, `glow`
 
 #### exitAnimation（可选）v1.1 新增
+
 节点退出动画，结构同 enterAnimation
 
 #### interactions（可选）v1.1 新增
+
 交互动画定义
 
 ```json
@@ -518,6 +545,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```
 
 #### visible（可选）v1.1 新增
+
 可见性控制
 
 ```json
@@ -552,22 +580,26 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ### 字段说明
 
 #### on（必需）
+
 事件匹配器
 
 ```json
 {
-  "event": "click",      // 事件类型
-  "target": "node-id"    // 目标节点（可选）
+  "event": "click", // 事件类型
+  "target": "node-id" // 目标节点（可选）
 }
 ```
 
 #### if（可选）
+
 条件数组，默认为 `true`
 
 #### then（必需）
+
 条件为真时执行的动作数组
 
 #### else（可选）
+
 条件为假时执行的动作数组
 
 ---
@@ -578,9 +610,9 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 
 ```json
 {
-  "op": "equals",                         // equals | notEquals | gt | gte | lt | lte
+  "op": "equals", // equals | notEquals | gt | gte | lt | lte
   "left": { "ref": "q1.state.selected" }, // 左值
-  "right": "2"                            // 右值
+  "right": "2" // 右值
 }
 ```
 
@@ -613,7 +645,8 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 {
   "action": "gotoScene",
   "sceneId": "s2",
-  "transition": {              // v1.1 新增：过渡效果覆盖
+  "transition": {
+    // v1.1 新增：过渡效果覆盖
     "type": "slide",
     "direction": "right"
   }
@@ -655,10 +688,10 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 {
   "action": "toast",
   "text": "回答正确！",
-  "duration": 2000,            // v1.1 新增
-  "position": "bottom",        // v1.1 新增：top | center | bottom
-  "variant": "success",        // v1.1 新增：info | success | warning | error
-  "icon": "check"              // v1.1 新增
+  "duration": 2000, // v1.1 新增
+  "position": "bottom", // v1.1 新增：top | center | bottom
+  "variant": "success", // v1.1 新增：info | success | warning | error
+  "icon": "check" // v1.1 新增
 }
 ```
 
@@ -668,8 +701,9 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 {
   "action": "modal",
   "text": "确认提交答案？",
-  "title": "确认",             // v1.1 新增
-  "buttons": [                 // v1.1 新增
+  "title": "确认", // v1.1 新增
+  "buttons": [
+    // v1.1 新增
     {
       "text": "取消",
       "variant": "secondary"
@@ -677,9 +711,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
     {
       "text": "确认",
       "variant": "primary",
-      "actions": [
-        { "action": "gotoScene", "sceneId": "s3" }
-      ]
+      "actions": [{ "action": "gotoScene", "sceneId": "s3" }]
     }
   ]
 }
@@ -845,7 +877,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ```json
 {
   "action": "haptic",
-  "type": "success"    // light | medium | heavy | success | warning | error
+  "type": "success" // light | medium | heavy | success | warning | error
 }
 ```
 
@@ -865,61 +897,61 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 
 ### 布局属性
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| width | number/string | 宽度 |
-| height | number/string | 高度 |
-| minWidth | number/string | 最小宽度 |
-| maxWidth | number/string | 最大宽度 |
-| padding | number/string/array | 内边距 |
-| margin | number/string/array | 外边距 |
-| flex | number/string | Flex 属性 |
-| flexDirection | string | 方向 |
-| justifyContent | string | 主轴对齐 |
-| alignItems | string | 交叉轴对齐 |
-| gap | number/string | 间距 |
+| 属性           | 类型                | 说明       |
+| -------------- | ------------------- | ---------- |
+| width          | number/string       | 宽度       |
+| height         | number/string       | 高度       |
+| minWidth       | number/string       | 最小宽度   |
+| maxWidth       | number/string       | 最大宽度   |
+| padding        | number/string/array | 内边距     |
+| margin         | number/string/array | 外边距     |
+| flex           | number/string       | Flex 属性  |
+| flexDirection  | string              | 方向       |
+| justifyContent | string              | 主轴对齐   |
+| alignItems     | string              | 交叉轴对齐 |
+| gap            | number/string       | 间距       |
 
 ### 定位属性
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| position | string | 定位方式 |
-| top | number/string | 上偏移 |
-| right | number/string | 右偏移 |
-| bottom | number/string | 下偏移 |
-| left | number/string | 左偏移 |
-| zIndex | number | 层级 |
+| 属性     | 类型          | 说明     |
+| -------- | ------------- | -------- |
+| position | string        | 定位方式 |
+| top      | number/string | 上偏移   |
+| right    | number/string | 右偏移   |
+| bottom   | number/string | 下偏移   |
+| left     | number/string | 左偏移   |
+| zIndex   | number        | 层级     |
 
 ### 背景属性
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| backgroundColor | string | 背景色 |
-| backgroundImage | string | 背景图 |
-| backgroundSize | string | 背景尺寸 |
+| 属性               | 类型   | 说明     |
+| ------------------ | ------ | -------- |
+| backgroundColor    | string | 背景色   |
+| backgroundImage    | string | 背景图   |
+| backgroundSize     | string | 背景尺寸 |
 | backgroundPosition | string | 背景位置 |
 | backgroundGradient | object | 背景渐变 |
 
 ### 边框属性
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| borderWidth | number/string | 边框宽度 |
-| borderColor | string | 边框颜色 |
-| borderStyle | string | 边框样式 |
-| borderRadius | number/string | 圆角 |
+| 属性         | 类型          | 说明     |
+| ------------ | ------------- | -------- |
+| borderWidth  | number/string | 边框宽度 |
+| borderColor  | string        | 边框颜色 |
+| borderStyle  | string        | 边框样式 |
+| borderRadius | number/string | 圆角     |
 
 ### 文字属性
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| color | string | 文字颜色 |
-| fontSize | number/string | 字号 |
-| fontWeight | number/string | 字重 |
-| fontFamily | string | 字体 |
-| lineHeight | number/string | 行高 |
-| textAlign | string | 对齐 |
-| letterSpacing | number/string | 字间距 |
+| 属性          | 类型          | 说明     |
+| ------------- | ------------- | -------- |
+| color         | string        | 文字颜色 |
+| fontSize      | number/string | 字号     |
+| fontWeight    | number/string | 字重     |
+| fontFamily    | string        | 字体     |
+| lineHeight    | number/string | 行高     |
+| textAlign     | string        | 对齐     |
+| letterSpacing | number/string | 字间距   |
 
 ### 变换属性
 
@@ -937,13 +969,13 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 
 ### 其他属性
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| opacity | number | 透明度 0-1 |
-| visibility | string | 可见性 |
-| overflow | string | 溢出处理 |
-| boxShadow | string | 阴影 |
-| cursor | string | 鼠标样式 |
+| 属性       | 类型   | 说明       |
+| ---------- | ------ | ---------- |
+| opacity    | number | 透明度 0-1 |
+| visibility | string | 可见性     |
+| overflow   | string | 溢出处理   |
+| boxShadow  | string | 阴影       |
+| cursor     | string | 鼠标样式   |
 
 ---
 
@@ -976,6 +1008,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 ## 版本演进
 
 ### v1.1 更新内容
+
 - ✅ 样式资源系统（variables, styles）
 - ✅ 主题系统（9 种内置主题）
 - ✅ 场景过渡效果（16 种过渡类型）
@@ -986,6 +1019,7 @@ v1.1 新增的主题系统，支持内置主题和自定义主题。
 - ✅ 多媒体支持（sound, haptic）
 
 ### M2 计划
+
 - 支持子场景（Subscene）
 - 支持更复杂的表达式
 - 支持事件冒泡

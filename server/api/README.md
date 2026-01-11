@@ -9,6 +9,7 @@ Java Spring Boot 后端服务
 ## 领域模块
 
 ### 1. Course（课程模块）
+
 - 课程 CRUD
 - 课程版本管理
 - 课程发布/下架
@@ -16,23 +17,27 @@ Java Spring Boot 后端服务
 - 资源索引管理
 
 ### 2. Progress（进度模块）
+
 - 学习进度保存
 - 进度读取/恢复
 - 进度统计
 - 学习上下文存档
 
 ### 3. Identity（身份模块）
+
 - 用户注册/登录
 - 用户信息管理
 - 角色权限（学生/家长/管理员）
 - Token 管理
 
 ### 4. Assessment（评估模块 - M2）
+
 - 任务评估
 - Rubric 评分
 - 证据链记录
 
 ### 5. Project（项目模块 - M3）
+
 - 项目管理
 - 组队管理
 - 成果提交
@@ -119,6 +124,7 @@ PUT    /api/v1/users/me             # 更新用户信息
 ## 数据库设计（M0）
 
 ### courses（课程表）
+
 ```sql
 CREATE TABLE courses (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -136,6 +142,7 @@ CREATE TABLE courses (
 ```
 
 ### progress（进度表）
+
 ```sql
 CREATE TABLE progress (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -153,6 +160,7 @@ CREATE TABLE progress (
 ```
 
 ### users（用户表）
+
 ```sql
 CREATE TABLE users (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -169,22 +177,26 @@ CREATE TABLE users (
 ## 开发指南
 
 ### 环境要求
+
 - JDK 17+
 - Maven 3.8+
 - PostgreSQL 14+ / MySQL 8+
 - Redis 6+
 
 ### 启动开发
+
 ```bash
 mvn spring-boot:run
 ```
 
 ### 构建
+
 ```bash
 mvn clean package
 ```
 
 ### 运行测试
+
 ```bash
 mvn test
 ```

@@ -9,17 +9,20 @@ VVCE 标准交互组件库
 ## M0 基础组件
 
 ### 1. Dialog（对话框）
+
 - 展示文本内容
 - 支持头像和说话者名称
 - props: `text`, `avatar`, `speaker`
 
 ### 2. QuizSingle（单选题）
+
 - 单选题组件
 - props: `question`, `options[]`, `answerKey`
 - state: `selected`
 - events: `change`
 
 ### 3. Button（按钮）
+
 - 交互按钮
 - props: `text`, `variant`, `disabled`
 - events: `click`
@@ -27,6 +30,7 @@ VVCE 标准交互组件库
 ## 组件协议
 
 每个组件必须实现：
+
 - `type`: 组件类型标识
 - `propsSchema`: 属性定义
 - `stateShape`: 状态结构

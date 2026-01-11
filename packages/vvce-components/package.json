@@ -7,12 +7,18 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "echo \"No tests yet\" && exit 0",
+    "test:ci": "echo \"No tests yet\" && exit 0"
   },
-  "keywords": ["vvce", "components"],
+  "keywords": [
+    "vvce",
+    "components"
+  ],
   "author": "VV Education",
   "license": "MIT",
   "devDependencies": {
+    "@vv-education/vvce-schema": "workspace:*",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0"
   },

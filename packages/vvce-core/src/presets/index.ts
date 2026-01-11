@@ -3,11 +3,7 @@
  */
 
 // 主题预设
-export {
-  BUILTIN_THEMES,
-  getThemeList,
-  getThemePreset,
-} from './themes';
+export { BUILTIN_THEMES, getThemeList, getThemePreset } from './themes';
 export type { ThemePreset } from './themes';
 
 // 动画预设

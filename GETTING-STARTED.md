@@ -5,10 +5,12 @@
 ### 环境要求
 
 #### 前端开发
+
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
 
 #### 后端开发
+
 - JDK 17+
 - Maven 3.8+
 - PostgreSQL 14+ / MySQL 8+
@@ -245,7 +247,7 @@ git push origin feature/xxx
 
 ```typescript
 const runtime = new VVCERuntime({
-  debug: true,  // 开启日志
+  debug: true, // 开启日志
 });
 ```
 

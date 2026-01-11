@@ -10,8 +10,8 @@ export interface CourseDSL {
   schema: 'vvce.dsl.v1';
   meta: CourseMeta;
   globals?: CourseGlobals;
-  resources?: CourseResources;       // 样式资源定义
-  theme?: ThemeConfig | string;       // 主题配置或预设主题名
+  resources?: CourseResources; // 样式资源定义
+  theme?: ThemeConfig | string; // 主题配置或预设主题名
   startSceneId: string;
   scenes: SceneDSL[];
 }
@@ -109,13 +109,7 @@ export type TransitionType =
   | 'custom';
 
 /** 过渡方向 */
-export type TransitionDirection =
-  | 'left'
-  | 'right'
-  | 'up'
-  | 'down'
-  | 'center'
-  | 'random';
+export type TransitionDirection = 'left' | 'right' | 'up' | 'down' | 'center' | 'random';
 
 /** 缓动函数 */
 export type EasingFunction =
@@ -303,14 +297,14 @@ export interface ThemeConfig {
 /** 内置主题 */
 export type BuiltinTheme =
   | 'default'
-  | 'playful'      // 童趣风格
-  | 'academic'     // 学术风格
-  | 'minimal'      // 极简风格
-  | 'vibrant'      // 鲜艳活泼
-  | 'dark'         // 暗色主题
-  | 'nature'       // 自然风格
-  | 'tech'         // 科技风格
-  | 'retro';       // 复古风格
+  | 'playful' // 童趣风格
+  | 'academic' // 学术风格
+  | 'minimal' // 极简风格
+  | 'vibrant' // 鲜艳活泼
+  | 'dark' // 暗色主题
+  | 'nature' // 自然风格
+  | 'tech' // 科技风格
+  | 'retro'; // 复古风格
 
 export interface CourseMeta {
   id: string;
@@ -494,9 +488,7 @@ export interface EventMatcher {
 
 // ============ 条件定义 ============
 
-export type ConditionDSL =
-  | ComparisonCondition
-  | LogicalCondition;
+export type ConditionDSL = ComparisonCondition | LogicalCondition;
 
 export interface ComparisonCondition {
   op: 'equals' | 'notEquals' | 'gt' | 'gte' | 'lt' | 'lte';
@@ -746,7 +738,7 @@ export interface DialogProps {
 export interface QuizSingleProps {
   question: string;
   options: string[];
-  answerKey?: string;  // M0 可包含答案，后续可移到后端
+  answerKey?: string; // M0 可包含答案，后续可移到后端
 }
 
 export interface ButtonProps {

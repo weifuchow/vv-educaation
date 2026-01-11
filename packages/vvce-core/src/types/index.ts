@@ -5,10 +5,10 @@
 // ============ 事件类型 ============
 
 export interface VVEvent {
-  type: string;         // 事件类型：click, change, submit, sceneEnter, sceneExit 等
-  target?: string;      // 目标节点 ID
-  payload?: any;        // 事件载荷
-  ts: number;           // 时间戳
+  type: string; // 事件类型：click, change, submit, sceneEnter, sceneExit 等
+  target?: string; // 目标节点 ID
+  payload?: any; // 事件载荷
+  ts: number; // 时间戳
 }
 
 export type EventListener = (event: VVEvent) => void;
@@ -32,7 +32,7 @@ export interface NodeState {
 // ============ 引用类型 ============
 
 export interface RefExpression {
-  ref: string;  // 如 "globals.vars.score" 或 "q1.state.selected"
+  ref: string; // 如 "globals.vars.score" 或 "q1.state.selected"
 }
 
 export type ValueOrRef = any | RefExpression;
@@ -54,7 +54,7 @@ export interface Condition {
   op: ConditionOperator;
   left?: ValueOrRef;
   right?: ValueOrRef;
-  conditions?: Condition[];  // 用于 and/or/not
+  conditions?: Condition[]; // 用于 and/or/not
 }
 
 // ============ 动作类型 ============

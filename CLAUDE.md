@@ -30,6 +30,7 @@ This document provides comprehensive guidance for AI assistants working on the V
 VV Education (VV课堂) is an **AI-powered interactive educational platform** that delivers courseware through a custom rendering engine called **VVCE (VV Courseware Engine)**.
 
 **Key Differentiators:**
+
 - **Declarative DSL**: Courses are defined in JSON, not code
 - **Interactive Experiences**: Event-driven, stateful courseware
 - **AI-Generated Content**: DSL designed to be AI-generatable
@@ -47,6 +48,7 @@ VV Education (VV课堂) is an **AI-powered interactive educational platform** th
 ### 1.3 Current Status (M0 Phase)
 
 **Completed:**
+
 - ✅ Monorepo architecture setup
 - ✅ VVCE core runtime implementation
 - ✅ Enhanced style system (v1.1) with themes and animations
@@ -54,11 +56,13 @@ VV Education (VV课堂) is an **AI-powered interactive educational platform** th
 - ✅ Comprehensive documentation
 
 **In Progress:**
+
 - 🔄 VVCE core unit tests
 - 🔄 vvce-components implementation
 - 🔄 Backend API development (Course, Progress modules)
 
 **Not Started:**
+
 - ⏳ Frontend apps (miniapp, web-admin, web-student)
 - ⏳ AI generation pipeline
 - ⏳ Project-based assessment system
@@ -115,15 +119,15 @@ apps/web-admin, apps/miniapp, apps/web-student
 
 ### 2.3 Key Files to Know
 
-| File | Purpose |
-|------|---------|
-| `packages/vvce-core/src/runtime/Runtime.ts` | Main runtime orchestrator |
-| `packages/vvce-core/src/store/Store.ts` | Three-layer state management |
-| `packages/vvce-core/src/interpreter/TriggerInterpreter.ts` | ECA pattern implementation |
-| `packages/vvce-core/src/executor/ActionExecutor.ts` | Action execution (23+ actions) |
-| `packages/vvce-schema/src/index.ts` | DSL type definitions |
-| `docs/specs/vvce-dsl-v1.md` | Complete DSL specification |
-| `server/api/src/main/java/com/vveducation/api/` | Backend entry point |
+| File                                                       | Purpose                        |
+| ---------------------------------------------------------- | ------------------------------ |
+| `packages/vvce-core/src/runtime/Runtime.ts`                | Main runtime orchestrator      |
+| `packages/vvce-core/src/store/Store.ts`                    | Three-layer state management   |
+| `packages/vvce-core/src/interpreter/TriggerInterpreter.ts` | ECA pattern implementation     |
+| `packages/vvce-core/src/executor/ActionExecutor.ts`        | Action execution (23+ actions) |
+| `packages/vvce-schema/src/index.ts`                        | DSL type definitions           |
+| `docs/specs/vvce-dsl-v1.md`                                | Complete DSL specification     |
+| `server/api/src/main/java/com/vveducation/api/`            | Backend entry point            |
 
 ---
 
@@ -132,21 +136,25 @@ apps/web-admin, apps/miniapp, apps/web-student
 ### 3.1 Frontend Stack
 
 **Package Management:**
+
 - **pnpm 8.14.0** (REQUIRED - do not use npm/yarn)
-- **Node.js >= 18.0.0**
+- **Node.js >= 20.17.0**
 
 **Build & Tooling:**
+
 - **tsup** - Package bundler (for libraries)
 - **Vite** - App bundler (planned for apps)
 - **TypeScript 5.3.0** - Strict mode enabled
 
 **Core Libraries:**
+
 - **vvce-core** - Pure TypeScript, zero runtime dependencies
 - **vvce-schema** - Ajv 8.12.0 for JSON Schema validation
 - **React** (planned) - For web apps
 - **WeChat Mini Program** - For miniapp
 
 **Code Quality:**
+
 - **ESLint** with TypeScript plugin
 - **Prettier** (single quotes, 90 char width, 2 spaces)
 - **Vitest** - Unit testing
@@ -164,14 +172,14 @@ apps/web-admin, apps/miniapp, apps/web-student
 
 ### 3.3 Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `pnpm-workspace.yaml` | Defines workspace packages |
-| `tsconfig.json` | Base TypeScript config (target: ES2020, strict mode) |
-| `.eslintrc.json` | Linting rules (allows `any`, warns on unused vars) |
-| `.prettierrc.json` | Code formatting (single quotes, 2 spaces, 90 width) |
-| `packages/*/package.json` | Individual package configs |
-| `server/api/src/main/resources/application.yml` | Backend config |
+| File                                            | Purpose                                              |
+| ----------------------------------------------- | ---------------------------------------------------- |
+| `pnpm-workspace.yaml`                           | Defines workspace packages                           |
+| `tsconfig.json`                                 | Base TypeScript config (target: ES2020, strict mode) |
+| `.eslintrc.json`                                | Linting rules (allows `any`, warns on unused vars)   |
+| `.prettierrc.json`                              | Code formatting (single quotes, 2 spaces, 90 width)  |
+| `packages/*/package.json`                       | Individual package configs                           |
+| `server/api/src/main/resources/application.yml` | Backend config                                       |
 
 ---
 
@@ -243,11 +251,13 @@ mvn test
 ### 4.5 Build Output
 
 **Packages** (tsup):
+
 - Dual format: CommonJS (`dist/index.js`) + ESM (`dist/index.mjs`)
 - TypeScript declarations: `dist/index.d.ts`
 - Source maps included in dev mode
 
 **Apps** (planned with Vite):
+
 - Production build to `dist/`
 - Assets optimized and hashed
 
@@ -257,21 +267,22 @@ mvn test
 
 ### 5.1 Naming Conventions
 
-| Type | Convention | Example |
-|------|-----------|---------|
-| Packages | `@vv-education/package-name` | `@vv-education/vvce-core` |
-| Types/Interfaces | PascalCase | `CourseDSL`, `SceneDSL`, `VVEvent` |
-| Classes | PascalCase | `Runtime`, `Store`, `EventBus` |
-| Files (classes) | PascalCase | `Runtime.ts`, `ActionExecutor.ts` |
-| Files (utilities) | kebab-case | `reference-resolver.ts` |
-| Functions/Methods | camelCase | `gotoScene`, `addScore`, `handleEvent` |
-| Constants | UPPER_SNAKE_CASE | `MAX_LOGS`, `DEFAULT_THEME` |
-| DSL Actions | camelCase | `gotoScene`, `setVar`, `playAnimation` |
-| Private fields | `private fieldName` | `private store: Store` |
+| Type              | Convention                   | Example                                |
+| ----------------- | ---------------------------- | -------------------------------------- |
+| Packages          | `@vv-education/package-name` | `@vv-education/vvce-core`              |
+| Types/Interfaces  | PascalCase                   | `CourseDSL`, `SceneDSL`, `VVEvent`     |
+| Classes           | PascalCase                   | `Runtime`, `Store`, `EventBus`         |
+| Files (classes)   | PascalCase                   | `Runtime.ts`, `ActionExecutor.ts`      |
+| Files (utilities) | kebab-case                   | `reference-resolver.ts`                |
+| Functions/Methods | camelCase                    | `gotoScene`, `addScore`, `handleEvent` |
+| Constants         | UPPER_SNAKE_CASE             | `MAX_LOGS`, `DEFAULT_THEME`            |
+| DSL Actions       | camelCase                    | `gotoScene`, `setVar`, `playAnimation` |
+| Private fields    | `private fieldName`          | `private store: Store`                 |
 
 ### 5.2 TypeScript Conventions
 
 **Strict Mode Enabled:**
+
 ```typescript
 // tsconfig.json
 {
@@ -282,6 +293,7 @@ mvn test
 ```
 
 **Type Imports:**
+
 ```typescript
 // Prefer type-only imports when possible
 import type { CourseDSL, SceneDSL } from '../types';
@@ -289,6 +301,7 @@ import { VVCERuntime } from './Runtime';
 ```
 
 **Explicit Return Types:**
+
 ```typescript
 // Always specify return types for public methods
 public loadCourse(dsl: CourseDSL): void {
@@ -301,12 +314,14 @@ public getState(): RuntimeState {
 ```
 
 **Interface vs Type:**
+
 - Use `interface` for object shapes that may be extended
 - Use `type` for unions, intersections, mapped types
 
 ### 5.3 File Structure Conventions
 
 **Class files:**
+
 ```typescript
 /**
  * ClassName - Brief description
@@ -338,6 +353,7 @@ export class ClassName {
 ```
 
 **Module exports:**
+
 ```typescript
 // packages/vvce-core/src/index.ts
 export { VVCERuntime } from './runtime/Runtime';
@@ -358,6 +374,7 @@ export type { CourseDSL, SceneDSL, VVEvent } from './types';
 ```
 
 **Example:**
+
 ```typescript
 const config: RuntimeOptions = {
   debug: true,
@@ -369,6 +386,7 @@ const config: RuntimeOptions = {
 ### 5.5 Comments & Documentation
 
 **Use JSDoc for public APIs:**
+
 ```typescript
 /**
  * Loads a course DSL into the runtime
@@ -382,6 +400,7 @@ public loadCourse(dsl: CourseDSL): void {
 ```
 
 **Use inline comments sparingly:**
+
 ```typescript
 // Only comment non-obvious logic
 // Prefer self-documenting code
@@ -474,6 +493,7 @@ RuntimeState {
 ```
 
 **Access Patterns:**
+
 ```typescript
 // Reference format in DSL
 { "ref": "globals.vars.score" }        // Global variable
@@ -518,6 +538,7 @@ this.store.set('globals.vars.score', 100);
 ```
 
 **Flow:**
+
 1. EventBus receives event (from component or system)
 2. TriggerInterpreter finds matching triggers
 3. ConditionEvaluator evaluates `if` conditions using ReferenceResolver
@@ -530,25 +551,26 @@ this.store.set('globals.vars.score', 100);
 
 ```typescript
 interface CourseDSL {
-  schema: 'vvce.dsl.v1';              // DSL version
+  schema: 'vvce.dsl.v1'; // DSL version
   meta: {
-    id: string;                        // Course ID
-    version: string;                   // Course version
+    id: string; // Course ID
+    version: string; // Course version
     title?: string;
     author?: string;
   };
   globals?: {
-    vars?: Record<string, any>;        // Initial global state
+    vars?: Record<string, any>; // Initial global state
   };
-  resources?: {                        // v1.1 additions
+  resources?: {
+    // v1.1 additions
     styles?: StyleVariables;
     animations?: CustomAnimation[];
     transitions?: CustomTransition[];
     classes?: Record<string, CSSProperties>;
     theme?: ThemeName;
   };
-  startSceneId: string;                // Entry point
-  scenes: SceneDSL[];                  // Scene list
+  startSceneId: string; // Entry point
+  scenes: SceneDSL[]; // Scene list
 }
 ```
 
@@ -556,14 +578,14 @@ interface CourseDSL {
 
 ```typescript
 interface SceneDSL {
-  id: string;                          // Unique scene ID
-  layout?: LayoutConfig;               // Stack/Grid layout
-  vars?: Record<string, any>;          // Scene-local vars
-  nodes: NodeDSL[];                    // UI components
-  triggers: Trigger[];                 // Event handlers
-  onEnter?: Action[];                  // Run on scene entry
-  onExit?: Action[];                   // Run on scene exit
-  transition?: TransitionConfig;       // Scene transition effect
+  id: string; // Unique scene ID
+  layout?: LayoutConfig; // Stack/Grid layout
+  vars?: Record<string, any>; // Scene-local vars
+  nodes: NodeDSL[]; // UI components
+  triggers: Trigger[]; // Event handlers
+  onEnter?: Action[]; // Run on scene entry
+  onExit?: Action[]; // Run on scene exit
+  transition?: TransitionConfig; // Scene transition effect
 }
 ```
 
@@ -572,6 +594,7 @@ interface SceneDSL {
 **M0 Components (Basic 3):**
 
 1. **Dialog** - Text display
+
    ```typescript
    {
      id: 'd1',
@@ -585,6 +608,7 @@ interface SceneDSL {
    ```
 
 2. **QuizSingle** - Single choice quiz
+
    ```typescript
    {
      id: 'q1',
@@ -617,16 +641,17 @@ interface SceneDSL {
 
 **Categories:**
 
-| Category | Actions | Description |
-|----------|---------|-------------|
-| **Flow** | `gotoScene`, `parallel`, `sequence`, `delay` | Control flow |
-| **State** | `setVar`, `incVar`, `addScore`, `resetNode` | State manipulation |
-| **UI** | `toast`, `modal`, `showNode`, `hideNode` | User feedback |
-| **Animation** | `playAnimation`, `stopAnimation` | Animations |
-| **Style** | `setStyle`, `addClass`, `removeClass`, `setTheme` | Styling |
-| **Media** | `sound`, `haptic` | Media playback |
+| Category      | Actions                                           | Description        |
+| ------------- | ------------------------------------------------- | ------------------ |
+| **Flow**      | `gotoScene`, `parallel`, `sequence`, `delay`      | Control flow       |
+| **State**     | `setVar`, `incVar`, `addScore`, `resetNode`       | State manipulation |
+| **UI**        | `toast`, `modal`, `showNode`, `hideNode`          | User feedback      |
+| **Animation** | `playAnimation`, `stopAnimation`                  | Animations         |
+| **Style**     | `setStyle`, `addClass`, `removeClass`, `setTheme` | Styling            |
+| **Media**     | `sound`, `haptic`                                 | Media playback     |
 
 **Example:**
+
 ```typescript
 // Flow control
 { "action": "gotoScene", "sceneId": "scene2" }
@@ -647,16 +672,19 @@ interface SceneDSL {
 **New in v1.1:** Enhanced styling capabilities
 
 **Theme System:**
+
 - 9 built-in themes: default, playful, academic, minimal, vibrant, dark, nature, tech, retro
 - Custom theme support
 - Design tokens (colors, spacing, fonts, shadows)
 
 **Animation System:**
+
 - 30+ built-in animations (fadeIn, bounceIn, shake, pulse, etc.)
 - Custom keyframe animations
 - Animation sequences and parallel animations
 
 **Transition System:**
+
 - 16 scene transitions (fade, slide, cube, carousel, etc.)
 - Customizable durations and easing
 
@@ -683,6 +711,7 @@ server/api/src/main/java/com/vveducation/api/
 ```
 
 **Key APIs (M0):**
+
 - `GET /api/v1/courses/{id}` - Fetch course DSL
 - `GET /api/v1/courses/{id}/resources` - Fetch assets
 - `POST /api/v1/progress` - Save progress
@@ -697,6 +726,7 @@ server/api/src/main/java/com/vveducation/api/
 **Steps:**
 
 1. **Define the action type in schema:**
+
    ```typescript
    // packages/vvce-schema/src/actions.ts
    export interface MyCustomAction {
@@ -713,6 +743,7 @@ server/api/src/main/java/com/vveducation/api/
    ```
 
 2. **Implement in ActionExecutor:**
+
    ```typescript
    // packages/vvce-core/src/executor/ActionExecutor.ts
    private executeAction(action: ActionDSL): void {
@@ -732,6 +763,7 @@ server/api/src/main/java/com/vveducation/api/
    ```
 
 3. **Add tests:**
+
    ```typescript
    // packages/vvce-core/src/executor/ActionExecutor.test.ts
    describe('myCustomAction', () => {
@@ -750,6 +782,7 @@ server/api/src/main/java/com/vveducation/api/
 **Steps:**
 
 1. **Define component schema:**
+
    ```typescript
    // packages/vvce-schema/src/components.ts
    export interface MyComponentProps {
@@ -770,6 +803,7 @@ server/api/src/main/java/com/vveducation/api/
    ```
 
 2. **Implement in vvce-components:**
+
    ```typescript
    // packages/vvce-components/src/MyComponent.tsx
    import React from 'react';
@@ -781,6 +815,7 @@ server/api/src/main/java/com/vveducation/api/
    ```
 
 3. **Register component:**
+
    ```typescript
    // packages/vvce-components/src/index.ts
    export { MyComponent } from './MyComponent';
@@ -813,6 +848,7 @@ pnpm lint
 ```
 
 **Key files to modify:**
+
 - `src/runtime/Runtime.ts` - Main orchestrator
 - `src/executor/ActionExecutor.ts` - Adding actions
 - `src/interpreter/TriggerInterpreter.ts` - Trigger logic
@@ -824,6 +860,7 @@ pnpm lint
 **Adding a new API endpoint:**
 
 1. **Define domain entity:**
+
    ```java
    // server/api/src/main/java/com/vveducation/api/course/domain/Course.java
    @Entity
@@ -843,6 +880,7 @@ pnpm lint
    ```
 
 2. **Create repository:**
+
    ```java
    // ...repository/CourseRepository.java
    public interface CourseRepository extends JpaRepository<Course, String> {
@@ -851,6 +889,7 @@ pnpm lint
    ```
 
 3. **Implement service:**
+
    ```java
    // ...service/CourseService.java
    @Service
@@ -866,6 +905,7 @@ pnpm lint
    ```
 
 4. **Create controller:**
+
    ```java
    // ...controller/CourseController.java
    @RestController
@@ -888,7 +928,7 @@ pnpm lint
 ```typescript
 // Enable debug mode
 const runtime = new VVCERuntime({
-  debug: true,  // Enables verbose logging
+  debug: true, // Enables verbose logging
 });
 
 // Access logs
@@ -914,12 +954,12 @@ logging:
 
 **Common Issues:**
 
-| Issue | Solution |
-|-------|----------|
-| Reference not found | Check path spelling, ensure node exists |
-| Trigger not firing | Verify event type and target match |
-| State not updating | Check action path, verify store.set() called |
-| Build fails | Run `pnpm clean` then `pnpm install` |
+| Issue               | Solution                                     |
+| ------------------- | -------------------------------------------- |
+| Reference not found | Check path spelling, ensure node exists      |
+| Trigger not firing  | Verify event type and target match           |
+| State not updating  | Check action path, verify store.set() called |
+| Build fails         | Run `pnpm clean` then `pnpm install`         |
 
 ---
 
@@ -961,6 +1001,7 @@ describe('Store', () => {
 - **Test naming**: `should [expected behavior] when [condition]`
 
 **Run tests:**
+
 ```bash
 # All tests
 pnpm test
@@ -1015,12 +1056,14 @@ class CourseServiceTest {
 ### 9.1 Branch Naming
 
 **Convention:**
+
 - Feature: `feature/description`
 - Bug fix: `fix/description`
 - Docs: `docs/description`
 - Refactor: `refactor/description`
 
 **Examples:**
+
 - `feature/add-quiz-multiple-component`
 - `fix/reference-resolver-null-check`
 - `docs/update-api-documentation`
@@ -1028,6 +1071,7 @@ class CourseServiceTest {
 ### 9.2 Commit Messages
 
 **Format:**
+
 ```
 <type>(<scope>): <subject>
 
@@ -1037,6 +1081,7 @@ class CourseServiceTest {
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation
@@ -1046,6 +1091,7 @@ class CourseServiceTest {
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```
 feat(vvce-core): add playAnimation action support
 
@@ -1133,7 +1179,7 @@ docs(vvce-schema): update action types documentation
 **What TO do:**
 
 - ✅ Keep vvce-core framework-agnostic
-- ✅ Use workspace:* for internal dependencies
+- ✅ Use workspace:\* for internal dependencies
 - ✅ Export types separately from implementations
 - ✅ Write comprehensive tests for core logic
 - ✅ Document public APIs with JSDoc
@@ -1142,6 +1188,7 @@ docs(vvce-schema): update action types documentation
 ### 10.3 Common Pitfalls
 
 **Pitfall 1: Forgetting to resolve references**
+
 ```typescript
 // ❌ Wrong
 const value = condition.left; // Might be { ref: "globals.vars.score" }
@@ -1151,6 +1198,7 @@ const value = this.resolver.resolve(condition.left);
 ```
 
 **Pitfall 2: Direct state mutation**
+
 ```typescript
 // ❌ Wrong
 this.state.globals.vars.score = 100;
@@ -1160,6 +1208,7 @@ this.store.set('globals.vars.score', 100);
 ```
 
 **Pitfall 3: Forgetting to log**
+
 ```typescript
 // ❌ Wrong
 this.gotoScene(sceneId);
@@ -1170,6 +1219,7 @@ this.gotoScene(sceneId);
 ```
 
 **Pitfall 4: Using npm instead of pnpm**
+
 ```bash
 # ❌ Wrong
 npm install
@@ -1225,12 +1275,14 @@ Before marking work complete, verify:
 ### 10.7 Helpful Resources
 
 **Internal Documentation:**
+
 - `README.md` - Project overview
 - `docs/specs/vvce-dsl-v1.md` - Complete DSL specification
 - `packages/vvce-core/README.md` - Core engine documentation
 - `ROADMAP.md` - Development roadmap
 
 **External Resources:**
+
 - TypeScript Handbook: https://www.typescriptlang.org/docs/
 - Vitest Documentation: https://vitest.dev/
 - Spring Boot Docs: https://spring.io/projects/spring-boot
@@ -1261,13 +1313,13 @@ pnpm typecheck        # Type check
 
 ### Important Paths
 
-| Path | Description |
-|------|-------------|
-| `packages/vvce-core/src/` | Core engine source |
-| `packages/vvce-schema/src/` | DSL types and validation |
+| Path                            | Description               |
+| ------------------------------- | ------------------------- |
+| `packages/vvce-core/src/`       | Core engine source        |
+| `packages/vvce-schema/src/`     | DSL types and validation  |
 | `packages/vvce-components/src/` | Component implementations |
-| `server/api/src/main/java/` | Backend source |
-| `docs/specs/` | Technical specifications |
+| `server/api/src/main/java/`     | Backend source            |
+| `docs/specs/`                   | Technical specifications  |
 
 ### Key Type Definitions
 
@@ -1282,18 +1334,38 @@ type EventType = 'click' | 'change' | 'submit' | 'sceneEnter' | 'sceneExit';
 
 // Action types (23 total)
 type ActionType =
-  | 'gotoScene' | 'parallel' | 'sequence' | 'delay'
-  | 'setVar' | 'incVar' | 'addScore' | 'resetNode'
-  | 'toast' | 'modal' | 'showNode' | 'hideNode'
-  | 'playAnimation' | 'stopAnimation'
-  | 'setStyle' | 'addClass' | 'removeClass' | 'setTheme'
-  | 'sound' | 'haptic';
+  | 'gotoScene'
+  | 'parallel'
+  | 'sequence'
+  | 'delay'
+  | 'setVar'
+  | 'incVar'
+  | 'addScore'
+  | 'resetNode'
+  | 'toast'
+  | 'modal'
+  | 'showNode'
+  | 'hideNode'
+  | 'playAnimation'
+  | 'stopAnimation'
+  | 'setStyle'
+  | 'addClass'
+  | 'removeClass'
+  | 'setTheme'
+  | 'sound'
+  | 'haptic';
 
 // Condition operators
 type ConditionOp =
-  | 'equals' | 'notEquals'
-  | 'gt' | 'gte' | 'lt' | 'lte'
-  | 'and' | 'or' | 'not';
+  | 'equals'
+  | 'notEquals'
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'and'
+  | 'or'
+  | 'not';
 ```
 
 ---
@@ -1308,6 +1380,7 @@ type ConditionOp =
 - Lessons learned
 
 **When in doubt:**
+
 1. Check this document
 2. Check inline code comments
 3. Check `/docs/specs/`

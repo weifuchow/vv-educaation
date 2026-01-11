@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Build outputs
+dist
+build
+*.tsbuildinfo
+
+# Coverage
+coverage
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# IDE
+.idea
+.vscode
+
+# Java build
+server/api/target/
+*.class
+
+# Misc
+.husky/_

@@ -82,10 +82,7 @@ export class ThemeProvider {
     }
 
     // 合并自定义变量
-    const mergedVariables = this.mergeVariables(
-      baseVariables,
-      theme.variables || {}
-    );
+    const mergedVariables = this.mergeVariables(baseVariables, theme.variables || {});
 
     // 合并组件样式
     const mergedComponents = {
@@ -120,10 +117,7 @@ export class ThemeProvider {
   /**
    * 深度合并样式变量
    */
-  private mergeVariables(
-    base: StyleVariables,
-    override: StyleVariables
-  ): StyleVariables {
+  private mergeVariables(base: StyleVariables, override: StyleVariables): StyleVariables {
     const result: StyleVariables = { ...base };
 
     for (const [key, value] of Object.entries(override)) {
@@ -230,10 +224,7 @@ export class ThemeProvider {
   updateVariables(variables: Partial<StyleVariables>): void {
     this.currentTheme = {
       ...this.currentTheme,
-      variables: this.mergeVariables(
-        this.currentTheme.variables || {},
-        variables
-      ),
+      variables: this.mergeVariables(this.currentTheme.variables || {}, variables),
     };
     this.resolvedTheme = this.resolveTheme(this.currentTheme);
     this.applyTheme();

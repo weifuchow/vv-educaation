@@ -34,17 +34,20 @@ This document provides comprehensive guidance for AI assistants working on the J
 **Current State:** Early setup stage (M0 phase)
 
 **Completed:**
+
 - ✅ Spring Boot project structure
 - ✅ Maven dependencies configuration
 - ✅ application.yml configuration
 - ✅ Main application class
 
 **In Progress:**
+
 - 🔄 Course domain implementation
 - 🔄 Progress domain implementation
 - 🔄 Identity/Auth implementation
 
 **Not Started:**
+
 - ⏳ Assessment domain (M2)
 - ⏳ Project domain (M3)
 
@@ -146,10 +149,12 @@ server/api/
 ### 2.2 Database
 
 **Primary Database:**
+
 - **PostgreSQL** 14+ (JSONB support for DSL storage)
 - **Alternative:** MySQL 8+ (JSON support)
 
 **ORM Frameworks:**
+
 - **JPA/Hibernate** (primary) - For standard CRUD
 - **MyBatis Plus** 3.5.5 (optional) - For complex queries
 
@@ -247,6 +252,7 @@ server/api/
 **Philosophy:** Domain-Driven Design (DDD) with modular organization
 
 **Benefits:**
+
 - Clear domain boundaries
 - Independent development of modules
 - Can evolve into microservices if needed
@@ -277,11 +283,11 @@ server/api/
 
 **Layer Responsibilities:**
 
-| Layer | Responsibilities | Should NOT |
-|-------|-----------------|------------|
-| **Controller** | HTTP handling, validation, DTO conversion | Business logic, direct DB access |
-| **Service** | Business logic, transactions, orchestration | HTTP concerns, entity exposure |
-| **Repository** | Data access, queries | Business logic, transactions |
+| Layer          | Responsibilities                            | Should NOT                       |
+| -------------- | ------------------------------------------- | -------------------------------- |
+| **Controller** | HTTP handling, validation, DTO conversion   | Business logic, direct DB access |
+| **Service**    | Business logic, transactions, orchestration | HTTP concerns, entity exposure   |
+| **Repository** | Data access, queries                        | Business logic, transactions     |
 
 ### 3.3 Dependency Injection
 
@@ -314,15 +320,18 @@ public class CourseService {
 ### 4.1 Course Domain
 
 **Responsibilities:**
+
 - Course CRUD operations
 - DSL content management
 - Course publishing workflow
 - Course metadata
 
 **Entities:**
+
 - `Course` - Course metadata and DSL content
 
 **Key Operations:**
+
 - Create draft course
 - Update course DSL
 - Publish course (draft → published)
@@ -332,14 +341,17 @@ public class CourseService {
 ### 4.2 Progress Domain
 
 **Responsibilities:**
+
 - Learning progress tracking
 - State persistence
 - Progress statistics
 
 **Entities:**
+
 - `Progress` - User learning progress per course
 
 **Key Operations:**
+
 - Save progress (runtime state snapshot)
 - Load progress (resume learning)
 - Get statistics (completion rate, time spent)
@@ -347,14 +359,17 @@ public class CourseService {
 ### 4.3 Identity Domain
 
 **Responsibilities:**
+
 - User authentication
 - User management
 - Role/permission management
 
 **Entities:**
+
 - `User` - User credentials and profile
 
 **Key Operations:**
+
 - Register user
 - Login (return JWT)
 - Get/update profile
@@ -363,6 +378,7 @@ public class CourseService {
 ### 4.4 Assessment Domain (M2)
 
 **Responsibilities:**
+
 - Project rubrics
 - Assessment criteria
 - Scoring logic
@@ -370,6 +386,7 @@ public class CourseService {
 ### 4.5 Project Domain (M3)
 
 **Responsibilities:**
+
 - Project submissions
 - Peer review
 - Project gallery
@@ -386,18 +403,19 @@ public class CourseService {
 
 ### 5.2 RESTful Conventions
 
-| HTTP Method | Path Pattern | Purpose | Example |
-|-------------|--------------|---------|---------|
-| GET | `/api/v1/{resource}` | List resources | `/api/v1/courses` |
-| GET | `/api/v1/{resource}/{id}` | Get single | `/api/v1/courses/course-001` |
-| POST | `/api/v1/{resource}` | Create | `/api/v1/courses` |
-| PUT | `/api/v1/{resource}/{id}` | Update (full) | `/api/v1/courses/course-001` |
-| PATCH | `/api/v1/{resource}/{id}` | Update (partial) | `/api/v1/courses/course-001` |
-| DELETE | `/api/v1/{resource}/{id}` | Delete | `/api/v1/courses/course-001` |
+| HTTP Method | Path Pattern              | Purpose          | Example                      |
+| ----------- | ------------------------- | ---------------- | ---------------------------- |
+| GET         | `/api/v1/{resource}`      | List resources   | `/api/v1/courses`            |
+| GET         | `/api/v1/{resource}/{id}` | Get single       | `/api/v1/courses/course-001` |
+| POST        | `/api/v1/{resource}`      | Create           | `/api/v1/courses`            |
+| PUT         | `/api/v1/{resource}/{id}` | Update (full)    | `/api/v1/courses/course-001` |
+| PATCH       | `/api/v1/{resource}/{id}` | Update (partial) | `/api/v1/courses/course-001` |
+| DELETE      | `/api/v1/{resource}/{id}` | Delete           | `/api/v1/courses/course-001` |
 
 ### 5.3 Planned API Endpoints
 
 **Course API:**
+
 ```
 GET    /api/v1/courses              # List courses
 GET    /api/v1/courses/{id}         # Get course metadata
@@ -409,6 +427,7 @@ POST   /api/v1/courses/{id}/publish # Publish course
 ```
 
 **Progress API:**
+
 ```
 GET    /api/v1/progress/{userId}/{courseId}  # Get progress
 POST   /api/v1/progress                      # Save progress
@@ -416,6 +435,7 @@ GET    /api/v1/progress/{userId}/stats       # Get stats
 ```
 
 **Identity API:**
+
 ```
 POST   /api/v1/auth/register        # Register
 POST   /api/v1/auth/login           # Login (JWT)
@@ -426,6 +446,7 @@ PUT    /api/v1/users/me             # Update profile
 ### 5.4 Response Format
 
 **Success Response:**
+
 ```json
 {
   "success": true,
@@ -436,6 +457,7 @@ PUT    /api/v1/users/me             # Update profile
 ```
 
 **Error Response:**
+
 ```json
 {
   "success": false,
@@ -449,6 +471,7 @@ PUT    /api/v1/users/me             # Update profile
 ```
 
 **ApiResponse Wrapper (to implement):**
+
 ```java
 @Data
 @AllArgsConstructor
@@ -524,6 +547,7 @@ enum CourseStatus {
 ```
 
 **SQL Schema:**
+
 ```sql
 CREATE TABLE courses (
     id BIGSERIAL PRIMARY KEY,
@@ -642,6 +666,7 @@ private Map<String, Object> metadata;
 ```
 
 **Custom Converter:**
+
 ```java
 @Converter
 public class JsonConverter implements AttributeConverter<Map<String, Object>, String> {
@@ -737,6 +762,7 @@ public class CourseService {
 ### 7.2 Transaction Management
 
 **Rules:**
+
 - Use `@Transactional` on **service methods**, not repository methods
 - Read-only transactions for queries: `@Transactional(readOnly = true)`
 - Isolate transactions at appropriate granularity
@@ -792,6 +818,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 ```
 
 **JPA Naming Conventions:**
+
 - `findBy{Property}` - Find by property
 - `findBy{Property}And{Property}` - Multiple conditions
 - `existsBy{Property}` - Check existence
@@ -800,6 +827,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 ### 8.2 MyBatis Plus (Optional)
 
 **When to use:**
+
 - Complex joins
 - Performance-critical queries
 - Dynamic SQL
@@ -821,6 +849,7 @@ public interface CourseMapper extends BaseMapper<Course> {
 ```
 
 **XML Mapper:**
+
 ```xml
 <!-- src/main/resources/mapper/CourseMapper.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
@@ -881,6 +910,7 @@ public class SecurityConfig {
 ### 9.2 JWT Implementation
 
 **JWT Token Structure:**
+
 ```json
 {
   "sub": "user-12345",
@@ -892,6 +922,7 @@ public class SecurityConfig {
 ```
 
 **JWT Service:**
+
 ```java
 @Service
 public class JwtService {
@@ -970,6 +1001,7 @@ public class AuthController {
 ### 10.1 application.yml
 
 **Current Configuration:**
+
 ```yaml
 spring:
   application:
@@ -988,7 +1020,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # ⚠️ Change to 'validate' in production
+      ddl-auto: update # ⚠️ Change to 'validate' in production
     show-sql: true
     properties:
       hibernate:
@@ -1008,7 +1040,7 @@ server:
 
 jwt:
   secret: vv-education-secret-key-please-change-in-production
-  expiration: 86400000  # 24 hours
+  expiration: 86400000 # 24 hours
 
 springdoc:
   api-docs:
@@ -1025,6 +1057,7 @@ logging:
 ### 10.2 Environment-Specific Config
 
 **application-dev.yml:**
+
 ```yaml
 spring:
   jpa:
@@ -1038,12 +1071,13 @@ logging:
 ```
 
 **application-prod.yml:**
+
 ```yaml
 spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: validate  # Never auto-update in prod
+      ddl-auto: validate # Never auto-update in prod
 
 logging:
   level:
@@ -1116,6 +1150,7 @@ class CourseControllerIntegrationTest {
 **Example:** Adding "Assessment" module
 
 1. **Create package structure:**
+
    ```
    domain/assessment/
    ├── controller/
@@ -1126,6 +1161,7 @@ class CourseControllerIntegrationTest {
    ```
 
 2. **Create entity:**
+
    ```java
    @Entity
    @Table(name = "assessments")

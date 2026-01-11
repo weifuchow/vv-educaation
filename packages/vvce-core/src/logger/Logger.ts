@@ -19,12 +19,7 @@ export class Logger {
   /**
    * 记录日志
    */
-  log(
-    level: LogLevel,
-    type: LogEntry['type'],
-    message: string,
-    data?: any
-  ): void {
+  log(level: LogLevel, type: LogEntry['type'], message: string, data?: any): void {
     const entry: LogEntry = {
       level,
       type,
