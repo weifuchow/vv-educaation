@@ -1,0 +1,251 @@
+{
+  "schema": "vvce.dsl.v1",
+  "meta": {
+    "id": "math-quiz-basic",
+    "version": "1.0.0",
+    "title": "基础数学测验",
+    "author": "VV Education",
+    "description": "简单的数学加法和乘法测验"
+  },
+  "globals": {
+    "vars": {
+      "score": 0,
+      "attempt": 0,
+      "nickname": "小明"
+    }
+  },
+  "startSceneId": "welcome",
+  "scenes": [
+    {
+      "id": "welcome",
+      "vars": {
+        "temp": "initial"
+      },
+      "nodes": [
+        {
+          "id": "welcome-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "你好，{{globals.vars.nickname}}！欢迎来到VV课堂。今天我们来做一个简单的数学测验。"
+          }
+        },
+        {
+          "id": "start-button",
+          "type": "Button",
+          "props": {
+            "text": "开始测验"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "start-button"
+          },
+          "then": [
+            {
+              "action": "gotoScene",
+              "sceneId": "question1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "question1",
+      "nodes": [
+        {
+          "id": "q1-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "第一题来了！"
+          }
+        },
+        {
+          "id": "q1",
+          "type": "QuizSingle",
+          "props": {
+            "question": "1 + 1 = ?",
+            "options": ["1", "2", "3", "4"],
+            "answerKey": "2"
+          }
+        },
+        {
+          "id": "submit1",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "submit1"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": {
+                "ref": "nodes.q1.selected"
+              },
+              "right": "2"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 10
+            },
+            {
+              "action": "toast",
+              "text": "回答正确！+10分"
+            },
+            {
+              "action": "delay",
+              "ms": 1500
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "question2"
+            }
+          ],
+          "else": [
+            {
+              "action": "incVar",
+              "path": "globals.vars.attempt",
+              "by": 1
+            },
+            {
+              "action": "toast",
+              "text": "答案不对哦，再想想～"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "question2",
+      "nodes": [
+        {
+          "id": "q2-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "做得不错！第二题稍微难一点..."
+          }
+        },
+        {
+          "id": "q2",
+          "type": "QuizSingle",
+          "props": {
+            "question": "5 × 3 = ?",
+            "options": ["10", "12", "15", "18"],
+            "answerKey": "15"
+          }
+        },
+        {
+          "id": "submit2",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "submit2"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": {
+                "ref": "nodes.q2.selected"
+              },
+              "right": "15"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 20
+            },
+            {
+              "action": "toast",
+              "text": "太棒了！+20分"
+            },
+            {
+              "action": "delay",
+              "ms": 1500
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "result"
+            }
+          ],
+          "else": [
+            {
+              "action": "incVar",
+              "path": "globals.vars.attempt",
+              "by": 1
+            },
+            {
+              "action": "toast",
+              "text": "再想想，提示：3个5相加是多少？"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "nodes": [
+        {
+          "id": "result-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "太棒了！{{globals.vars.nickname}}，你已经完成了所有题目！最终得分：{{globals.vars.score}}分"
+          }
+        },
+        {
+          "id": "restart-button",
+          "type": "Button",
+          "props": {
+            "text": "重新开始"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "restart-button"
+          },
+          "then": [
+            {
+              "action": "setVar",
+              "path": "globals.vars.score",
+              "value": 0
+            },
+            {
+              "action": "setVar",
+              "path": "globals.vars.attempt",
+              "value": 0
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "welcome"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
