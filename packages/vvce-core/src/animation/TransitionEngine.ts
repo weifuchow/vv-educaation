@@ -436,7 +436,7 @@ export class TransitionEngine {
       direction,
     };
 
-    const startTime = now();
+    let startTime: number | null = null;
     let cancelled = false;
 
     const animate = (currentTime: number) => {
@@ -444,6 +444,9 @@ export class TransitionEngine {
         return;
       }
 
+      if (startTime === null) {
+        startTime = currentTime;
+      }
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
