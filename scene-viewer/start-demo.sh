@@ -2,6 +2,8 @@
 
 # VVCE Demo 启动脚本
 
+pnpm install
+pnpm build:packages
 echo "🚀 启动 VVCE 课件渲染引擎演示..."
 echo ""
 
@@ -21,7 +23,7 @@ echo "  VVCE 演示已启动！"
 echo "======================================"
 echo ""
 echo "📍 访问地址："
-echo "   http://localhost:8080/demo/basic-example/"
+echo "    http://localhost:10000/scene-viewer/scene-runner/"
 echo ""
 echo "💡 提示："
 echo "   - 左侧：课件交互区域"
@@ -33,4 +35,4 @@ echo "======================================"
 echo ""
 
 # Start server
-python3 -m http.server 8080
+py -m http.server 10000

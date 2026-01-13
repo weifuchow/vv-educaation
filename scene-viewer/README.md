@@ -11,7 +11,7 @@
 ./demo/start-demo.sh
 ```
 
-然后在浏览器打开: **http://localhost:8080/demo/basic-example/**
+然后在浏览器打开: **http://localhost:10000/scene-viewer/scene-runner/**
 
 ### 方法 2: 手动启动
 
@@ -20,10 +20,10 @@
 pnpm build:packages
 
 # 2. 启动 HTTP 服务器
-python3 -m http.server 8080
+py -m http.server 10000
 
 # 3. 在浏览器打开
-# http://localhost:8080/demo/basic-example/
+# http://localhost:10000/scene-viewer/scene-runner/
 ```
 
 ## 演示列表
