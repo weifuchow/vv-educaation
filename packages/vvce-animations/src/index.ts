@@ -16,6 +16,9 @@ export { pisaTowerAnimation } from './physics/pisa-tower';
 // 地理动画
 export { earthSystemAnimation } from './geography/earth-system';
 
+// Web渲染器 (浏览器环境专用)
+export * from './web';
+
 // 自动注册所有预设动画
 import { animationRegistry } from './core/registry';
 import { pisaTowerAnimation } from './physics/pisa-tower';

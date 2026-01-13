@@ -1,6 +1,12 @@
-/* Animation-specific styles for VVCE Scene Runner */
+/**
+ * VVCE Animations CSS
+ * 动画库样式文件 - 可复用的动画样式
+ */
 
-/* Pisa Tower Animation */
+/* ===================================
+   Pisa Tower Animation (比萨斜塔)
+   =================================== */
+
 .animation-container.space {
   background: linear-gradient(180deg, #000428 0%, #004e92 100%);
 }
@@ -88,7 +94,10 @@
   z-index: 10;
 }
 
-/* Earth System Animation */
+/* ===================================
+   Earth System Animation (地球系统)
+   =================================== */
+
 .earth-system {
   position: relative;
   width: 100%;
@@ -179,7 +188,11 @@
   left: 10%;
   width: 80%;
   height: 80%;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   border-radius: 50%;
 }
 

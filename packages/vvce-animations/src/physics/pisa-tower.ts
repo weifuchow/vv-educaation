@@ -229,8 +229,8 @@ class PisaTowerAnimation extends AnimationBase {
     // 更新阴影大小（越接近地面阴影越小）
     const shadowScale = 1 - progress * 0.5;
     const shadows = this.container.querySelectorAll('.ball-shadow');
-    shadows.forEach((shadow: HTMLElement) => {
-      shadow.style.transform = `translateX(-50%) scale(${shadowScale})`;
+    shadows.forEach((shadow) => {
+      (shadow as HTMLElement).style.transform = `translateX(-50%) scale(${shadowScale})`;
     });
 
     // 更新标签

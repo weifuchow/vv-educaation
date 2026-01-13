@@ -451,8 +451,8 @@
       }
     </style>
 
-    <!-- Animation-specific styles loaded dynamically -->
-    <link rel="stylesheet" href="./animations.css" />
+    <!-- Animation-specific styles from vvce-animations package -->
+    <link rel="stylesheet" href="../../packages/vvce-animations/dist/animations.css" />
   </head>
   <body>
     <!-- Scene Selector -->
@@ -515,7 +515,7 @@
 
     <script type="module">
       import { VVCERuntime } from '../../packages/vvce-core/dist/index.mjs';
-      import { AnimationRegistry } from './animations.js';
+      import { webAnimationRegistry } from '../../packages/vvce-animations/dist/index.mjs';
 
       // Scene loader
       async function loadScene(sceneName) {
@@ -528,9 +528,8 @@
 
       // Component Renderer
       class ComponentRenderer {
-        constructor(runtime, animationRegistry) {
+        constructor(runtime) {
           this.runtime = runtime;
-          this.animationRegistry = animationRegistry;
           this.nodeStates = new Map();
         }
 
@@ -588,7 +587,7 @@
           const { type, autoplay } = node.props;
 
           // Get animation HTML from registry
-          const animationHtml = this.animationRegistry.getAnimationHtml(type);
+          const animationHtml = webAnimationRegistry.getHtml(type);
 
           return `
             <div class="node anim-component" data-node-id="${node.id}" data-animation-type="${type}" data-autoplay="${autoplay}">
@@ -675,11 +674,11 @@
 
       // UI Manager
       class UIManager {
-        constructor(runtime, renderer, animationRegistry) {
+        constructor(runtime, renderer) {
           this.runtime = runtime;
           this.renderer = renderer;
-          this.animationRegistry = animationRegistry;
           this.sceneContainer = document.getElementById('scene-container');
+          this.activeAnimations = new Map(); // Store active animation instances
           this.setupEventListeners();
         }
 
@@ -720,17 +719,16 @@
               });
             }
 
-            // Handle control buttons - delegate to animation registry
+            // Handle control buttons - delegate to animation instance
             if (target.classList.contains('control-button')) {
               const controlId = target.dataset.control;
-              const nodeId = target.dataset.nodeId;
 
-              // Find the animation node
-              const animNode = this.sceneContainer.querySelector('.anim-component');
-              if (animNode) {
-                const animType = animNode.dataset.animationType;
-                this.animationRegistry.handleControl(animType, controlId, target);
-              }
+              // Find active animation instance
+              this.activeAnimations.forEach((animation) => {
+                if (animation.handleControl) {
+                  animation.handleControl(controlId, target);
+                }
+              });
             }
           });
         }
@@ -741,14 +739,35 @@
             return;
           }
 
+          // Clear previous animations
+          this.activeAnimations.forEach((anim) => anim.destroy && anim.destroy());
+          this.activeAnimations.clear();
+
           const html = scene.nodes.map((node) => this.renderer.renderNode(node)).join('');
           this.sceneContainer.innerHTML = html;
 
-          // Auto-play animations if needed
+          // Create and initialize animation instances
           setTimeout(() => {
             scene.nodes.forEach((node) => {
-              if (node.type === 'Animation' && node.props.autoplay) {
-                this.animationRegistry.startAnimation(node.props.type);
+              if (node.type === 'Animation') {
+                const container = document.getElementById(`animation-${node.id}`);
+                if (container) {
+                  const animation = webAnimationRegistry.create(node.props.type, {
+                    container,
+                    autoplay: node.props.autoplay,
+                    onResult: (result) => {
+                      console.log('Animation result:', result);
+                    },
+                    onInteract: (interaction) => {
+                      console.log('Animation interaction:', interaction);
+                    },
+                  });
+
+                  if (animation) {
+                    this.activeAnimations.set(node.id, animation);
+                    animation.initialize();
+                  }
+                }
               }
             });
           }, 100);
@@ -802,7 +821,6 @@
       let runtime = null;
       let renderer = null;
       let uiManager = null;
-      const animationRegistry = new AnimationRegistry();
 
       // Load and run scene
       async function runScene(sceneName) {
@@ -840,8 +858,8 @@
             },
           });
 
-          renderer = new ComponentRenderer(runtime, animationRegistry);
-          uiManager = new UIManager(runtime, renderer, animationRegistry);
+          renderer = new ComponentRenderer(runtime);
+          uiManager = new UIManager(runtime, renderer);
 
           runtime.loadCourse(courseDSL);
           runtime.start();
