@@ -72,7 +72,7 @@
           "id": "animation",
           "type": "Animation",
           "props": {
-            "type": "earth-system",
+            "type": "geography.earth-system",
             "autoplay": false
           }
         },
@@ -173,7 +173,7 @@
           "id": "final-anim",
           "type": "Animation",
           "props": {
-            "type": "earth-system",
+            "type": "geography.earth-system",
             "autoplay": true
           }
         },

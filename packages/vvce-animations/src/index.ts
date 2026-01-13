@@ -12,12 +12,6 @@ export { webAnimationRegistry } from './standards/WebAnimationRegistry';
 export { AnimationBase } from './core/AnimationBase';
 export { AnimationRegistry, animationRegistry } from './core/registry';
 
-// 物理动画（核心定义）
-export { pisaTowerAnimation } from './physics/pisa-tower';
-
-// 地理动画（核心定义）
-export { earthSystemAnimation } from './geography/earth-system';
-
 // ============= Web标准动画模块 =============
 export { pisaTowerModule } from './physics/pisa-tower/index';
 export { earthSystemModule } from './geography/earth-system/index';
@@ -29,13 +23,6 @@ import { earthSystemModule } from './geography/earth-system/index';
 
 // 自动注册所有Web动画模块
 webAnimationRegistry.registerBatch([pisaTowerModule, earthSystemModule]);
-
-// 核心动画库自动注册（用于非Web环境）
-import { animationRegistry } from './core/registry';
-import { pisaTowerAnimation } from './physics/pisa-tower';
-import { earthSystemAnimation } from './geography/earth-system';
-
-animationRegistry.registerBatch([pisaTowerAnimation, earthSystemAnimation]);
 
 // ============= 便捷函数 =============
 

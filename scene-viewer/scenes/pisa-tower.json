@@ -72,7 +72,7 @@
           "id": "animation",
           "type": "Animation",
           "props": {
-            "type": "pisa-tower",
+            "type": "physics.pisa-tower",
             "autoplay": false
           }
         },
@@ -159,7 +159,7 @@
           "id": "result-anim",
           "type": "Animation",
           "props": {
-            "type": "pisa-tower",
+            "type": "physics.pisa-tower",
             "autoplay": true
           }
         },
@@ -197,7 +197,7 @@
           "id": "result-anim-wrong",
           "type": "Animation",
           "props": {
-            "type": "pisa-tower",
+            "type": "physics.pisa-tower",
             "autoplay": true
           }
         },
