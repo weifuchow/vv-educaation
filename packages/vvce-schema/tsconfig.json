@@ -12,7 +12,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noUnusedLocals": true,
@@ -20,6 +20,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "schemas/**/*.json"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

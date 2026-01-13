@@ -88,3 +88,29 @@ export type { DialogProps, QuizSingleProps, ButtonProps } from './types/dsl';
 // ============ 校验器 ============
 export { Validator, validateCourse } from './validator/Validator';
 export type { ValidationResult, ValidationError } from './validator/Validator';
+
+// ============ JSON Schema 校验器 ============
+export { SchemaValidator, validateSchema } from './validator/SchemaValidator';
+export type {
+  SchemaValidationResult,
+  SchemaValidationError,
+} from './validator/SchemaValidator';
+
+// ============ 语义校验器 ============
+export { SemanticValidator, validateSemantics } from './validator/SemanticValidator';
+export type {
+  SemanticValidationResult,
+  SemanticError,
+  SemanticErrorCode,
+} from './validator/SemanticValidator';
+
+// ============ 静态分析 (Dry Run) ============
+export { DryRunSimulator, dryRun, dryRunReport } from './analyzer/DryRunSimulator';
+export type {
+  DryRunResult,
+  ExecutionPath,
+  ExecutionStep,
+  StateMutation,
+  EventActionMap,
+  CoverageReport,
+} from './analyzer/DryRunSimulator';
