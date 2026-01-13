@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VVCE 场景运行器 - Scene Runner</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+          'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      /* Scene Selector */
+      .scene-selector {
+        max-width: 1400px;
+        margin: 0 auto 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .selector-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .scene-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+      }
+
+      .scene-card {
+        padding: 15px;
+        border: 2px solid #e1e4e8;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: white;
+      }
+
+      .scene-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+      }
+
+      .scene-card.active {
+        border-color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .scene-card-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .scene-card-desc {
+        font-size: 13px;
+        color: #666;
+      }
+
+      /* Main Container */
+      .container {
+        display: flex;
+        gap: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .main-panel {
+        flex: 1;
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .debug-panel {
+        width: 350px;
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow-y: auto;
+        max-height: calc(100vh - 180px);
+      }
+
+      h1 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 28px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+
+      .scene {
+        min-height: 400px;
+      }
+
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Node components */
+      .node {
+        margin-bottom: 20px;
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Dialog component */
+      .dialog {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .dialog-speaker {
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 8px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .dialog-speaker::before {
+        content: '👨‍🏫';
+        font-size: 20px;
+      }
+
+      .dialog-text {
+        color: #333;
+        line-height: 1.8;
+        font-size: 16px;
+      }
+
+      /* Quiz component */
+      .quiz {
+        background: #fff;
+        border: 2px solid #e1e4e8;
+        border-radius: 12px;
+        padding: 24px;
+      }
+
+      .quiz-question {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .quiz-option {
+        padding: 16px 20px;
+        border: 2px solid #e1e4e8;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 16px;
+        background: white;
+      }
+
+      .quiz-option:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+        transform: translateX(5px);
+      }
+
+      .quiz-option.selected {
+        border-color: #667eea;
+        background: #f0f4ff;
+        font-weight: 600;
+      }
+
+      /* Button component */
+      .button {
+        padding: 14px 32px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .button:active {
+        transform: translateY(0);
+      }
+
+      /* Generic Animation component */
+      .animation-container {
+        background: linear-gradient(180deg, #87ceeb 0%, #e0f7ff 100%);
+        border-radius: 12px;
+        padding: 30px;
+        margin: 20px 0;
+        min-height: 400px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Conclusion & Thinking */
+      .conclusion {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border-left: 4px solid #4caf50;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+      }
+
+      .conclusion-title {
+        font-weight: bold;
+        color: #2e7d32;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      .conclusion-text {
+        color: #1b5e20;
+        line-height: 1.8;
+        white-space: pre-line;
+      }
+
+      .thinking {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        border-left: 4px solid #ff9800;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+      }
+
+      .thinking-title {
+        font-weight: bold;
+        color: #e65100;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      .thinking-text {
+        color: #bf360c;
+        line-height: 1.8;
+      }
+
+      /* Control buttons */
+      .control-buttons {
+        display: flex;
+        gap: 12px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+      }
+
+      .control-button {
+        padding: 12px 24px;
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .control-button:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .control-button.active {
+        background: #667eea;
+        color: white;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        animation: slideDown 0.3s ease-out;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+
+      /* Debug panel */
+      .debug-section {
+        margin-bottom: 20px;
+      }
+
+      .debug-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .debug-content {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        color: #333;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .log-entry {
+        padding: 8px;
+        margin-bottom: 6px;
+        border-radius: 4px;
+        background: white;
+        border-left: 3px solid #667eea;
+        font-size: 11px;
+      }
+
+      .log-type {
+        font-weight: bold;
+        color: #667eea;
+        text-transform: uppercase;
+        font-size: 10px;
+      }
+
+      .log-message {
+        color: #666;
+        margin-top: 4px;
+      }
+
+      .score-display {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .score-label {
+        font-size: 12px;
+        opacity: 0.9;
+        margin-bottom: 5px;
+      }
+
+      .score-value {
+        font-size: 32px;
+        font-weight: bold;
+      }
+
+      .scene-info {
+        background: #f0f4ff;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #667eea;
+        font-weight: 600;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Scene Selector -->
+    <div class="scene-selector" id="scene-selector">
+      <div class="selector-title">📚 选择场景 / Scene Selection</div>
+      <div class="scene-grid" id="scene-grid">
+        <div class="scene-card" data-scene="math-quiz">
+          <div class="scene-card-title">🧮 数学测验</div>
+          <div class="scene-card-desc">基础加法和乘法测试</div>
+        </div>
+        <div class="scene-card" data-scene="pisa-tower">
+          <div class="scene-card-title">🏛️ 比萨斜塔实验</div>
+          <div class="scene-card-desc">伽利略的自由落体实验</div>
+        </div>
+        <div class="scene-card" data-scene="earth-system">
+          <div class="scene-card-title">🌍 地球公转自转</div>
+          <div class="scene-card-desc">地球运动的互动模拟</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Main content area -->
+      <div class="main-panel">
+        <h1>🎓 VVCE 场景运行器</h1>
+        <p class="subtitle">Scene Runner - 快速测试课件场景</p>
+
+        <div id="scene-container" class="scene">
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>请选择一个场景开始体验...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Debug panel -->
+      <div class="debug-panel">
+        <div class="debug-section">
+          <div class="debug-title">📊 当前状态</div>
+          <div class="scene-info" id="current-scene">场景: 未加载</div>
+
+          <div class="score-display">
+            <div class="score-label">得分</div>
+            <div class="score-value" id="score-display">0</div>
+          </div>
+        </div>
+
+        <div class="debug-section">
+          <div class="debug-title">🔧 全局变量</div>
+          <div class="debug-content" id="global-vars">-</div>
+        </div>
+
+        <div class="debug-section">
+          <div class="debug-title">📝 最近日志</div>
+          <div id="logs-container">-</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { VVCERuntime } from '../../packages/vvce-core/dist/index.mjs';
+      import { webAnimationRegistry } from '../../packages/vvce-animations/dist/index.mjs';
+
+      // Scene loader
+      async function loadScene(sceneName) {
+        const response = await fetch(`../scenes/${sceneName}.json`);
+        if (!response.ok) {
+          throw new Error(`Failed to load scene: ${sceneName}`);
+        }
+        return await response.json();
+      }
+
+      // Component Renderer
+      class ComponentRenderer {
+        constructor(runtime) {
+          this.runtime = runtime;
+          this.nodeStates = new Map();
+        }
+
+        renderDialog(node) {
+          const { speaker, text } = node.props;
+          const processedText = this.interpolateText(text);
+
+          return `
+          <div class="node dialog" data-node-id="${node.id}">
+            ${speaker ? `<div class="dialog-speaker">${speaker}</div>` : ''}
+            <div class="dialog-text">${processedText}</div>
+          </div>
+        `;
+        }
+
+        renderQuizSingle(node) {
+          const { question, options } = node.props;
+          const selected = this.nodeStates.get(node.id) || null;
+
+          const optionsHtml = options
+            .map((option, index) => {
+              const isSelected = selected === option;
+              return `
+            <div class="quiz-option ${isSelected ? 'selected' : ''}"
+                 data-node-id="${node.id}"
+                 data-option="${option}">
+              ${String.fromCharCode(65 + index)}. ${option}
+            </div>
+          `;
+            })
+            .join('');
+
+          return `
+          <div class="node quiz" data-node-id="${node.id}">
+            <div class="quiz-question">${question}</div>
+            <div class="quiz-options">
+              ${optionsHtml}
+            </div>
+          </div>
+        `;
+        }
+
+        renderButton(node) {
+          const { text } = node.props;
+          return `
+          <div class="node">
+            <button class="button" data-node-id="${node.id}">
+              ${text}
+            </button>
+          </div>
+        `;
+        }
+
+        renderAnimation(node) {
+          const { type, autoplay } = node.props;
+
+          // Get animation HTML from registry
+          const animationHtml = webAnimationRegistry.getHtml(type);
+
+          return `
+            <div class="node anim-component" data-node-id="${node.id}" data-animation-type="${type}" data-autoplay="${autoplay}">
+              <div class="animation-container" id="animation-${node.id}">
+                ${animationHtml}
+              </div>
+            </div>
+          `;
+        }
+
+        renderControls(node) {
+          const { buttons } = node.props;
+
+          const buttonsHtml = buttons
+            .map(
+              (btn) => `
+          <button class="control-button"
+                  data-node-id="${node.id}"
+                  data-control="${btn.id}">
+            ${btn.text}
+          </button>
+        `
+            )
+            .join('');
+
+          return `
+          <div class="node control-buttons" data-node-id="${node.id}">
+            ${buttonsHtml}
+          </div>
+        `;
+        }
+
+        renderConclusion(node) {
+          const { title, text } = node.props;
+          return `
+          <div class="node conclusion" data-node-id="${node.id}">
+            <div class="conclusion-title">${title}</div>
+            <div class="conclusion-text">${text}</div>
+          </div>
+        `;
+        }
+
+        renderThinking(node) {
+          const { title, text } = node.props;
+          return `
+          <div class="node thinking" data-node-id="${node.id}">
+            <div class="thinking-title">${title}</div>
+            <div class="thinking-text">${text}</div>
+          </div>
+        `;
+        }
+
+        interpolateText(text) {
+          return text.replace(/\{\{(.+?)\}\}/g, (match, path) => {
+            const trimmedPath = path.trim();
+            const parts = trimmedPath.split('.');
+            const varName = parts[parts.length - 1];
+            const value = this.runtime.getState().globals.vars[varName];
+            return value !== undefined ? value : match;
+          });
+        }
+
+        renderNode(node) {
+          switch (node.type) {
+            case 'Dialog':
+              return this.renderDialog(node);
+            case 'QuizSingle':
+              return this.renderQuizSingle(node);
+            case 'Button':
+              return this.renderButton(node);
+            case 'Animation':
+              return this.renderAnimation(node);
+            case 'Controls':
+              return this.renderControls(node);
+            case 'Conclusion':
+              return this.renderConclusion(node);
+            case 'Thinking':
+              return this.renderThinking(node);
+            default:
+              return `<div class="node">Unknown component: ${node.type}</div>`;
+          }
+        }
+      }
+
+      // UI Manager
+      class UIManager {
+        constructor(runtime, renderer) {
+          this.runtime = runtime;
+          this.renderer = renderer;
+          this.sceneContainer = document.getElementById('scene-container');
+          this.activeAnimations = new Map(); // Store active animation instances
+          this.setupEventListeners();
+        }
+
+        setupEventListeners() {
+          this.sceneContainer.addEventListener('click', (e) => {
+            const target = e.target;
+
+            // Handle button clicks
+            if (target.classList.contains('button')) {
+              const nodeId = target.dataset.nodeId;
+              this.runtime.emit({
+                type: 'click',
+                target: nodeId,
+                payload: null,
+                ts: Date.now(),
+              });
+            }
+
+            // Handle quiz option clicks
+            if (target.classList.contains('quiz-option')) {
+              const nodeId = target.dataset.nodeId;
+              const option = target.dataset.option;
+
+              const allOptions = this.sceneContainer.querySelectorAll(
+                `.quiz-option[data-node-id="${nodeId}"]`
+              );
+              allOptions.forEach((opt) => opt.classList.remove('selected'));
+              target.classList.add('selected');
+
+              this.renderer.nodeStates.set(nodeId, option);
+              this.runtime.updateNodeState(nodeId, { selected: option });
+
+              this.runtime.emit({
+                type: 'change',
+                target: nodeId,
+                payload: option,
+                ts: Date.now(),
+              });
+            }
+
+            // Handle control buttons - delegate to animation instance
+            if (target.classList.contains('control-button')) {
+              const controlId = target.dataset.control;
+
+              // Find active animation instance
+              this.activeAnimations.forEach((animation) => {
+                if (animation.handleControl) {
+                  animation.handleControl(controlId, target);
+                }
+              });
+            }
+          });
+        }
+
+        renderScene(scene) {
+          if (!scene || !scene.nodes) {
+            this.sceneContainer.innerHTML = '<p>场景加载中...</p>';
+            return;
+          }
+
+          // Clear previous animations
+          this.activeAnimations.forEach((anim) => anim.destroy && anim.destroy());
+          this.activeAnimations.clear();
+
+          const html = scene.nodes.map((node) => this.renderer.renderNode(node)).join('');
+          this.sceneContainer.innerHTML = html;
+
+          // Create and initialize animation instances
+          setTimeout(() => {
+            scene.nodes.forEach((node) => {
+              if (node.type === 'Animation') {
+                const container = document.getElementById(`animation-${node.id}`);
+                if (container) {
+                  const animation = webAnimationRegistry.create(node.props.type, {
+                    container,
+                    autoplay: node.props.autoplay,
+                    onResult: (result) => {
+                      console.log('Animation result:', result);
+                    },
+                    onInteract: (interaction) => {
+                      console.log('Animation interaction:', interaction);
+                    },
+                  });
+
+                  if (animation) {
+                    this.activeAnimations.set(node.id, animation);
+                    animation.initialize();
+                  }
+                }
+              }
+            });
+          }, 100);
+        }
+
+        showToast(text) {
+          const existing = document.querySelector('.toast');
+          if (existing) {
+            existing.remove();
+          }
+
+          const toast = document.createElement('div');
+          toast.className = 'toast';
+          toast.textContent = text;
+          document.body.appendChild(toast);
+
+          setTimeout(() => {
+            toast.remove();
+          }, 3000);
+        }
+
+        updateDebugPanel() {
+          const state = this.runtime.getState();
+
+          document.getElementById('current-scene').textContent = `场景: ${state.scene.current || '未知'}`;
+
+          document.getElementById('score-display').textContent = state.globals.vars.score || 0;
+
+          document.getElementById('global-vars').textContent = JSON.stringify(
+            state.globals.vars,
+            null,
+            2
+          );
+
+          const logs = this.runtime.getLogs().slice(-8).reverse();
+          const logsHtml = logs
+            .map(
+              (log) => `
+          <div class="log-entry">
+            <div class="log-type">${log.type}</div>
+            <div class="log-message">${log.message}</div>
+          </div>
+        `
+            )
+            .join('');
+          document.getElementById('logs-container').innerHTML = logsHtml;
+        }
+      }
+
+      // App State
+      let runtime = null;
+      let renderer = null;
+      let uiManager = null;
+
+      // Load and run scene
+      async function runScene(sceneName) {
+        try {
+          // Show loading
+          document.getElementById('scene-container').innerHTML = `
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>加载场景: ${sceneName}...</p>
+          </div>
+        `;
+
+          // Load scene JSON
+          const courseDSL = await loadScene(sceneName);
+
+          // Initialize runtime
+          runtime = new VVCERuntime({
+            debug: true,
+            onSceneChange: (sceneId) => {
+              console.log('Scene changed to:', sceneId);
+              const currentScene = runtime.course.scenes.find((s) => s.id === sceneId);
+              uiManager.renderScene(currentScene);
+              uiManager.updateDebugPanel();
+            },
+            onStateChange: (state) => {
+              console.log('State changed:', state);
+              uiManager.updateDebugPanel();
+            },
+            onUIAction: (action) => {
+              console.log('UI Action:', action);
+              if (action.action === 'toast') {
+                uiManager.showToast(action.text);
+              }
+              uiManager.updateDebugPanel();
+            },
+          });
+
+          renderer = new ComponentRenderer(runtime);
+          uiManager = new UIManager(runtime, renderer);
+
+          runtime.loadCourse(courseDSL);
+          runtime.start();
+
+          const startScene = runtime.course.scenes.find(
+            (s) => s.id === runtime.course.startSceneId
+          );
+          uiManager.renderScene(startScene);
+          uiManager.updateDebugPanel();
+
+          // Expose to window for debugging
+          window.vvceRuntime = runtime;
+          window.uiManager = uiManager;
+
+          console.log(`✅ Scene "${sceneName}" loaded successfully!`);
+        } catch (error) {
+          console.error('Failed to load scene:', error);
+          document.getElementById('scene-container').innerHTML = `
+          <div class="loading">
+            <p style="color: red;">❌ 加载失败: ${error.message}</p>
+          </div>
+        `;
+        }
+      }
+
+      // Scene selector
+      document.getElementById('scene-grid').addEventListener('click', (e) => {
+        const card = e.target.closest('.scene-card');
+        if (!card) return;
+
+        const sceneName = card.dataset.scene;
+
+        // Update active state
+        document.querySelectorAll('.scene-card').forEach((c) => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // Run scene
+        runScene(sceneName);
+      });
+
+      console.log('🎓 VVCE Scene Runner initialized!');
+      console.log('Click a scene card above to start.');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,200 @@
+{
+  "schema": "vvce.dsl.v1",
+  "meta": {
+    "id": "geography-earth-system",
+    "version": "1.0.0",
+    "title": "地球的公转与自转",
+    "author": "VV Education",
+    "description": "探索地球运动的两种方式及其产生的自然现象"
+  },
+  "globals": {
+    "vars": {
+      "score": 0,
+      "earthAnswered": false
+    }
+  },
+  "startSceneId": "intro",
+  "scenes": [
+    {
+      "id": "intro",
+      "nodes": [
+        {
+          "id": "intro-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV教授",
+            "text": "欢迎来到地球科学课堂！地球是一颗神奇的星球，它有两种重要的运动方式。"
+          }
+        },
+        {
+          "id": "explain",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV教授",
+            "text": "地球围绕太阳转动（公转），同时也在自己的轴上旋转（自转）。这两种运动造就了我们的昼夜交替和四季变化。"
+          }
+        },
+        {
+          "id": "btn-next",
+          "type": "Button",
+          "props": {
+            "text": "开始探索 →"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "btn-next"
+          },
+          "then": [
+            {
+              "action": "gotoScene",
+              "sceneId": "interactive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "interactive",
+      "nodes": [
+        {
+          "id": "interactive-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV教授",
+            "text": "让我们通过互动模拟来理解地球的运动！点击下面的按钮控制地球的运动。"
+          }
+        },
+        {
+          "id": "animation",
+          "type": "Animation",
+          "props": {
+            "type": "geography.earth-system",
+            "autoplay": false
+          }
+        },
+        {
+          "id": "controls",
+          "type": "Controls",
+          "props": {
+            "buttons": [
+              {
+                "id": "btn-rotation",
+                "text": "启动自转"
+              },
+              {
+                "id": "btn-revolution",
+                "text": "启动公转"
+              },
+              {
+                "id": "btn-both",
+                "text": "同时运动"
+              },
+              {
+                "id": "btn-stop",
+                "text": "停止"
+              }
+            ]
+          }
+        },
+        {
+          "id": "quiz",
+          "type": "QuizSingle",
+          "props": {
+            "question": "地球自转一周需要多长时间？",
+            "options": ["12小时", "24小时", "365天", "一个月"]
+          }
+        },
+        {
+          "id": "btn-submit",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "btn-submit"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": {
+                "ref": "nodes.quiz.selected"
+              },
+              "right": "24小时"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 30
+            },
+            {
+              "action": "toast",
+              "text": "完全正确！"
+            },
+            {
+              "action": "delay",
+              "ms": 1500
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "conclusion"
+            }
+          ],
+          "else": [
+            {
+              "action": "toast",
+              "text": "再想想，观察一下地球的自转动画..."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conclusion",
+      "nodes": [
+        {
+          "id": "conclusion-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV教授",
+            "text": "太棒了！让我们总结一下地球运动的知识。"
+          }
+        },
+        {
+          "id": "final-anim",
+          "type": "Animation",
+          "props": {
+            "type": "geography.earth-system",
+            "autoplay": true
+          }
+        },
+        {
+          "id": "conclusion-box",
+          "type": "Conclusion",
+          "props": {
+            "title": "🌍 地球运动总结",
+            "text": "1️⃣ 自转：地球绕自己的轴旋转，周期约24小时，造成昼夜交替\n2️⃣ 公转：地球绕太阳运动，周期约365天，造成四季变化\n3️⃣ 地轴倾斜23.5°：这是四季形成的关键因素"
+          }
+        },
+        {
+          "id": "thinking-box",
+          "type": "Thinking",
+          "props": {
+            "title": "💭 有趣的问题",
+            "text": "如果地球不自转会怎样？一面永远是白天，一面永远是黑夜！那会是什么样的世界呢？"
+          }
+        }
+      ],
+      "triggers": []
+    }
+  ]
+}

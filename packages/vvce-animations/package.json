@@ -1,0 +1,33 @@
+{
+  "name": "@vv-education/vvce-animations",
+  "version": "0.1.0",
+  "description": "VVCE Animation Library - Reusable interactive science experiment animations",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "vvce",
+    "animation",
+    "education",
+    "interactive",
+    "science",
+    "experiments"
+  ],
+  "author": "VV Education",
+  "license": "MIT",
+  "peerDependencies": {
+    "@vv-education/vvce-schema": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
