@@ -16,8 +16,10 @@
 - [x] 触发器解释器
 - [x] 运行时主类
 - [x] 日志记录器
-- [ ] 单元测试
+- [x] 单元测试（6个核心模块已完成）
+- [x] Demo 示例（examples/demo.ts）
 - [ ] 集成测试
+- [ ] 性能测试
 
 ### Schema 包 (packages/vvce-schema)
 
@@ -189,56 +191,92 @@
 
 ### 工程化
 
-- [ ] CI/CD 流水线
-- [ ] 自动化测试
+- [x] CI/CD 流水线（前端、后端、代码质量、PR检查）
+- [x] 自动化测试（GitHub Actions）
 - [ ] 代码覆盖率监控
 - [ ] 性能监控
+- [ ] 部署自动化
 
 ### 文档完善
 
+- [x] CLAUDE.md（AI助手指南）
+- [x] 核心包模块文档
+- [x] DSL 规范文档 v1.0
 - [ ] API 文档
 - [ ] 组件文档
 - [ ] 最佳实践指南
 - [ ] 贡献指南
+- [ ] 部署指南
 
 ---
 
 ## 当前进度
 
-**阶段**: M0 - 脚手架搭建完成
+**阶段**: M0 - 核心引擎开发中（约70%完成）
 
 **已完成**:
 
 - ✅ Monorepo 架构搭建
-- ✅ packages/vvce-core 核心代码骨架
+- ✅ packages/vvce-core 完整实现
+  - ✅ 核心运行时引擎
+  - ✅ 三层状态管理
+  - ✅ ECA 事件驱动模型
+  - ✅ 23+ 动作执行器
+  - ✅ 增强样式系统 v1.1（主题、动画、过渡）
+  - ✅ 综合单元测试（6个核心模块）
+  - ✅ Demo 示例程序
 - ✅ packages/vvce-schema 基础实现
 - ✅ packages/vvce-components 脚手架
 - ✅ packages/contracts 脚手架
 - ✅ packages/shared 脚手架
 - ✅ server/api Spring Boot 项目搭建
-- ✅ apps/miniapp README
-- ✅ apps/web-admin README
-- ✅ apps/web-student README
-- ✅ 技术规范文档
-- ✅ 开发指南
+- ✅ CI/CD 流水线完整配置
+  - ✅ 前端 CI（构建、测试、类型检查）
+  - ✅ 后端 CI（Maven 构建、测试）
+  - ✅ 代码质量检查
+  - ✅ PR 自动检查
+- ✅ 课件渲染引擎视觉测试
+- ✅ 完整技术文档体系
+  - ✅ CLAUDE.md（AI助手指南）
+  - ✅ 核心包模块文档
+  - ✅ DSL 规范文档 v1.0
+  - ✅ 开发指南
 
 **进行中**:
 
-- 🔄 vvce-core 单元测试
-- 🔄 vvce-schema 完善校验器
-- 🔄 vvce-components 组件实现
+- 🔄 vvce-schema 完善校验器（JSON Schema 定义）
+- 🔄 vvce-components 组件实现（3个基础组件）
+- 🔄 Backend API 模块开发
 
 **下一步**:
 
-1. 完成 vvce-core 单元测试
-2. 实现基础 3 个组件
-3. 完成 Course API
-4. 完成 Progress API
-5. 创建简单的演示 demo
+1. 完成 vvce-schema JSON Schema 定义和语义校验
+2. 实现基础 3 个组件（Dialog、QuizSingle、Button）
+3. 完成 Course API（CRUD + DSL 获取）
+4. 完成 Progress API（保存/读取进度）
+5. 完成 Identity API（用户认证 + JWT）
+6. 创建完整的 Web 演示应用
+7. M0 里程碑验收测试
 
 ---
 
 ## 更新日志
+
+### 2026-01-13
+
+- ✅ 更新 ROADMAP 和 TODO 清单
+- ✅ 标记 M0 阶段完成项目（约70%）
+- ✅ 明确下一步开发重点
+
+### 2026-01-10 ~ 2026-01-12
+
+- ✅ 完成 vvce-core 综合单元测试
+- ✅ 创建 Demo 示例程序（examples/demo.ts）
+- ✅ 搭建完整 CI/CD 流水线（4个工作流）
+- ✅ 课件渲染引擎视觉测试
+- ✅ 增强样式系统 v1.1（主题、动画、过渡）
+- ✅ 修复 TypeScript 类型错误
+- ✅ 对齐过渡动画时钟和RAF回退机制
 
 ### 2024-01-10
 
@@ -248,4 +286,4 @@
 
 ---
 
-最后更新：2024-01-10
+最后更新：2026-01-13
