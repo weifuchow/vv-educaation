@@ -1,15 +1,23 @@
 /**
- * Earth System Animation Web Renderer
- * 地球公转自转系统 - 浏览器渲染器，支持交互控制
+ * Earth System Animation Renderer
+ * 地球公转自转系统渲染器
  */
 
-import { WebAnimationRenderer, WebWebAnimationConfig } from './WebAnimationRenderer';
+import {
+  IAnimationRenderer,
+  WebAnimationConfig,
+  AnimationResult,
+} from '../../standards/AnimationStandard';
 
-export class EarthSystemRenderer extends WebAnimationRenderer {
+export class EarthSystemRenderer implements IAnimationRenderer {
+  public readonly id = 'geography.earth-system';
+  private container: HTMLElement;
+  private config: WebAnimationConfig;
   private currentMode: 'rotation' | 'revolution' | 'both' | 'stop' = 'both';
 
   constructor(config: WebAnimationConfig) {
-    super('geography.earth-system', config);
+    this.container = config.container;
+    this.config = config;
   }
 
   getHtml(): string {
@@ -47,8 +55,7 @@ export class EarthSystemRenderer extends WebAnimationRenderer {
     this.setMode('both');
     this.emitInteraction({
       action: 'animation_start',
-      animation: 'earth-system',
-      mode: 'both',
+      data: { animation: 'earth-system', mode: 'both' },
     });
   }
 
@@ -60,6 +67,11 @@ export class EarthSystemRenderer extends WebAnimationRenderer {
     this.stop();
     // Reset to initial position would require CSS manipulation
     // For now, just stop the animation
+  }
+
+  destroy(): void {
+    this.stop();
+    this.container.innerHTML = '';
   }
 
   /**
@@ -89,8 +101,7 @@ export class EarthSystemRenderer extends WebAnimationRenderer {
     // Emit interaction result
     this.emitInteraction({
       action: 'control_change',
-      controlId,
-      mode: this.currentMode,
+      data: { controlId, mode: this.currentMode },
     });
 
     // Emit result with current state
@@ -136,5 +147,24 @@ export class EarthSystemRenderer extends WebAnimationRenderer {
       stop: '暂停所有运动',
     };
     return descriptions[mode] || '';
+  }
+
+  private emitResult(type: AnimationResult['type'], data?: any): void {
+    if (this.config.onResult) {
+      this.config.onResult({
+        type,
+        data,
+        timestamp: Date.now(),
+      });
+    }
+  }
+
+  private emitInteraction(interaction: any): void {
+    if (this.config.onInteract) {
+      this.config.onInteract({
+        ...interaction,
+        timestamp: Date.now(),
+      });
+    }
   }
 }

@@ -1,15 +1,23 @@
 /**
- * Pisa Tower Animation Web Renderer
- * 比萨斜塔自由落体实验 - 浏览器渲染器
+ * Pisa Tower Animation Renderer
+ * 比萨斜塔自由落体实验渲染器
  */
 
-import { WebAnimationRenderer, WebWebAnimationConfig } from './WebAnimationRenderer';
+import {
+  IAnimationRenderer,
+  WebAnimationConfig,
+  AnimationResult,
+} from '../../standards/AnimationStandard';
 
-export class PisaTowerRenderer extends WebAnimationRenderer {
+export class PisaTowerRenderer implements IAnimationRenderer {
+  public readonly id = 'physics.pisa-tower';
+  private container: HTMLElement;
+  private config: WebAnimationConfig;
   private animationTimeout: any = null;
 
   constructor(config: WebAnimationConfig) {
-    super('physics.pisa-tower', config);
+    this.container = config.container;
+    this.config = config;
   }
 
   getHtml(): string {
@@ -49,7 +57,7 @@ export class PisaTowerRenderer extends WebAnimationRenderer {
     // Emit interaction event - experiment started
     this.emitInteraction({
       action: 'experiment_start',
-      animation: 'pisa-tower',
+      data: { animation: 'pisa-tower' },
     });
 
     // Start falling animation
@@ -92,6 +100,30 @@ export class PisaTowerRenderer extends WebAnimationRenderer {
     if (lightBall) {
       lightBall.style.top = '50px';
       lightBall.classList.remove('falling');
+    }
+  }
+
+  destroy(): void {
+    this.stop();
+    this.container.innerHTML = '';
+  }
+
+  private emitResult(type: AnimationResult['type'], data?: any): void {
+    if (this.config.onResult) {
+      this.config.onResult({
+        type,
+        data,
+        timestamp: Date.now(),
+      });
+    }
+  }
+
+  private emitInteraction(interaction: any): void {
+    if (this.config.onInteract) {
+      this.config.onInteract({
+        ...interaction,
+        timestamp: Date.now(),
+      });
     }
   }
 }

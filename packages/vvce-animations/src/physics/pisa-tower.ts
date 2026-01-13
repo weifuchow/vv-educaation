@@ -4,7 +4,11 @@
  */
 
 import { AnimationBase } from '../core/AnimationBase';
-import type { AnimationDefinition, AnimationConfig, AnimationInstance } from '../types';
+import type {
+  AnimationDefinition,
+  WebAnimationConfig,
+  AnimationInstance,
+} from '../types';
 
 interface PisaTowerParams {
   towerHeight?: number; // 塔高（米）
