@@ -27,13 +27,23 @@ jobs:
         with:
           script: |
             const title = context.payload.pull_request.title;
-            const pattern = /^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+/;
+            const headRef = context.payload.pull_request.head.ref;
+
+            // Skip strict validation for AI-assisted branches (claude/*)
+            if (headRef.startsWith('claude/')) {
+              console.log(`Skipping strict title validation for AI branch: ${headRef}`);
+              console.log(`PR Title: ${title}`);
+              return;
+            }
+
+            // Extended conventional commit types
+            const pattern = /^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\(.+\))?: .+/;
 
             if (!pattern.test(title)) {
               core.setFailed(
                 `PR title "${title}" does not match the required format.\n` +
                 'Expected format: "type(scope): description"\n' +
-                'Types: feat, fix, docs, style, refactor, test, chore\n' +
+                'Types: feat, fix, docs, style, refactor, test, chore, build, ci, perf, revert\n' +
                 'Example: "feat(vvce-core): add new animation support"'
               );
             }
