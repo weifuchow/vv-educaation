@@ -146,10 +146,14 @@
           }
         },
         {
-          "id": "play-linear-btn",
-          "type": "Button",
+          "id": "linear-controls",
+          "type": "Controls",
           "props": {
-            "text": "播放动画"
+            "buttons": [
+              { "id": "play", "text": "播放动画" },
+              { "id": "pause", "text": "暂停" },
+              { "id": "reset", "text": "重置" }
+            ]
           }
         },
         {
@@ -161,18 +165,6 @@
         }
       ],
       "triggers": [
-        {
-          "on": {
-            "event": "click",
-            "target": "play-linear-btn"
-          },
-          "then": [
-            {
-              "action": "animationPlay",
-              "target": "linear-animation"
-            }
-          ]
-        },
         {
           "on": {
             "event": "click",
@@ -315,10 +307,14 @@
           }
         },
         {
-          "id": "play-quad-btn",
-          "type": "Button",
+          "id": "quadratic-controls",
+          "type": "Controls",
           "props": {
-            "text": "播放动画"
+            "buttons": [
+              { "id": "play", "text": "播放动画" },
+              { "id": "pause", "text": "暂停" },
+              { "id": "reset", "text": "重置" }
+            ]
           }
         },
         {
@@ -338,18 +334,6 @@
         }
       ],
       "triggers": [
-        {
-          "on": {
-            "event": "click",
-            "target": "play-quad-btn"
-          },
-          "then": [
-            {
-              "action": "animationPlay",
-              "target": "quadratic-animation"
-            }
-          ]
-        },
         {
           "on": {
             "event": "click",
@@ -497,10 +481,14 @@
           }
         },
         {
-          "id": "play-cubic-btn",
-          "type": "Button",
+          "id": "cubic-controls",
+          "type": "Controls",
           "props": {
-            "text": "播放动画"
+            "buttons": [
+              { "id": "play", "text": "播放动画" },
+              { "id": "pause", "text": "暂停" },
+              { "id": "reset", "text": "重置" }
+            ]
           }
         },
         {
@@ -520,18 +508,6 @@
         }
       ],
       "triggers": [
-        {
-          "on": {
-            "event": "click",
-            "target": "play-cubic-btn"
-          },
-          "then": [
-            {
-              "action": "animationPlay",
-              "target": "cubic-animation"
-            }
-          ]
-        },
         {
           "on": {
             "event": "click",

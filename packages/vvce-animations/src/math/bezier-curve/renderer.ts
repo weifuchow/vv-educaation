@@ -155,11 +155,6 @@ export class BezierCurveRenderer implements IAnimationRenderer {
         <div class="bezier-info" id="bezier-info">
           ${this.getInfoText(order)}
         </div>
-        <div class="bezier-controls">
-          <button class="bezier-btn bezier-btn-primary" id="btn-play">播放动画</button>
-          <button class="bezier-btn bezier-btn-primary" id="btn-pause" style="display: none;">暂停</button>
-          <button class="bezier-btn bezier-btn-primary" id="btn-reset">重置</button>
-        </div>
       </div>
     `;
   }
@@ -225,48 +220,11 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       this.setupInteraction();
     }
 
-    // 设置按钮事件
-    this.setupButtons();
-
     // 绘制初始状态
     this.draw();
 
     if (this.config.autoplay) {
       setTimeout(() => this.start(), 500);
-    }
-  }
-
-  private setupButtons(): void {
-    const btnPlay = this.container.querySelector('#btn-play') as HTMLButtonElement;
-    const btnPause = this.container.querySelector('#btn-pause') as HTMLButtonElement;
-    const btnReset = this.container.querySelector('#btn-reset') as HTMLButtonElement;
-
-    if (btnPlay) {
-      btnPlay.addEventListener('click', () => {
-        this.start();
-        btnPlay.style.display = 'none';
-        if (btnPause) btnPause.style.display = 'inline-flex';
-      });
-    }
-    if (btnPause) {
-      btnPause.addEventListener('click', () => {
-        this.pause();
-        btnPause.style.display = 'none';
-        if (btnPlay) {
-          btnPlay.textContent = '继续播放';
-          btnPlay.style.display = 'inline-flex';
-        }
-      });
-    }
-    if (btnReset) {
-      btnReset.addEventListener('click', () => {
-        this.reset();
-        if (btnPause) btnPause.style.display = 'none';
-        if (btnPlay) {
-          btnPlay.textContent = '播放动画';
-          btnPlay.style.display = 'inline-flex';
-        }
-      });
     }
   }
 
@@ -522,8 +480,6 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       } else {
         this.isPlaying = false;
         this.isGenerated = true;
-        // 动画完成，更新按钮状态
-        this.updateButtonsOnComplete();
         this.emitResult('complete', {
           order: this.bezierConfig.order,
           controlPoints: this.controlPoints,
@@ -533,16 +489,6 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     };
 
     animate();
-  }
-
-  private updateButtonsOnComplete(): void {
-    const btnPlay = this.container.querySelector('#btn-play') as HTMLButtonElement;
-    const btnPause = this.container.querySelector('#btn-pause') as HTMLButtonElement;
-    if (btnPause) btnPause.style.display = 'none';
-    if (btnPlay) {
-      btnPlay.textContent = '播放动画';
-      btnPlay.style.display = 'inline-flex';
-    }
   }
 
   stop(): void {
