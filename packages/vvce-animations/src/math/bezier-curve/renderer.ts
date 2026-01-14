@@ -23,12 +23,16 @@ export interface BezierCurveConfig {
   showAuxiliaryLines?: boolean;
   /** 是否显示公式 */
   showFormula?: boolean;
-  /** 动画速度 (秒) */
+  /** 动画时长(秒) */
   duration?: number;
   /** 曲线颜色 */
   curveColor?: string;
   /** 是否允许交互（拖拽控制点） */
   interactive?: boolean;
+  /** 采样点数量 */
+  samplePoints?: number;
+  /** 每秒生成的点数 */
+  pointsPerSecond?: number;
 }
 
 export class BezierCurveRenderer implements IAnimationRenderer {
@@ -36,20 +40,24 @@ export class BezierCurveRenderer implements IAnimationRenderer {
   private container: HTMLElement;
   private config: WebAnimationConfig;
   private bezierConfig: BezierCurveConfig;
-  private animationFrame: number | null = null;
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
-  private t: number = 0;
+  private currentPointIndex: number = 0;
   private isPlaying: boolean = false;
-  private curvePoints: { x: number; y: number }[] = [];
+  private allCurvePoints: { x: number; y: number; t: number }[] = [];
+  private drawnPoints: { x: number; y: number; t: number }[] = [];
   private controlPoints: { x: number; y: number }[] = [];
   private draggingPoint: number | null = null;
+  private hoveredPoint: { x: number; y: number; t: number } | null = null;
 
-  // 默认控制点位置（相对于画布尺寸的百分比）
+  // 画布边距
+  private padding = { top: 40, right: 40, bottom: 60, left: 60 };
+
+  // 默认控制点位置（相对于绘图区域的百分比）
   private defaultControlPoints: Record<1 | 2 | 3, { x: number; y: number }[]> = {
     1: [
-      { x: 0.15, y: 0.7 },
-      { x: 0.85, y: 0.3 },
+      { x: 0.1, y: 0.8 },
+      { x: 0.9, y: 0.2 },
     ],
     2: [
       { x: 0.1, y: 0.8 },
@@ -74,9 +82,11 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       showControlPoints: true,
       showAuxiliaryLines: true,
       showFormula: true,
-      duration: 3,
+      duration: 5,
       curveColor: '#3b82f6',
       interactive: true,
+      samplePoints: 100,
+      pointsPerSecond: 20,
     };
 
     // 合并用户配置（用户配置覆盖默认值）
@@ -101,7 +111,21 @@ export class BezierCurveRenderer implements IAnimationRenderer {
         </div>
         <div class="bezier-canvas-wrapper">
           <canvas id="bezier-canvas" class="bezier-canvas"></canvas>
-          <div class="bezier-t-display" id="t-display">t = 0.00</div>
+          <div class="bezier-tooltip" id="bezier-tooltip" style="display: none;"></div>
+        </div>
+        <div class="bezier-status">
+          <div class="status-item">
+            <span class="status-label">进度:</span>
+            <span class="status-value" id="progress-display">0%</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">已生成点数:</span>
+            <span class="status-value" id="points-display">0 / ${this.bezierConfig.samplePoints}</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">当前 t 值:</span>
+            <span class="status-value" id="t-display">0.00</span>
+          </div>
         </div>
         <div class="bezier-legend">
           <div class="legend-item">
@@ -163,14 +187,24 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     const wrapper = this.canvas.parentElement;
     if (wrapper) {
       const rect = wrapper.getBoundingClientRect();
-      this.canvas.width = rect.width || 600;
-      this.canvas.height = rect.height || 400;
+      const dpr = window.devicePixelRatio || 1;
+      this.canvas.width = (rect.width || 600) * dpr;
+      this.canvas.height = (rect.height || 400) * dpr;
+      this.canvas.style.width = `${rect.width || 600}px`;
+      this.canvas.style.height = `${rect.height || 400}px`;
     }
 
     this.ctx = this.canvas.getContext('2d');
+    if (this.ctx) {
+      const dpr = window.devicePixelRatio || 1;
+      this.ctx.scale(dpr, dpr);
+    }
 
     // 初始化控制点
     this.initializeControlPoints();
+
+    // 预计算所有曲线点
+    this.precomputeCurvePoints();
 
     // 设置交互
     if (this.bezierConfig.interactive) {
@@ -185,15 +219,39 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     }
   }
 
+  private getDrawingArea(): { x: number; y: number; width: number; height: number } {
+    const canvasWidth = (this.canvas?.width || 600) / (window.devicePixelRatio || 1);
+    const canvasHeight = (this.canvas?.height || 400) / (window.devicePixelRatio || 1);
+    return {
+      x: this.padding.left,
+      y: this.padding.top,
+      width: canvasWidth - this.padding.left - this.padding.right,
+      height: canvasHeight - this.padding.top - this.padding.bottom,
+    };
+  }
+
   private initializeControlPoints(): void {
+    const area = this.getDrawingArea();
+
     if (this.bezierConfig.controlPoints) {
       this.controlPoints = [...this.bezierConfig.controlPoints];
     } else {
-      const defaults = this.defaultControlPoints[this.bezierConfig.order];
+      const defaults = this.defaultControlPoints[this.bezierConfig.order || 2];
       this.controlPoints = defaults.map((p) => ({
-        x: p.x * (this.canvas?.width || 600),
-        y: p.y * (this.canvas?.height || 400),
+        x: area.x + p.x * area.width,
+        y: area.y + p.y * area.height,
       }));
+    }
+  }
+
+  private precomputeCurvePoints(): void {
+    const samplePoints = this.bezierConfig.samplePoints || 100;
+    this.allCurvePoints = [];
+
+    for (let i = 0; i <= samplePoints; i++) {
+      const t = i / samplePoints;
+      const point = this.calculateBezierPoint(t);
+      this.allCurvePoints.push({ ...point, t });
     }
   }
 
@@ -203,18 +261,16 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     this.canvas.addEventListener('mousedown', this.handleMouseDown);
     this.canvas.addEventListener('mousemove', this.handleMouseMove);
     this.canvas.addEventListener('mouseup', this.handleMouseUp);
-    this.canvas.addEventListener('mouseleave', this.handleMouseUp);
+    this.canvas.addEventListener('mouseleave', this.handleMouseLeave);
   }
 
   private handleMouseDown = (e: MouseEvent): void => {
-    const rect = this.canvas!.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const pos = this.getCanvasPos(e);
 
     // 检查是否点击了控制点
     for (let i = 0; i < this.controlPoints.length; i++) {
       const p = this.controlPoints[i];
-      const dist = Math.sqrt((x - p.x) ** 2 + (y - p.y) ** 2);
+      const dist = Math.sqrt((pos.x - p.x) ** 2 + (pos.y - p.y) ** 2);
       if (dist < 15) {
         this.draggingPoint = i;
         this.canvas!.style.cursor = 'grabbing';
@@ -224,14 +280,19 @@ export class BezierCurveRenderer implements IAnimationRenderer {
   };
 
   private handleMouseMove = (e: MouseEvent): void => {
-    const rect = this.canvas!.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const pos = this.getCanvasPos(e);
 
     if (this.draggingPoint !== null) {
       // 更新控制点位置
-      this.controlPoints[this.draggingPoint] = { x, y };
-      this.curvePoints = [];
+      const area = this.getDrawingArea();
+      this.controlPoints[this.draggingPoint] = {
+        x: Math.max(area.x, Math.min(area.x + area.width, pos.x)),
+        y: Math.max(area.y, Math.min(area.y + area.height, pos.y)),
+      };
+
+      // 重新计算曲线点
+      this.precomputeCurvePoints();
+      this.drawnPoints = this.allCurvePoints.slice(0, this.currentPointIndex + 1);
       this.draw();
 
       // 发送交互事件
@@ -239,86 +300,145 @@ export class BezierCurveRenderer implements IAnimationRenderer {
         action: 'control_point_moved',
         data: {
           pointIndex: this.draggingPoint,
-          position: { x, y },
+          position: pos,
         },
       });
     } else {
       // 检查鼠标是否悬停在控制点上
       let hovering = false;
       for (const p of this.controlPoints) {
-        const dist = Math.sqrt((x - p.x) ** 2 + (y - p.y) ** 2);
+        const dist = Math.sqrt((pos.x - p.x) ** 2 + (pos.y - p.y) ** 2);
         if (dist < 15) {
           hovering = true;
           break;
         }
       }
-      this.canvas!.style.cursor = hovering ? 'grab' : 'default';
+
+      // 检查是否悬停在曲线点附近
+      this.hoveredPoint = null;
+      for (const point of this.drawnPoints) {
+        const dist = Math.sqrt((pos.x - point.x) ** 2 + (pos.y - point.y) ** 2);
+        if (dist < 10) {
+          this.hoveredPoint = point;
+          break;
+        }
+      }
+
+      this.canvas!.style.cursor = hovering ? 'grab' : 'crosshair';
+      this.updateTooltip(pos);
+      this.draw();
     }
   };
 
   private handleMouseUp = (): void => {
     this.draggingPoint = null;
     if (this.canvas) {
-      this.canvas.style.cursor = 'default';
+      this.canvas.style.cursor = 'crosshair';
     }
   };
+
+  private handleMouseLeave = (): void => {
+    this.draggingPoint = null;
+    this.hoveredPoint = null;
+    this.hideTooltip();
+    this.draw();
+  };
+
+  private getCanvasPos(e: MouseEvent): { x: number; y: number } {
+    const rect = this.canvas!.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+  }
+
+  private updateTooltip(pos: { x: number; y: number }): void {
+    const tooltip = this.container.querySelector('#bezier-tooltip') as HTMLElement;
+    if (!tooltip) return;
+
+    const area = this.getDrawingArea();
+
+    // 检查是否在绘图区域内
+    if (
+      pos.x >= area.x &&
+      pos.x <= area.x + area.width &&
+      pos.y >= area.y &&
+      pos.y <= area.y + area.height
+    ) {
+      // 转换为坐标值 (0-1)
+      const normalizedX = (pos.x - area.x) / area.width;
+      const normalizedY = 1 - (pos.y - area.y) / area.height; // Y轴反转
+
+      let tooltipContent = `x: ${normalizedX.toFixed(3)}<br>y: ${normalizedY.toFixed(3)}`;
+
+      // 如果悬停在曲线点上，显示t值
+      if (this.hoveredPoint) {
+        tooltipContent += `<br><span style="color: #ef4444;">t: ${this.hoveredPoint.t.toFixed(3)}</span>`;
+      }
+
+      tooltip.innerHTML = tooltipContent;
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${pos.x + 15}px`;
+      tooltip.style.top = `${pos.y - 10}px`;
+    } else {
+      this.hideTooltip();
+    }
+  }
+
+  private hideTooltip(): void {
+    const tooltip = this.container.querySelector('#bezier-tooltip') as HTMLElement;
+    if (tooltip) {
+      tooltip.style.display = 'none';
+    }
+  }
 
   start(): void {
     if (this.isPlaying) return;
 
     this.isPlaying = true;
-    this.t = 0;
-    this.curvePoints = [];
+    this.currentPointIndex = 0;
+    this.drawnPoints = [];
 
     this.emitInteraction({
       action: 'animation_start',
       data: { order: this.bezierConfig.order },
     });
 
-    const duration = (this.bezierConfig.duration || 3) * 1000;
-    const startTime = performance.now();
+    const pointsPerSecond = this.bezierConfig.pointsPerSecond || 20;
+    const intervalMs = 1000 / pointsPerSecond;
 
-    const animate = (currentTime: number) => {
+    const animate = () => {
       if (!this.isPlaying) return;
 
-      const elapsed = currentTime - startTime;
-      this.t = Math.min(elapsed / duration, 1);
-
-      // 计算当前曲线点并添加到轨迹
-      const currentPoint = this.calculateBezierPoint(this.t);
-      this.curvePoints.push(currentPoint);
-
-      this.draw();
-      this.updateTDisplay();
-
-      if (this.t < 1) {
-        this.animationFrame = requestAnimationFrame(animate);
+      if (this.currentPointIndex <= (this.bezierConfig.samplePoints || 100)) {
+        this.drawnPoints = this.allCurvePoints.slice(0, this.currentPointIndex + 1);
+        this.draw();
+        this.updateStatusDisplay();
+        this.currentPointIndex++;
+        setTimeout(animate, intervalMs);
       } else {
         this.isPlaying = false;
         this.emitResult('complete', {
           order: this.bezierConfig.order,
           controlPoints: this.controlPoints,
+          totalPoints: this.drawnPoints.length,
         });
       }
     };
 
-    this.animationFrame = requestAnimationFrame(animate);
+    animate();
   }
 
   stop(): void {
     this.isPlaying = false;
-    if (this.animationFrame) {
-      cancelAnimationFrame(this.animationFrame);
-      this.animationFrame = null;
-    }
   }
 
   reset(): void {
     this.stop();
-    this.t = 0;
-    this.curvePoints = [];
+    this.currentPointIndex = 0;
+    this.drawnPoints = [];
     this.draw();
-    this.updateTDisplay();
+    this.updateStatusDisplay();
   }
 
   pause(): void {
@@ -326,8 +446,30 @@ export class BezierCurveRenderer implements IAnimationRenderer {
   }
 
   resume(): void {
-    if (!this.isPlaying && this.t < 1) {
-      this.start();
+    if (
+      !this.isPlaying &&
+      this.currentPointIndex < (this.bezierConfig.samplePoints || 100)
+    ) {
+      this.isPlaying = true;
+
+      const pointsPerSecond = this.bezierConfig.pointsPerSecond || 20;
+      const intervalMs = 1000 / pointsPerSecond;
+
+      const animate = () => {
+        if (!this.isPlaying) return;
+
+        if (this.currentPointIndex <= (this.bezierConfig.samplePoints || 100)) {
+          this.drawnPoints = this.allCurvePoints.slice(0, this.currentPointIndex + 1);
+          this.draw();
+          this.updateStatusDisplay();
+          this.currentPointIndex++;
+          setTimeout(animate, intervalMs);
+        } else {
+          this.isPlaying = false;
+        }
+      };
+
+      animate();
     }
   }
 
@@ -337,7 +479,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       this.canvas.removeEventListener('mousedown', this.handleMouseDown);
       this.canvas.removeEventListener('mousemove', this.handleMouseMove);
       this.canvas.removeEventListener('mouseup', this.handleMouseUp);
-      this.canvas.removeEventListener('mouseleave', this.handleMouseUp);
+      this.canvas.removeEventListener('mouseleave', this.handleMouseLeave);
     }
     this.container.innerHTML = '';
   }
@@ -350,31 +492,53 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       case 'pause':
         this.pause();
         break;
+      case 'resume':
+        this.resume();
+        break;
       case 'reset':
         this.reset();
         break;
     }
   }
 
+  private updateStatusDisplay(): void {
+    const samplePoints = this.bezierConfig.samplePoints || 100;
+    const currentT = this.currentPointIndex / samplePoints;
+    const progress = Math.round((this.currentPointIndex / samplePoints) * 100);
+
+    const progressEl = this.container.querySelector('#progress-display');
+    const pointsEl = this.container.querySelector('#points-display');
+    const tEl = this.container.querySelector('#t-display');
+
+    if (progressEl) progressEl.textContent = `${progress}%`;
+    if (pointsEl) pointsEl.textContent = `${this.currentPointIndex} / ${samplePoints}`;
+    if (tEl) tEl.textContent = currentT.toFixed(2);
+  }
+
   private draw(): void {
     if (!this.ctx || !this.canvas) return;
 
     const ctx = this.ctx;
-    const width = this.canvas.width;
-    const height = this.canvas.height;
+    const canvasWidth = this.canvas.width / (window.devicePixelRatio || 1);
+    const canvasHeight = this.canvas.height / (window.devicePixelRatio || 1);
 
     // 清除画布
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // 绘制网格背景
-    this.drawGrid();
+    // 绘制白色背景
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // 绘制坐标系
+    this.drawCoordinateSystem();
 
     // 绘制控制点之间的连线（骨架）
     this.drawControlPolygon();
 
     // 绘制辅助线（De Casteljau算法可视化）
-    if (this.bezierConfig.showAuxiliaryLines && this.t > 0) {
-      this.drawDeCasteljauLines();
+    if (this.bezierConfig.showAuxiliaryLines && this.drawnPoints.length > 0) {
+      const currentT = this.drawnPoints[this.drawnPoints.length - 1]?.t || 0;
+      this.drawDeCasteljauLines(currentT);
     }
 
     // 绘制已生成的曲线
@@ -386,37 +550,106 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     }
 
     // 绘制当前点
-    if (this.t > 0 && this.t <= 1) {
-      const currentPoint = this.calculateBezierPoint(this.t);
+    if (this.drawnPoints.length > 0) {
+      const currentPoint = this.drawnPoints[this.drawnPoints.length - 1];
       this.drawCurrentPoint(currentPoint);
+    }
+
+    // 绘制悬停高亮点
+    if (this.hoveredPoint) {
+      this.drawHoveredPoint(this.hoveredPoint);
     }
   }
 
-  private drawGrid(): void {
-    if (!this.ctx || !this.canvas) return;
+  private drawCoordinateSystem(): void {
+    if (!this.ctx) return;
 
     const ctx = this.ctx;
-    const width = this.canvas.width;
-    const height = this.canvas.height;
+    const area = this.getDrawingArea();
 
-    ctx.strokeStyle = '#e5e7eb';
+    // 绘制背景网格
+    ctx.strokeStyle = '#f0f0f0';
     ctx.lineWidth = 1;
 
-    // 绘制垂直线
-    for (let x = 0; x <= width; x += 50) {
+    // 垂直网格线
+    const gridSpacingX = area.width / 10;
+    for (let i = 0; i <= 10; i++) {
+      const x = area.x + i * gridSpacingX;
       ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
+      ctx.moveTo(x, area.y);
+      ctx.lineTo(x, area.y + area.height);
       ctx.stroke();
     }
 
-    // 绘制水平线
-    for (let y = 0; y <= height; y += 50) {
+    // 水平网格线
+    const gridSpacingY = area.height / 10;
+    for (let i = 0; i <= 10; i++) {
+      const y = area.y + i * gridSpacingY;
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
+      ctx.moveTo(area.x, y);
+      ctx.lineTo(area.x + area.width, y);
       ctx.stroke();
     }
+
+    // 绘制坐标轴
+    ctx.strokeStyle = '#333333';
+    ctx.lineWidth = 2;
+
+    // X轴
+    ctx.beginPath();
+    ctx.moveTo(area.x, area.y + area.height);
+    ctx.lineTo(area.x + area.width, area.y + area.height);
+    ctx.stroke();
+
+    // Y轴
+    ctx.beginPath();
+    ctx.moveTo(area.x, area.y);
+    ctx.lineTo(area.x, area.y + area.height);
+    ctx.stroke();
+
+    // 绘制刻度和标签
+    ctx.fillStyle = '#666666';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'center';
+
+    // X轴刻度
+    for (let i = 0; i <= 10; i++) {
+      const x = area.x + i * gridSpacingX;
+      const value = (i / 10).toFixed(1);
+
+      ctx.beginPath();
+      ctx.moveTo(x, area.y + area.height);
+      ctx.lineTo(x, area.y + area.height + 5);
+      ctx.stroke();
+
+      ctx.fillText(value, x, area.y + area.height + 18);
+    }
+
+    // Y轴刻度
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 10; i++) {
+      const y = area.y + area.height - i * gridSpacingY;
+      const value = (i / 10).toFixed(1);
+
+      ctx.beginPath();
+      ctx.moveTo(area.x - 5, y);
+      ctx.lineTo(area.x, y);
+      ctx.stroke();
+
+      ctx.fillText(value, area.x - 10, y + 4);
+    }
+
+    // 轴标签
+    ctx.fillStyle = '#333333';
+    ctx.font = 'bold 14px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('x', area.x + area.width / 2, area.y + area.height + 40);
+
+    ctx.save();
+    ctx.translate(20, area.y + area.height / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('y', 0, 0);
+    ctx.restore();
   }
 
   private drawControlPolygon(): void {
@@ -443,6 +676,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
     const ctx = this.ctx;
     const points = this.controlPoints;
+    const area = this.getDrawingArea();
 
     for (let i = 0; i < points.length; i++) {
       const p = points[i];
@@ -466,15 +700,25 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       ctx.fillStyle = '#1e40af';
       ctx.font = 'bold 14px system-ui';
       ctx.textAlign = 'center';
-      ctx.fillText(`P${i}`, p.x, p.y - 20);
+      ctx.fillText(`P${i}`, p.x, p.y - 18);
+
+      // 显示坐标
+      const normalizedX = (p.x - area.x) / area.width;
+      const normalizedY = 1 - (p.y - area.y) / area.height;
+      ctx.font = '10px system-ui';
+      ctx.fillStyle = '#666666';
+      ctx.fillText(
+        `(${normalizedX.toFixed(2)}, ${normalizedY.toFixed(2)})`,
+        p.x,
+        p.y + 25
+      );
     }
   }
 
-  private drawDeCasteljauLines(): void {
-    if (!this.ctx) return;
+  private drawDeCasteljauLines(t: number): void {
+    if (!this.ctx || t <= 0) return;
 
     const ctx = this.ctx;
-    const t = this.t;
     const points = this.controlPoints;
 
     // 颜色梯度
@@ -523,7 +767,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
   }
 
   private drawCurve(): void {
-    if (!this.ctx || this.curvePoints.length < 2) return;
+    if (!this.ctx || this.drawnPoints.length < 2) return;
 
     const ctx = this.ctx;
 
@@ -533,14 +777,23 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.lineJoin = 'round';
 
     ctx.beginPath();
-    ctx.moveTo(this.curvePoints[0].x, this.curvePoints[0].y);
-    for (let i = 1; i < this.curvePoints.length; i++) {
-      ctx.lineTo(this.curvePoints[i].x, this.curvePoints[i].y);
+    ctx.moveTo(this.drawnPoints[0].x, this.drawnPoints[0].y);
+    for (let i = 1; i < this.drawnPoints.length; i++) {
+      ctx.lineTo(this.drawnPoints[i].x, this.drawnPoints[i].y);
     }
     ctx.stroke();
+
+    // 绘制曲线上的采样点（小圆点）
+    ctx.fillStyle = this.bezierConfig.curveColor || '#3b82f6';
+    for (let i = 0; i < this.drawnPoints.length; i += 5) {
+      const point = this.drawnPoints[i];
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
-  private drawCurrentPoint(point: { x: number; y: number }): void {
+  private drawCurrentPoint(point: { x: number; y: number; t: number }): void {
     if (!this.ctx) return;
 
     const ctx = this.ctx;
@@ -560,6 +813,19 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.fillStyle = '#ef4444';
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  private drawHoveredPoint(point: { x: number; y: number; t: number }): void {
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+
+    // 绘制高亮圈
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, 12, 0, Math.PI * 2);
+    ctx.strokeStyle = '#ef4444';
     ctx.lineWidth = 2;
     ctx.stroke();
   }
@@ -588,13 +854,6 @@ export class BezierCurveRenderer implements IAnimationRenderer {
   private factorial(n: number): number {
     if (n <= 1) return 1;
     return n * this.factorial(n - 1);
-  }
-
-  private updateTDisplay(): void {
-    const tDisplay = this.container.querySelector('#t-display');
-    if (tDisplay) {
-      tDisplay.textContent = `t = ${this.t.toFixed(2)}`;
-    }
   }
 
   private emitResult(type: AnimationResult['type'], data?: any): void {

@@ -65,20 +65,49 @@ export const bezierCurveStyles = `
   width: 100%;
   height: 100%;
   display: block;
+  cursor: crosshair;
 }
 
-.bezier-t-display {
+.bezier-tooltip {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  padding: 8px 16px;
-  background: rgba(0, 0, 0, 0.75);
-  color: #22c55e;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
   font-family: 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 100;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.bezier-status {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-label {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.status-value {
   font-size: 16px;
   font-weight: 600;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: #1e40af;
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
 }
 
 .bezier-legend {
@@ -203,6 +232,12 @@ export const bezierCurveStyles = `
     height: 280px;
   }
 
+  .bezier-status {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
   .bezier-legend {
     gap: 16px;
   }
@@ -251,6 +286,18 @@ export const bezierCurveStyles = `
 
 .bezier-animation-container.dark .bezier-canvas-wrapper {
   background: #1e293b;
+}
+
+.bezier-animation-container.dark .bezier-status {
+  background: rgba(15, 23, 42, 0.7);
+}
+
+.bezier-animation-container.dark .status-label {
+  color: #94a3b8;
+}
+
+.bezier-animation-container.dark .status-value {
+  color: #60a5fa;
 }
 
 .bezier-animation-container.dark .bezier-legend {
