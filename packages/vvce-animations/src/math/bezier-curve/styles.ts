@@ -54,7 +54,8 @@ export const bezierCurveStyles = `
 .bezier-canvas-wrapper {
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 500px;
+  min-height: 450px;
   background: white;
   border-radius: 12px;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -229,7 +230,8 @@ export const bezierCurveStyles = `
   }
 
   .bezier-canvas-wrapper {
-    height: 280px;
+    height: 350px;
+    min-height: 300px;
   }
 
   .bezier-status {

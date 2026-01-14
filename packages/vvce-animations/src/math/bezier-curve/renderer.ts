@@ -4,6 +4,8 @@
  *
  * 支持线性、二次、三次贝塞尔曲线的动态生成演示
  * 展示De Casteljau算法的递归分割过程
+ *
+ * 坐标范围: 0-100
  */
 
 import {
@@ -15,7 +17,7 @@ import {
 export interface BezierCurveConfig {
   /** 曲线阶数: 1=线性, 2=二次, 3=三次 */
   order: 1 | 2 | 3;
-  /** 控制点坐标 */
+  /** 控制点坐标 (0-100范围) */
   controlPoints?: { x: number; y: number }[];
   /** 是否显示控制点 */
   showControlPoints?: boolean;
@@ -49,26 +51,31 @@ export class BezierCurveRenderer implements IAnimationRenderer {
   private controlPoints: { x: number; y: number }[] = [];
   private draggingPoint: number | null = null;
   private hoveredPoint: { x: number; y: number; t: number } | null = null;
+  private isGenerated: boolean = false;
 
   // 画布边距
-  private padding = { top: 40, right: 40, bottom: 60, left: 60 };
+  private padding = { top: 50, right: 50, bottom: 70, left: 70 };
 
-  // 默认控制点位置（相对于绘图区域的百分比）
+  // 坐标范围
+  private readonly COORD_MIN = 0;
+  private readonly COORD_MAX = 100;
+
+  // 默认控制点位置（0-100坐标）
   private defaultControlPoints: Record<1 | 2 | 3, { x: number; y: number }[]> = {
     1: [
-      { x: 0.1, y: 0.8 },
-      { x: 0.9, y: 0.2 },
+      { x: 10, y: 20 },
+      { x: 90, y: 80 },
     ],
     2: [
-      { x: 0.1, y: 0.8 },
-      { x: 0.5, y: 0.1 },
-      { x: 0.9, y: 0.8 },
+      { x: 10, y: 20 },
+      { x: 50, y: 90 },
+      { x: 90, y: 20 },
     ],
     3: [
-      { x: 0.1, y: 0.8 },
-      { x: 0.3, y: 0.1 },
-      { x: 0.7, y: 0.1 },
-      { x: 0.9, y: 0.8 },
+      { x: 10, y: 20 },
+      { x: 30, y: 90 },
+      { x: 70, y: 90 },
+      { x: 90, y: 20 },
     ],
   };
 
@@ -109,7 +116,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
             ${formula}
           </div>
         </div>
-        <div class="bezier-canvas-wrapper">
+        <div class="bezier-canvas-wrapper" style="height: 500px;">
           <canvas id="bezier-canvas" class="bezier-canvas"></canvas>
           <div class="bezier-tooltip" id="bezier-tooltip" style="display: none;"></div>
         </div>
@@ -127,10 +134,15 @@ export class BezierCurveRenderer implements IAnimationRenderer {
             <span class="status-value" id="t-display">0.00</span>
           </div>
         </div>
+        <div class="bezier-controls">
+          <button class="bezier-btn bezier-btn-primary" id="btn-generate">生成贝塞尔曲线</button>
+          <button class="bezier-btn bezier-btn-secondary" id="btn-play">播放生成过程</button>
+          <button class="bezier-btn bezier-btn-secondary" id="btn-reset">重置</button>
+        </div>
         <div class="bezier-legend">
           <div class="legend-item">
             <span class="legend-dot control-point"></span>
-            <span>控制点 P<sub>i</sub></span>
+            <span>控制点 P<sub>i</sub> (坐标范围: 0-100)</span>
           </div>
           <div class="legend-item">
             <span class="legend-line auxiliary"></span>
@@ -171,11 +183,11 @@ export class BezierCurveRenderer implements IAnimationRenderer {
   private getInfoText(order: 1 | 2 | 3): string {
     switch (order) {
       case 1:
-        return '线性贝塞尔曲线是最简单的形式，本质上是两点之间的直线段。参数t从0变化到1时，点从P₀移动到P₁。';
+        return '线性贝塞尔曲线是最简单的形式，本质上是两点之间的直线段。参数t从0变化到1时，点从P₀移动到P₁。坐标范围: x, y ∈ [0, 100]';
       case 2:
-        return '二次贝塞尔曲线有3个控制点。当t变化时，先在P₀P₁和P₁P₂上各取一个插值点，然后在这两点之间再做插值，得到曲线上的点。';
+        return '二次贝塞尔曲线有3个控制点。当t变化时，先在P₀P₁和P₁P₂上各取一个插值点，然后在这两点之间再做插值，得到曲线上的点。坐标范围: x, y ∈ [0, 100]';
       case 3:
-        return '三次贝塞尔曲线有4个控制点，是计算机图形学中最常用的形式。CSS动画、字体轮廓、矢量图形都广泛使用三次贝塞尔曲线。';
+        return '三次贝塞尔曲线有4个控制点，是计算机图形学中最常用的形式。CSS动画、字体轮廓、矢量图形都广泛使用三次贝塞尔曲线。坐标范围: x, y ∈ [0, 100]';
     }
   }
 
@@ -183,15 +195,17 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     this.canvas = this.container.querySelector('#bezier-canvas');
     if (!this.canvas) return;
 
-    // 设置canvas尺寸
+    // 设置canvas尺寸 - 更大的画布
     const wrapper = this.canvas.parentElement;
     if (wrapper) {
       const rect = wrapper.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      this.canvas.width = (rect.width || 600) * dpr;
-      this.canvas.height = (rect.height || 400) * dpr;
-      this.canvas.style.width = `${rect.width || 600}px`;
-      this.canvas.style.height = `${rect.height || 400}px`;
+      const width = rect.width || 700;
+      const height = rect.height || 500;
+      this.canvas.width = width * dpr;
+      this.canvas.height = height * dpr;
+      this.canvas.style.width = `${width}px`;
+      this.canvas.style.height = `${height}px`;
     }
 
     this.ctx = this.canvas.getContext('2d');
@@ -211,6 +225,9 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       this.setupInteraction();
     }
 
+    // 设置按钮事件
+    this.setupButtons();
+
     // 绘制初始状态
     this.draw();
 
@@ -219,9 +236,25 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     }
   }
 
+  private setupButtons(): void {
+    const btnGenerate = this.container.querySelector('#btn-generate');
+    const btnPlay = this.container.querySelector('#btn-play');
+    const btnReset = this.container.querySelector('#btn-reset');
+
+    if (btnGenerate) {
+      btnGenerate.addEventListener('click', () => this.generate());
+    }
+    if (btnPlay) {
+      btnPlay.addEventListener('click', () => this.start());
+    }
+    if (btnReset) {
+      btnReset.addEventListener('click', () => this.reset());
+    }
+  }
+
   private getDrawingArea(): { x: number; y: number; width: number; height: number } {
-    const canvasWidth = (this.canvas?.width || 600) / (window.devicePixelRatio || 1);
-    const canvasHeight = (this.canvas?.height || 400) / (window.devicePixelRatio || 1);
+    const canvasWidth = (this.canvas?.width || 700) / (window.devicePixelRatio || 1);
+    const canvasHeight = (this.canvas?.height || 500) / (window.devicePixelRatio || 1);
     return {
       x: this.padding.left,
       y: this.padding.top,
@@ -230,17 +263,29 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     };
   }
 
-  private initializeControlPoints(): void {
+  // 将0-100坐标转换为画布坐标
+  private coordToCanvas(point: { x: number; y: number }): { x: number; y: number } {
     const area = this.getDrawingArea();
+    return {
+      x: area.x + (point.x / this.COORD_MAX) * area.width,
+      y: area.y + area.height - (point.y / this.COORD_MAX) * area.height, // Y轴反转
+    };
+  }
 
+  // 将画布坐标转换为0-100坐标
+  private canvasToCoord(point: { x: number; y: number }): { x: number; y: number } {
+    const area = this.getDrawingArea();
+    return {
+      x: ((point.x - area.x) / area.width) * this.COORD_MAX,
+      y: ((area.y + area.height - point.y) / area.height) * this.COORD_MAX, // Y轴反转
+    };
+  }
+
+  private initializeControlPoints(): void {
     if (this.bezierConfig.controlPoints) {
       this.controlPoints = [...this.bezierConfig.controlPoints];
     } else {
-      const defaults = this.defaultControlPoints[this.bezierConfig.order || 2];
-      this.controlPoints = defaults.map((p) => ({
-        x: area.x + p.x * area.width,
-        y: area.y + p.y * area.height,
-      }));
+      this.controlPoints = [...this.defaultControlPoints[this.bezierConfig.order || 2]];
     }
   }
 
@@ -269,8 +314,8 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
     // 检查是否点击了控制点
     for (let i = 0; i < this.controlPoints.length; i++) {
-      const p = this.controlPoints[i];
-      const dist = Math.sqrt((pos.x - p.x) ** 2 + (pos.y - p.y) ** 2);
+      const canvasPos = this.coordToCanvas(this.controlPoints[i]);
+      const dist = Math.sqrt((pos.x - canvasPos.x) ** 2 + (pos.y - canvasPos.y) ** 2);
       if (dist < 15) {
         this.draggingPoint = i;
         this.canvas!.style.cursor = 'grabbing';
@@ -284,15 +329,22 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
     if (this.draggingPoint !== null) {
       // 更新控制点位置
-      const area = this.getDrawingArea();
+      const coord = this.canvasToCoord(pos);
       this.controlPoints[this.draggingPoint] = {
-        x: Math.max(area.x, Math.min(area.x + area.width, pos.x)),
-        y: Math.max(area.y, Math.min(area.y + area.height, pos.y)),
+        x: Math.max(this.COORD_MIN, Math.min(this.COORD_MAX, coord.x)),
+        y: Math.max(this.COORD_MIN, Math.min(this.COORD_MAX, coord.y)),
       };
 
       // 重新计算曲线点
       this.precomputeCurvePoints();
-      this.drawnPoints = this.allCurvePoints.slice(0, this.currentPointIndex + 1);
+
+      // 如果已生成曲线，更新显示
+      if (this.isGenerated) {
+        this.drawnPoints = [...this.allCurvePoints];
+      } else {
+        this.drawnPoints = this.allCurvePoints.slice(0, this.currentPointIndex + 1);
+      }
+
       this.draw();
 
       // 发送交互事件
@@ -300,14 +352,15 @@ export class BezierCurveRenderer implements IAnimationRenderer {
         action: 'control_point_moved',
         data: {
           pointIndex: this.draggingPoint,
-          position: pos,
+          position: this.controlPoints[this.draggingPoint],
         },
       });
     } else {
       // 检查鼠标是否悬停在控制点上
       let hovering = false;
       for (const p of this.controlPoints) {
-        const dist = Math.sqrt((pos.x - p.x) ** 2 + (pos.y - p.y) ** 2);
+        const canvasPos = this.coordToCanvas(p);
+        const dist = Math.sqrt((pos.x - canvasPos.x) ** 2 + (pos.y - canvasPos.y) ** 2);
         if (dist < 15) {
           hovering = true;
           break;
@@ -317,7 +370,8 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       // 检查是否悬停在曲线点附近
       this.hoveredPoint = null;
       for (const point of this.drawnPoints) {
-        const dist = Math.sqrt((pos.x - point.x) ** 2 + (pos.y - point.y) ** 2);
+        const canvasPos = this.coordToCanvas(point);
+        const dist = Math.sqrt((pos.x - canvasPos.x) ** 2 + (pos.y - canvasPos.y) ** 2);
         if (dist < 10) {
           this.hoveredPoint = point;
           break;
@@ -365,15 +419,15 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       pos.y >= area.y &&
       pos.y <= area.y + area.height
     ) {
-      // 转换为坐标值 (0-1)
-      const normalizedX = (pos.x - area.x) / area.width;
-      const normalizedY = 1 - (pos.y - area.y) / area.height; // Y轴反转
+      // 转换为坐标值 (0-100)
+      const coord = this.canvasToCoord(pos);
 
-      let tooltipContent = `x: ${normalizedX.toFixed(3)}<br>y: ${normalizedY.toFixed(3)}`;
+      let tooltipContent = `x: ${coord.x.toFixed(1)}<br>y: ${coord.y.toFixed(1)}`;
 
       // 如果悬停在曲线点上，显示t值
       if (this.hoveredPoint) {
-        tooltipContent += `<br><span style="color: #ef4444;">t: ${this.hoveredPoint.t.toFixed(3)}</span>`;
+        tooltipContent += `<br><span style="color: #ef4444; font-weight: bold;">t = ${this.hoveredPoint.t.toFixed(3)}</span>`;
+        tooltipContent += `<br><span style="color: #3b82f6;">曲线点: (${this.hoveredPoint.x.toFixed(1)}, ${this.hoveredPoint.y.toFixed(1)})</span>`;
       }
 
       tooltip.innerHTML = tooltipContent;
@@ -392,10 +446,37 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     }
   }
 
+  // 生成完整曲线（立即显示所有点连接成的曲线）
+  generate(): void {
+    this.stop();
+    this.isGenerated = true;
+    this.currentPointIndex = this.bezierConfig.samplePoints || 100;
+    this.drawnPoints = [...this.allCurvePoints];
+    this.draw();
+    this.updateStatusDisplay();
+
+    this.emitInteraction({
+      action: 'curve_generated',
+      data: {
+        order: this.bezierConfig.order,
+        controlPoints: this.controlPoints,
+        totalPoints: this.drawnPoints.length,
+      },
+    });
+
+    this.emitResult('complete', {
+      order: this.bezierConfig.order,
+      controlPoints: this.controlPoints,
+      totalPoints: this.drawnPoints.length,
+    });
+  }
+
+  // 播放生成过程动画
   start(): void {
     if (this.isPlaying) return;
 
     this.isPlaying = true;
+    this.isGenerated = false;
     this.currentPointIndex = 0;
     this.drawnPoints = [];
 
@@ -418,6 +499,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
         setTimeout(animate, intervalMs);
       } else {
         this.isPlaying = false;
+        this.isGenerated = true;
         this.emitResult('complete', {
           order: this.bezierConfig.order,
           controlPoints: this.controlPoints,
@@ -435,6 +517,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
   reset(): void {
     this.stop();
+    this.isGenerated = false;
     this.currentPointIndex = 0;
     this.drawnPoints = [];
     this.draw();
@@ -466,6 +549,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
           setTimeout(animate, intervalMs);
         } else {
           this.isPlaying = false;
+          this.isGenerated = true;
         }
       };
 
@@ -486,6 +570,9 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
   handleControl(controlId: string): void {
     switch (controlId) {
+      case 'generate':
+        this.generate();
+        break;
       case 'play':
         this.start();
         break;
@@ -550,7 +637,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     }
 
     // 绘制当前点
-    if (this.drawnPoints.length > 0) {
+    if (this.drawnPoints.length > 0 && !this.isGenerated) {
       const currentPoint = this.drawnPoints[this.drawnPoints.length - 1];
       this.drawCurrentPoint(currentPoint);
     }
@@ -571,9 +658,10 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.strokeStyle = '#f0f0f0';
     ctx.lineWidth = 1;
 
-    // 垂直网格线
-    const gridSpacingX = area.width / 10;
-    for (let i = 0; i <= 10; i++) {
+    // 垂直网格线 (每10个单位一条)
+    const gridCount = 10;
+    const gridSpacingX = area.width / gridCount;
+    for (let i = 0; i <= gridCount; i++) {
       const x = area.x + i * gridSpacingX;
       ctx.beginPath();
       ctx.moveTo(x, area.y);
@@ -582,8 +670,8 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     }
 
     // 水平网格线
-    const gridSpacingY = area.height / 10;
-    for (let i = 0; i <= 10; i++) {
+    const gridSpacingY = area.height / gridCount;
+    for (let i = 0; i <= gridCount; i++) {
       const y = area.y + i * gridSpacingY;
       ctx.beginPath();
       ctx.moveTo(area.x, y);
@@ -607,29 +695,48 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.lineTo(area.x, area.y + area.height);
     ctx.stroke();
 
+    // 绘制箭头
+    ctx.fillStyle = '#333333';
+
+    // X轴箭头
+    ctx.beginPath();
+    ctx.moveTo(area.x + area.width + 10, area.y + area.height);
+    ctx.lineTo(area.x + area.width - 5, area.y + area.height - 5);
+    ctx.lineTo(area.x + area.width - 5, area.y + area.height + 5);
+    ctx.closePath();
+    ctx.fill();
+
+    // Y轴箭头
+    ctx.beginPath();
+    ctx.moveTo(area.x, area.y - 10);
+    ctx.lineTo(area.x - 5, area.y + 5);
+    ctx.lineTo(area.x + 5, area.y + 5);
+    ctx.closePath();
+    ctx.fill();
+
     // 绘制刻度和标签
     ctx.fillStyle = '#666666';
     ctx.font = '12px system-ui';
     ctx.textAlign = 'center';
 
-    // X轴刻度
-    for (let i = 0; i <= 10; i++) {
+    // X轴刻度 (0-100)
+    for (let i = 0; i <= gridCount; i++) {
       const x = area.x + i * gridSpacingX;
-      const value = (i / 10).toFixed(1);
+      const value = ((i * this.COORD_MAX) / gridCount).toFixed(0);
 
       ctx.beginPath();
       ctx.moveTo(x, area.y + area.height);
       ctx.lineTo(x, area.y + area.height + 5);
       ctx.stroke();
 
-      ctx.fillText(value, x, area.y + area.height + 18);
+      ctx.fillText(value, x, area.y + area.height + 20);
     }
 
-    // Y轴刻度
+    // Y轴刻度 (0-100)
     ctx.textAlign = 'right';
-    for (let i = 0; i <= 10; i++) {
+    for (let i = 0; i <= gridCount; i++) {
       const y = area.y + area.height - i * gridSpacingY;
-      const value = (i / 10).toFixed(1);
+      const value = ((i * this.COORD_MAX) / gridCount).toFixed(0);
 
       ctx.beginPath();
       ctx.moveTo(area.x - 5, y);
@@ -643,13 +750,18 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.fillStyle = '#333333';
     ctx.font = 'bold 14px system-ui';
     ctx.textAlign = 'center';
-    ctx.fillText('x', area.x + area.width / 2, area.y + area.height + 40);
+    ctx.fillText('x', area.x + area.width / 2, area.y + area.height + 45);
 
     ctx.save();
-    ctx.translate(20, area.y + area.height / 2);
+    ctx.translate(25, area.y + area.height / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('y', 0, 0);
     ctx.restore();
+
+    // 原点标签
+    ctx.font = '12px system-ui';
+    ctx.fillStyle = '#666666';
+    ctx.fillText('O', area.x - 15, area.y + area.height + 20);
   }
 
   private drawControlPolygon(): void {
@@ -662,10 +774,12 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
 
+    const canvasPoints = points.map((p) => this.coordToCanvas(p));
+
     ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      ctx.lineTo(points[i].x, points[i].y);
+    ctx.moveTo(canvasPoints[0].x, canvasPoints[0].y);
+    for (let i = 1; i < canvasPoints.length; i++) {
+      ctx.lineTo(canvasPoints[i].x, canvasPoints[i].y);
     }
     ctx.stroke();
     ctx.setLineDash([]);
@@ -676,14 +790,14 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
     const ctx = this.ctx;
     const points = this.controlPoints;
-    const area = this.getDrawingArea();
 
     for (let i = 0; i < points.length; i++) {
       const p = points[i];
+      const canvasPos = this.coordToCanvas(p);
 
       // 绘制外圈
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
+      ctx.arc(canvasPos.x, canvasPos.y, 12, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
       ctx.strokeStyle = '#3b82f6';
@@ -692,7 +806,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
       // 绘制内圈
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+      ctx.arc(canvasPos.x, canvasPos.y, 6, 0, Math.PI * 2);
       ctx.fillStyle = '#3b82f6';
       ctx.fill();
 
@@ -700,17 +814,15 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       ctx.fillStyle = '#1e40af';
       ctx.font = 'bold 14px system-ui';
       ctx.textAlign = 'center';
-      ctx.fillText(`P${i}`, p.x, p.y - 18);
+      ctx.fillText(`P${i}`, canvasPos.x, canvasPos.y - 18);
 
-      // 显示坐标
-      const normalizedX = (p.x - area.x) / area.width;
-      const normalizedY = 1 - (p.y - area.y) / area.height;
-      ctx.font = '10px system-ui';
+      // 显示坐标 (0-100)
+      ctx.font = '11px system-ui';
       ctx.fillStyle = '#666666';
       ctx.fillText(
-        `(${normalizedX.toFixed(2)}, ${normalizedY.toFixed(2)})`,
-        p.x,
-        p.y + 25
+        `(${p.x.toFixed(0)}, ${p.y.toFixed(0)})`,
+        canvasPos.x,
+        canvasPos.y + 28
       );
     }
   }
@@ -731,15 +843,18 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     while (currentLevel.length > 1) {
       const nextLevel: { x: number; y: number }[] = [];
 
+      // 转换为画布坐标
+      const canvasPoints = currentLevel.map((p) => this.coordToCanvas(p));
+
       // 绘制当前层的连线
       ctx.strokeStyle = colors[level % colors.length];
       ctx.lineWidth = 2;
       ctx.globalAlpha = 0.6;
 
       ctx.beginPath();
-      ctx.moveTo(currentLevel[0].x, currentLevel[0].y);
-      for (let i = 1; i < currentLevel.length; i++) {
-        ctx.lineTo(currentLevel[i].x, currentLevel[i].y);
+      ctx.moveTo(canvasPoints[0].x, canvasPoints[0].y);
+      for (let i = 1; i < canvasPoints.length; i++) {
+        ctx.lineTo(canvasPoints[i].x, canvasPoints[i].y);
       }
       ctx.stroke();
 
@@ -754,8 +869,9 @@ export class BezierCurveRenderer implements IAnimationRenderer {
         nextLevel.push(interpolated);
 
         // 绘制插值点
+        const canvasInterpolated = this.coordToCanvas(interpolated);
         ctx.beginPath();
-        ctx.arc(interpolated.x, interpolated.y, 5, 0, Math.PI * 2);
+        ctx.arc(canvasInterpolated.x, canvasInterpolated.y, 5, 0, Math.PI * 2);
         ctx.fillStyle = colors[level % colors.length];
         ctx.fill();
       }
@@ -776,19 +892,21 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
+    const canvasPoints = this.drawnPoints.map((p) => this.coordToCanvas(p));
+
     ctx.beginPath();
-    ctx.moveTo(this.drawnPoints[0].x, this.drawnPoints[0].y);
-    for (let i = 1; i < this.drawnPoints.length; i++) {
-      ctx.lineTo(this.drawnPoints[i].x, this.drawnPoints[i].y);
+    ctx.moveTo(canvasPoints[0].x, canvasPoints[0].y);
+    for (let i = 1; i < canvasPoints.length; i++) {
+      ctx.lineTo(canvasPoints[i].x, canvasPoints[i].y);
     }
     ctx.stroke();
 
-    // 绘制曲线上的采样点（小圆点）
+    // 绘制曲线上的采样点（小圆点）- 显示曲线是由点连接而成
     ctx.fillStyle = this.bezierConfig.curveColor || '#3b82f6';
-    for (let i = 0; i < this.drawnPoints.length; i += 5) {
-      const point = this.drawnPoints[i];
+    for (let i = 0; i < canvasPoints.length; i += 5) {
+      const point = canvasPoints[i];
       ctx.beginPath();
-      ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
+      ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
       ctx.fill();
     }
   }
@@ -797,37 +915,58 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     if (!this.ctx) return;
 
     const ctx = this.ctx;
+    const canvasPos = this.coordToCanvas(point);
 
     // 绘制发光效果
-    const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 20);
+    const gradient = ctx.createRadialGradient(
+      canvasPos.x,
+      canvasPos.y,
+      0,
+      canvasPos.x,
+      canvasPos.y,
+      20
+    );
     gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)');
     gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
     ctx.beginPath();
-    ctx.arc(point.x, point.y, 20, 0, Math.PI * 2);
+    ctx.arc(canvasPos.x, canvasPos.y, 20, 0, Math.PI * 2);
     ctx.fillStyle = gradient;
     ctx.fill();
 
     // 绘制当前点
     ctx.beginPath();
-    ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+    ctx.arc(canvasPos.x, canvasPos.y, 8, 0, Math.PI * 2);
     ctx.fillStyle = '#ef4444';
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 2;
     ctx.stroke();
+
+    // 显示当前t值
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 12px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText(`t = ${point.t.toFixed(2)}`, canvasPos.x + 15, canvasPos.y - 5);
   }
 
   private drawHoveredPoint(point: { x: number; y: number; t: number }): void {
     if (!this.ctx) return;
 
     const ctx = this.ctx;
+    const canvasPos = this.coordToCanvas(point);
 
     // 绘制高亮圈
     ctx.beginPath();
-    ctx.arc(point.x, point.y, 12, 0, Math.PI * 2);
+    ctx.arc(canvasPos.x, canvasPos.y, 15, 0, Math.PI * 2);
     ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.stroke();
+
+    // 绘制内点
+    ctx.beginPath();
+    ctx.arc(canvasPos.x, canvasPos.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#ef4444';
+    ctx.fill();
   }
 
   private calculateBezierPoint(t: number): { x: number; y: number } {
