@@ -15,14 +15,20 @@ export { AnimationRegistry, animationRegistry } from './core/registry';
 // ============= Web标准动画模块 =============
 export { pisaTowerModule } from './physics/pisa-tower/index';
 export { earthSystemModule } from './geography/earth-system/index';
+export { bezierCurveModule } from './math/bezier-curve/index';
 
 // ============= 自动注册 =============
 import { webAnimationRegistry } from './standards/WebAnimationRegistry';
 import { pisaTowerModule } from './physics/pisa-tower/index';
 import { earthSystemModule } from './geography/earth-system/index';
+import { bezierCurveModule } from './math/bezier-curve/index';
 
 // 自动注册所有Web动画模块
-webAnimationRegistry.registerBatch([pisaTowerModule, earthSystemModule]);
+webAnimationRegistry.registerBatch([
+  pisaTowerModule,
+  earthSystemModule,
+  bezierCurveModule,
+]);
 
 // ============= 便捷函数 =============
 

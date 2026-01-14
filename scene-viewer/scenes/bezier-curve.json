@@ -1,0 +1,948 @@
+{
+  "schema": "vvce.dsl.v1",
+  "meta": {
+    "id": "math-bezier-curve",
+    "version": "1.0.0",
+    "title": "贝塞尔曲线的生成",
+    "author": "VV Education",
+    "description": "深入探索贝塞尔曲线的数学原理与生成过程，通过可视化动画理解De Casteljau算法"
+  },
+  "globals": {
+    "vars": {
+      "score": 0,
+      "totalQuestions": 5,
+      "correctAnswers": 0,
+      "studentName": "同学"
+    }
+  },
+  "resources": {
+    "styles": {
+      "highlight-box": {
+        "base": {
+          "background": "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
+          "borderRadius": "12px",
+          "padding": "16px",
+          "borderLeft": "4px solid #3b82f6"
+        }
+      },
+      "formula-display": {
+        "base": {
+          "background": "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)",
+          "color": "white",
+          "padding": "12px 24px",
+          "borderRadius": "12px",
+          "fontFamily": "serif",
+          "fontStyle": "italic"
+        }
+      }
+    },
+    "animations": {
+      "fadeInUp": {
+        "keyframes": [
+          {
+            "offset": 0,
+            "properties": { "opacity": 0, "transform": "translateY(20px)" }
+          },
+          { "offset": 100, "properties": { "opacity": 1, "transform": "translateY(0)" } }
+        ],
+        "duration": 500,
+        "easing": "ease-out"
+      }
+    }
+  },
+  "theme": "academic",
+  "startSceneId": "welcome",
+  "scenes": [
+    {
+      "id": "welcome",
+      "title": "欢迎",
+      "enterTransition": {
+        "type": "fade",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "welcome-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "欢迎来到《贝塞尔曲线的生成》课程！贝塞尔曲线是计算机图形学中最重要的数学工具之一。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 400
+          }
+        },
+        {
+          "id": "intro-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "无论是字体设计、矢量图形、CSS动画还是3D建模，贝塞尔曲线无处不在。今天我们将通过可视化动画，深入理解它的数学原理。"
+          }
+        },
+        {
+          "id": "start-btn",
+          "type": "Button",
+          "props": {
+            "text": "开始学习"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "start-btn"
+          },
+          "then": [
+            {
+              "action": "gotoScene",
+              "sceneId": "linear-intro"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "linear-intro",
+      "title": "线性贝塞尔曲线",
+      "enterTransition": {
+        "type": "slide",
+        "direction": "left",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "linear-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "让我们从最简单的开始 —— 线性贝塞尔曲线（一次贝塞尔曲线）。"
+          }
+        },
+        {
+          "id": "linear-explain",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "给定两个控制点P₀和P₁，线性贝塞尔曲线其实就是连接它们的直线段。公式非常简单：B(t) = (1-t)P₀ + tP₁，其中参数t从0变化到1。"
+          }
+        },
+        {
+          "id": "linear-animation",
+          "type": "Animation",
+          "props": {
+            "type": "math.bezier-curve",
+            "autoplay": false,
+            "params": {
+              "order": 1,
+              "showControlPoints": true,
+              "showAuxiliaryLines": true,
+              "showFormula": true,
+              "duration": 2,
+              "interactive": true
+            }
+          }
+        },
+        {
+          "id": "play-linear-btn",
+          "type": "Button",
+          "props": {
+            "text": "播放动画"
+          }
+        },
+        {
+          "id": "next-linear-btn",
+          "type": "Button",
+          "props": {
+            "text": "理解了，继续"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "play-linear-btn"
+          },
+          "then": [
+            {
+              "action": "animationPlay",
+              "target": "linear-animation"
+            }
+          ]
+        },
+        {
+          "on": {
+            "event": "click",
+            "target": "next-linear-btn"
+          },
+          "then": [
+            {
+              "action": "gotoScene",
+              "sceneId": "linear-quiz"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "linear-quiz",
+      "title": "线性贝塞尔曲线测验",
+      "enterTransition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "nodes": [
+        {
+          "id": "quiz1-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "让我们测试一下你对线性贝塞尔曲线的理解。"
+          }
+        },
+        {
+          "id": "quiz1",
+          "type": "QuizSingle",
+          "props": {
+            "question": "在线性贝塞尔曲线公式 B(t) = (1-t)P₀ + tP₁ 中，当 t = 0.5 时，曲线上的点位于什么位置？",
+            "options": ["P₀点的位置", "P₁点的位置", "P₀和P₁的正中间", "无法确定"],
+            "answerKey": "P₀和P₁的正中间"
+          }
+        },
+        {
+          "id": "submit-quiz1-btn",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "submit-quiz1-btn"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz1.selected" },
+              "right": "P₀和P₁的正中间"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 20
+            },
+            {
+              "action": "incVar",
+              "path": "globals.vars.correctAnswers",
+              "by": 1
+            },
+            {
+              "action": "toast",
+              "text": "正确！当t=0.5时，(1-0.5)P₀ + 0.5P₁ = 0.5P₀ + 0.5P₁，正好是中点。+20分"
+            },
+            {
+              "action": "delay",
+              "ms": 2000
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "quadratic-intro"
+            }
+          ],
+          "else": [
+            {
+              "action": "toast",
+              "text": "不对哦，把t=0.5代入公式试试：(1-0.5)P₀ + 0.5P₁ = 0.5P₀ + 0.5P₁"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quadratic-intro",
+      "title": "二次贝塞尔曲线",
+      "enterTransition": {
+        "type": "slide",
+        "direction": "left",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "quad-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "现在进入二次贝塞尔曲线！这是最常用的贝塞尔曲线形式之一。"
+          }
+        },
+        {
+          "id": "quad-explain1",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "二次贝塞尔曲线有3个控制点：P₀、P₁、P₂。公式为：B(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂"
+          }
+        },
+        {
+          "id": "quad-explain2",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "关键思想是De Casteljau算法：先在P₀P₁和P₁P₂上各找一个插值点，然后在这两点之间再做插值。观察动画中彩色的辅助线！"
+          }
+        },
+        {
+          "id": "quadratic-animation",
+          "type": "Animation",
+          "props": {
+            "type": "math.bezier-curve",
+            "autoplay": false,
+            "params": {
+              "order": 2,
+              "showControlPoints": true,
+              "showAuxiliaryLines": true,
+              "showFormula": true,
+              "duration": 3,
+              "interactive": true
+            }
+          }
+        },
+        {
+          "id": "play-quad-btn",
+          "type": "Button",
+          "props": {
+            "text": "播放动画"
+          }
+        },
+        {
+          "id": "tip-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "提示：你可以拖拽控制点来观察曲线如何变化！这就是贝塞尔曲线的魔力所在。"
+          }
+        },
+        {
+          "id": "next-quad-btn",
+          "type": "Button",
+          "props": {
+            "text": "继续"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "play-quad-btn"
+          },
+          "then": [
+            {
+              "action": "animationPlay",
+              "target": "quadratic-animation"
+            }
+          ]
+        },
+        {
+          "on": {
+            "event": "click",
+            "target": "next-quad-btn"
+          },
+          "then": [
+            {
+              "action": "gotoScene",
+              "sceneId": "quadratic-quiz"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quadratic-quiz",
+      "title": "二次贝塞尔曲线测验",
+      "enterTransition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "nodes": [
+        {
+          "id": "quiz2-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "观察动画后，来回答这个问题。"
+          }
+        },
+        {
+          "id": "quiz2",
+          "type": "QuizSingle",
+          "props": {
+            "question": "在二次贝塞尔曲线中，控制点P₁的作用是什么？",
+            "options": [
+              "曲线的起点",
+              "曲线的终点",
+              "控制曲线的弯曲方向和程度",
+              "与曲线形状无关"
+            ],
+            "answerKey": "控制曲线的弯曲方向和程度"
+          }
+        },
+        {
+          "id": "submit-quiz2-btn",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "submit-quiz2-btn"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz2.selected" },
+              "right": "控制曲线的弯曲方向和程度"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 20
+            },
+            {
+              "action": "incVar",
+              "path": "globals.vars.correctAnswers",
+              "by": 1
+            },
+            {
+              "action": "toast",
+              "text": "正确！P₁不在曲线上，但它决定了曲线的弯曲方向和幅度。+20分"
+            },
+            {
+              "action": "delay",
+              "ms": 2000
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "cubic-intro"
+            }
+          ],
+          "else": [
+            {
+              "action": "toast",
+              "text": "想一想，P₁在曲线上吗？它对曲线有什么影响？"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cubic-intro",
+      "title": "三次贝塞尔曲线",
+      "enterTransition": {
+        "type": "slide",
+        "direction": "left",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "cubic-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "终于来到三次贝塞尔曲线了！这是图形设计中最常用的形式。"
+          }
+        },
+        {
+          "id": "cubic-explain1",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "三次贝塞尔曲线有4个控制点，公式为：B(t) = (1-t)³P₀ + 3(1-t)²tP₁ + 3(1-t)t²P₂ + t³P₃"
+          }
+        },
+        {
+          "id": "cubic-explain2",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "Adobe Illustrator、Photoshop中的钢笔工具，CSS的cubic-bezier()动画函数，都是基于三次贝塞尔曲线！"
+          }
+        },
+        {
+          "id": "cubic-animation",
+          "type": "Animation",
+          "props": {
+            "type": "math.bezier-curve",
+            "autoplay": false,
+            "params": {
+              "order": 3,
+              "showControlPoints": true,
+              "showAuxiliaryLines": true,
+              "showFormula": true,
+              "duration": 4,
+              "interactive": true
+            }
+          }
+        },
+        {
+          "id": "play-cubic-btn",
+          "type": "Button",
+          "props": {
+            "text": "播放动画"
+          }
+        },
+        {
+          "id": "cubic-tip",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "观察辅助线的递归分割过程：先有3条线做插值，再有2条，最后1条。这就是De Casteljau算法的精髓！"
+          }
+        },
+        {
+          "id": "next-cubic-btn",
+          "type": "Button",
+          "props": {
+            "text": "继续测验"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "play-cubic-btn"
+          },
+          "then": [
+            {
+              "action": "animationPlay",
+              "target": "cubic-animation"
+            }
+          ]
+        },
+        {
+          "on": {
+            "event": "click",
+            "target": "next-cubic-btn"
+          },
+          "then": [
+            {
+              "action": "gotoScene",
+              "sceneId": "cubic-quiz"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cubic-quiz",
+      "title": "三次贝塞尔曲线测验",
+      "enterTransition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "nodes": [
+        {
+          "id": "quiz3-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "关于De Casteljau算法，你理解了吗？"
+          }
+        },
+        {
+          "id": "quiz3",
+          "type": "QuizSingle",
+          "props": {
+            "question": "De Casteljau算法的核心思想是什么？",
+            "options": [
+              "直接计算多项式",
+              "递归地在相邻控制点之间做线性插值",
+              "使用矩阵运算",
+              "随机采样曲线上的点"
+            ],
+            "answerKey": "递归地在相邻控制点之间做线性插值"
+          }
+        },
+        {
+          "id": "submit-quiz3-btn",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "submit-quiz3-btn"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz3.selected" },
+              "right": "递归地在相邻控制点之间做线性插值"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 20
+            },
+            {
+              "action": "incVar",
+              "path": "globals.vars.correctAnswers",
+              "by": 1
+            },
+            {
+              "action": "toast",
+              "text": "完全正确！这就是动画中彩色辅助线展示的过程。+20分"
+            },
+            {
+              "action": "delay",
+              "ms": 2000
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "application"
+            }
+          ],
+          "else": [
+            {
+              "action": "toast",
+              "text": "回忆一下动画中辅助线是怎么画的？它们在做什么运算？"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "application",
+      "title": "实际应用",
+      "enterTransition": {
+        "type": "slide",
+        "direction": "up",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "app-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "贝塞尔曲线的应用非常广泛，让我们来看看！"
+          }
+        },
+        {
+          "id": "app-list1",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "1. 字体设计：TrueType和OpenType字体使用二次和三次贝塞尔曲线定义字符轮廓"
+          }
+        },
+        {
+          "id": "app-list2",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "2. CSS动画：transition-timing-function中的cubic-bezier()就是三次贝塞尔曲线"
+          }
+        },
+        {
+          "id": "app-list3",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "3. 矢量图形：SVG、Adobe Illustrator、Figma中的路径都是贝塞尔曲线"
+          }
+        },
+        {
+          "id": "app-list4",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "4. 3D建模：NURBS曲面是贝塞尔曲线的扩展，广泛用于汽车和飞机设计"
+          }
+        },
+        {
+          "id": "next-app-btn",
+          "type": "Button",
+          "props": {
+            "text": "进入应用测验"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "next-app-btn"
+          },
+          "then": [
+            {
+              "action": "gotoScene",
+              "sceneId": "application-quiz"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "application-quiz",
+      "title": "应用测验",
+      "enterTransition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "nodes": [
+        {
+          "id": "quiz4-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "关于贝塞尔曲线的应用，你了解多少？"
+          }
+        },
+        {
+          "id": "quiz4",
+          "type": "QuizSingle",
+          "props": {
+            "question": "CSS中的 cubic-bezier(0.25, 0.1, 0.25, 1.0) 使用的是哪种贝塞尔曲线？",
+            "options": [
+              "线性贝塞尔曲线",
+              "二次贝塞尔曲线",
+              "三次贝塞尔曲线",
+              "四次贝塞尔曲线"
+            ],
+            "answerKey": "三次贝塞尔曲线"
+          }
+        },
+        {
+          "id": "submit-quiz4-btn",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "submit-quiz4-btn"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz4.selected" },
+              "right": "三次贝塞尔曲线"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 20
+            },
+            {
+              "action": "incVar",
+              "path": "globals.vars.correctAnswers",
+              "by": 1
+            },
+            {
+              "action": "toast",
+              "text": "正确！cubic就是'三次'的意思，4个参数定义了两个中间控制点。+20分"
+            },
+            {
+              "action": "delay",
+              "ms": 2000
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "final-quiz"
+            }
+          ],
+          "else": [
+            {
+              "action": "toast",
+              "text": "注意函数名中的'cubic'这个词，它是什么意思？"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "final-quiz",
+      "title": "综合测验",
+      "enterTransition": {
+        "type": "scale",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "final-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "最后一道综合题，检验你对贝塞尔曲线的整体理解！"
+          }
+        },
+        {
+          "id": "quiz5",
+          "type": "QuizSingle",
+          "props": {
+            "question": "关于贝塞尔曲线的以下说法，哪一个是正确的？",
+            "options": [
+              "曲线总是通过所有控制点",
+              "曲线必定通过首尾两个控制点",
+              "增加控制点会使曲线变得更简单",
+              "贝塞尔曲线只能是封闭的"
+            ],
+            "answerKey": "曲线必定通过首尾两个控制点"
+          }
+        },
+        {
+          "id": "submit-quiz5-btn",
+          "type": "Button",
+          "props": {
+            "text": "提交最终答案"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "submit-quiz5-btn"
+          },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz5.selected" },
+              "right": "曲线必定通过首尾两个控制点"
+            }
+          ],
+          "then": [
+            {
+              "action": "addScore",
+              "value": 20
+            },
+            {
+              "action": "incVar",
+              "path": "globals.vars.correctAnswers",
+              "by": 1
+            },
+            {
+              "action": "toast",
+              "text": "完美！当t=0时B(t)=P₀，t=1时B(t)=Pₙ，曲线总是从起点到终点。+20分"
+            },
+            {
+              "action": "delay",
+              "ms": 2000
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "result"
+            }
+          ],
+          "else": [
+            {
+              "action": "toast",
+              "text": "回忆一下公式：当t=0和t=1时，曲线在哪里？"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "result",
+      "title": "课程完成",
+      "enterTransition": {
+        "type": "zoom",
+        "duration": 500
+      },
+      "nodes": [
+        {
+          "id": "result-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "恭喜你完成了《贝塞尔曲线的生成》课程！"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "duration": 600
+          }
+        },
+        {
+          "id": "score-display",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV数学教授",
+            "text": "你的最终得分：{{globals.vars.score}} 分，正确回答了 {{globals.vars.correctAnswers}}/{{globals.vars.totalQuestions}} 道题目！"
+          }
+        },
+        {
+          "id": "summary",
+          "type": "Conclusion",
+          "props": {
+            "title": "课程要点回顾",
+            "text": "1. 贝塞尔曲线由控制点定义，参数t从0到1\n2. De Casteljau算法通过递归线性插值生成曲线\n3. 曲线总是通过首尾控制点\n4. 中间控制点决定曲线的形状但不在曲线上\n5. 三次贝塞尔曲线是实践中最常用的形式"
+          }
+        },
+        {
+          "id": "thinking",
+          "type": "Thinking",
+          "props": {
+            "title": "延伸思考",
+            "text": "如果我们将多段贝塞尔曲线连接起来，如何保证连接处光滑？这就是B样条曲线和NURBS要解决的问题！"
+          }
+        },
+        {
+          "id": "restart-btn",
+          "type": "Button",
+          "props": {
+            "text": "重新学习"
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": {
+            "event": "click",
+            "target": "restart-btn"
+          },
+          "then": [
+            {
+              "action": "setVar",
+              "path": "globals.vars.score",
+              "value": 0
+            },
+            {
+              "action": "setVar",
+              "path": "globals.vars.correctAnswers",
+              "value": 0
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "welcome"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
