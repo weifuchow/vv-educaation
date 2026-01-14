@@ -77,17 +77,18 @@ export const bezierCurveStyles = `
 
 .bezier-tooltip {
   position: absolute;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.85);
+  padding: 10px 14px;
+  background: rgba(30, 41, 59, 0.95);
   color: white;
-  font-family: 'Fira Code', 'JetBrains Mono', monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  border-radius: 6px;
+  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 8px;
   pointer-events: none;
-  z-index: 100;
+  z-index: 1000;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bezier-status {
@@ -121,83 +122,56 @@ export const bezierCurveStyles = `
 }
 
 /* 控制按钮区域 */
-.bezier-controls {
+.bezier-animation-container .bezier-controls {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.7);
+  padding: 20px;
+  background: transparent;
   border-radius: 12px;
   flex-wrap: wrap;
 }
 
-/* 按钮基础样式 */
-.bezier-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 28px;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: system-ui, -apple-system, sans-serif;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  outline: none;
-  white-space: nowrap;
-  min-width: 140px;
-}
-
-.bezier-btn:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* 主要按钮样式 */
-.bezier-btn.bezier-btn-primary,
-.bezier-btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+/* 按钮基础样式 - 高优先级 */
+.bezier-animation-container .bezier-controls button.bezier-btn,
+.bezier-animation-container button.bezier-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 14px 32px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  border: none !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  outline: none !important;
+  white-space: nowrap !important;
+  min-width: 140px !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
   color: white !important;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4) !important;
 }
 
-.bezier-btn.bezier-btn-primary:hover,
-.bezier-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+.bezier-animation-container .bezier-controls button.bezier-btn:hover,
+.bezier-animation-container button.bezier-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5) !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
 }
 
-.bezier-btn.bezier-btn-primary:active,
-.bezier-btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+.bezier-animation-container .bezier-controls button.bezier-btn:active,
+.bezier-animation-container button.bezier-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4) !important;
 }
 
-/* 次要按钮样式 */
-.bezier-btn.bezier-btn-secondary,
-.bezier-btn-secondary {
-  background: white;
-  color: #3b82f6 !important;
-  border: 2px solid #3b82f6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.bezier-btn.bezier-btn-secondary:hover,
-.bezier-btn-secondary:hover {
-  background: #eff6ff;
-  border-color: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-}
-
-.bezier-btn.bezier-btn-secondary:active,
-.bezier-btn-secondary:active {
-  transform: translateY(0);
-  background: #dbeafe;
+.bezier-animation-container .bezier-controls button.bezier-btn:focus {
+  outline: 3px solid rgba(139, 92, 246, 0.5) !important;
+  outline-offset: 2px !important;
 }
 
 /* 图例区域 */
@@ -284,15 +258,15 @@ export const bezierCurveStyles = `
     padding: 14px 16px;
   }
 
-  .bezier-controls {
+  .bezier-animation-container .bezier-controls {
     gap: 12px;
     padding: 14px 16px;
   }
 
-  .bezier-btn {
-    padding: 10px 20px;
-    font-size: 14px;
-    min-width: 120px;
+  .bezier-animation-container .bezier-controls button.bezier-btn {
+    padding: 12px 24px !important;
+    font-size: 15px !important;
+    min-width: 120px !important;
   }
 
   .bezier-legend {
@@ -338,16 +312,16 @@ export const bezierCurveStyles = `
     padding: 0 8px;
   }
 
-  .bezier-controls {
+  .bezier-animation-container .bezier-controls {
     flex-direction: column;
     gap: 10px;
     padding: 12px 14px;
   }
 
-  .bezier-btn {
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 15px;
+  .bezier-animation-container .bezier-controls button.bezier-btn {
+    width: 100% !important;
+    padding: 14px 20px !important;
+    font-size: 16px !important;
   }
 
   .bezier-legend {
@@ -414,20 +388,6 @@ export const bezierCurveStyles = `
 
 .bezier-animation-container.dark .status-value {
   color: #60a5fa;
-}
-
-.bezier-animation-container.dark .bezier-controls {
-  background: rgba(15, 23, 42, 0.7);
-}
-
-.bezier-animation-container.dark .bezier-btn-secondary {
-  background: #1e293b;
-  border-color: #60a5fa;
-  color: #60a5fa !important;
-}
-
-.bezier-animation-container.dark .bezier-btn-secondary:hover {
-  background: #334155;
 }
 
 .bezier-animation-container.dark .bezier-legend {

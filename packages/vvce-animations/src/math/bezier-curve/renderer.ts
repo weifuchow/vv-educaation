@@ -976,11 +976,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // 显示当前t值
-    ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 12px system-ui';
-    ctx.textAlign = 'left';
-    ctx.fillText(`t = ${point.t.toFixed(2)}`, canvasPos.x + 15, canvasPos.y - 5);
+    // t值已在状态栏显示，不在画布上重复显示以避免遮挡
   }
 
   private drawHoveredPoint(point: { x: number; y: number; t: number }): void {
