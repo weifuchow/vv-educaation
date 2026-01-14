@@ -706,29 +706,31 @@ export class SemanticValidator {
    */
   private detectUnreachableScenes(dsl: CourseDSL): void {
     const reachable = new Set<string>([dsl.startSceneId]);
+    const visited = new Set<string>();
     const queue = [dsl.startSceneId];
 
     while (queue.length > 0) {
       const current = queue.shift()!;
+      if (visited.has(current)) {
+        continue;
+      }
+      visited.add(current);
       const scene = dsl.scenes.find((s) => s.id === current);
 
       if (!scene) continue;
 
+      const targets = new Set<string>();
       scene.triggers?.forEach((trigger) => {
         [...trigger.then, ...(trigger.else || [])].forEach((action) => {
-          this.collectGotoTargets(action, reachable);
+          this.collectGotoTargets(action, targets);
         });
       });
 
       // Add newly found scenes to queue
-      reachable.forEach((sceneId) => {
-        if (!queue.includes(sceneId) && this.sceneIds.has(sceneId)) {
-          const alreadyProcessed =
-            Array.from(reachable).indexOf(sceneId) <
-            Array.from(reachable).indexOf(current);
-          if (!alreadyProcessed) {
-            queue.push(sceneId);
-          }
+      targets.forEach((sceneId) => {
+        if (this.sceneIds.has(sceneId) && !reachable.has(sceneId)) {
+          reachable.add(sceneId);
+          queue.push(sceneId);
         }
       });
     }
