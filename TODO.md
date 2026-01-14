@@ -34,35 +34,35 @@
   - [ ] 定义 `VVCEComponentMeta` 接口（组件元数据）
     ```typescript
     interface VVCEComponentMeta {
-      type: string;                    // 组件类型标识符
-      displayName: string;             // 显示名称
-      description?: string;            // 组件描述
-      propsSchema: JSONSchema;         // Props JSON Schema 定义
-      stateShape?: StateShapeDefinition;  // 状态形状定义
-      events: EventDefinition[];       // 支持的事件列表
+      type: string; // 组件类型标识符
+      displayName: string; // 显示名称
+      description?: string; // 组件描述
+      propsSchema: JSONSchema; // Props JSON Schema 定义
+      stateShape?: StateShapeDefinition; // 状态形状定义
+      events: EventDefinition[]; // 支持的事件列表
       defaultProps?: Record<string, any>; // 默认属性
     }
     ```
   - [ ] 定义 `VVCEComponentProps` 基础接口
     ```typescript
     interface VVCEComponentProps<P = any, S = any> {
-      id: string;                      // 节点 ID
-      props: P;                        // 组件属性
-      state?: S;                       // 组件状态
-      style?: StyleProperties;         // 内联样式
-      styleClass?: string | string[];  // 样式类
-      visible?: boolean;               // 可见性
-      onEvent: (event: VVCEEvent) => void;  // 事件回调
-      onStateChange: (state: S) => void;    // 状态变更回调
+      id: string; // 节点 ID
+      props: P; // 组件属性
+      state?: S; // 组件状态
+      style?: StyleProperties; // 内联样式
+      styleClass?: string | string[]; // 样式类
+      visible?: boolean; // 可见性
+      onEvent: (event: VVCEEvent) => void; // 事件回调
+      onStateChange: (state: S) => void; // 状态变更回调
     }
     ```
   - [ ] 定义 `VVCEEvent` 事件接口
     ```typescript
     interface VVCEEvent {
-      type: string;                    // 事件类型 (click, change, etc.)
-      target: string;                  // 目标节点 ID
-      payload?: Record<string, any>;   // 事件数据
-      timestamp: number;               // 时间戳
+      type: string; // 事件类型 (click, change, etc.)
+      target: string; // 目标节点 ID
+      payload?: Record<string, any>; // 事件数据
+      timestamp: number; // 时间戳
     }
     ```
   - [ ] 定义 `EventDefinition` 事件定义接口
@@ -72,11 +72,11 @@
   - [ ] 定义 `VVCEComponentLifecycle` 接口
     ```typescript
     interface VVCEComponentLifecycle {
-      onMount?: () => void;            // 组件挂载
-      onUnmount?: () => void;          // 组件卸载
-      onPropsChange?: (prev: P, next: P) => void;  // 属性变更
-      onStateChange?: (prev: S, next: S) => void;  // 状态变更
-      onVisibilityChange?: (visible: boolean) => void;  // 可见性变更
+      onMount?: () => void; // 组件挂载
+      onUnmount?: () => void; // 组件卸载
+      onPropsChange?: (prev: P, next: P) => void; // 属性变更
+      onStateChange?: (prev: S, next: S) => void; // 状态变更
+      onVisibilityChange?: (visible: boolean) => void; // 可见性变更
     }
     ```
   - [ ] 定义 `useVVCEComponent` 钩子接口（React 适配）
@@ -113,13 +113,13 @@
   - [ ] 定义 `RenderContext` 接口
     ```typescript
     interface RenderContext {
-      runtime: VVCERuntime;            // Runtime 引用
-      theme: ThemeConfig;              // 当前主题
-      resources: CourseResources;      // 资源定义
-      dispatch: (event: VVCEEvent) => void;  // 事件分发
-      getState: (nodeId: string) => any;     // 获取节点状态
-      setState: (nodeId: string, state: any) => void;  // 设置节点状态
-      resolveRef: (ref: string) => any;       // 解析引用
+      runtime: VVCERuntime; // Runtime 引用
+      theme: ThemeConfig; // 当前主题
+      resources: CourseResources; // 资源定义
+      dispatch: (event: VVCEEvent) => void; // 事件分发
+      getState: (nodeId: string) => any; // 获取节点状态
+      setState: (nodeId: string, state: any) => void; // 设置节点状态
+      resolveRef: (ref: string) => any; // 解析引用
     }
     ```
   - [ ] 实现 React Context Provider（`VVCEProvider`）
@@ -144,9 +144,9 @@
       displayName: '对话框',
       description: '显示文本内容，支持头像和说话者',
       propsSchema: DialogPropsSchema,
-      stateShape: null,  // Dialog 无状态
-      events: [],        // Dialog 无事件
-      defaultProps: { text: '' }
+      stateShape: null, // Dialog 无状态
+      events: [], // Dialog 无事件
+      defaultProps: { text: '' },
     };
     ```
   - [ ] 实现 Dialog React 组件
@@ -175,7 +175,7 @@
       propsSchema: ButtonPropsSchema,
       stateShape: null,
       events: [{ type: 'click', description: '点击事件' }],
-      defaultProps: { text: '按钮', variant: 'primary' }
+      defaultProps: { text: '按钮', variant: 'primary' },
     };
     ```
   - [ ] 实现 Button React 组件
@@ -205,10 +205,12 @@
       description: '单选测验组件',
       propsSchema: QuizSinglePropsSchema,
       stateShape: {
-        selected: { type: 'string', nullable: true, description: '当前选中的选项' }
+        selected: { type: 'string', nullable: true, description: '当前选中的选项' },
       },
-      events: [{ type: 'change', description: '选择变更事件', payload: { selected: 'string' } }],
-      defaultProps: { question: '', options: [] }
+      events: [
+        { type: 'change', description: '选择变更事件', payload: { selected: 'string' } },
+      ],
+      defaultProps: { question: '', options: [] },
     };
     ```
   - [ ] 实现 QuizSingle React 组件
@@ -238,10 +240,7 @@
 - [ ] **插值解析器** (`src/utils/interpolation.ts`)
   - [ ] 实现 `interpolate` 函数
     ```typescript
-    function interpolate(
-      template: string,
-      resolver: (path: string) => any
-    ): string;
+    function interpolate(template: string, resolver: (path: string) => any): string;
     ```
   - [ ] 支持 `{{ref}}` 语法
   - [ ] 支持嵌套路径 `{{globals.vars.score}}`
@@ -675,50 +674,54 @@ packages/vvce-components/
 
 ### M0 阶段完成度：70%
 
-| 模块 | 进度 | 状态 | 说明 |
-|------|------|------|------|
-| vvce-core | 95% | ✅ | 只剩集成测试 |
-| vvce-schema | 85% | ✅ | JSON Schema、语义校验、Dry Run 已完成 |
-| vvce-components | 5% | 🔴 | **关键路径** - 需要实现组件架构和 3 个基础组件 |
-| Backend API | 30% | 🔄 | 需要实现所有 API |
-| CI/CD | 100% | ✅ | 已完成 |
-| 文档 | 85% | ✅ | 需要 API 和组件文档 |
+| 模块            | 进度 | 状态 | 说明                                           |
+| --------------- | ---- | ---- | ---------------------------------------------- |
+| vvce-core       | 95%  | ✅   | 只剩集成测试                                   |
+| vvce-schema     | 85%  | ✅   | JSON Schema、语义校验、Dry Run 已完成          |
+| vvce-components | 5%   | 🔴   | **关键路径** - 需要实现组件架构和 3 个基础组件 |
+| Backend API     | 30%  | 🔄   | 需要实现所有 API                               |
+| CI/CD           | 100% | ✅   | 已完成                                         |
+| 文档            | 85%  | ✅   | 需要 API 和组件文档                            |
 
 ### vvce-components 详细进度
 
-| 子模块 | 进度 | 状态 |
-|--------|------|------|
-| 组件协议定义 | 0% | ⏳ |
-| 组件注册表 | 0% | ⏳ |
-| 组件工厂 | 0% | ⏳ |
-| 渲染上下文 | 0% | ⏳ |
-| Dialog 组件 | 0% | ⏳ |
-| Button 组件 | 0% | ⏳ |
-| QuizSingle 组件 | 0% | ⏳ |
-| 文本插值系统 | 0% | ⏳ |
-| 样式系统集成 | 0% | ⏳ |
-| Runtime 适配器 | 0% | ⏳ |
-| 场景/节点渲染器 | 0% | ⏳ |
-| 测试基础设施 | 0% | ⏳ |
+| 子模块          | 进度 | 状态 |
+| --------------- | ---- | ---- |
+| 组件协议定义    | 0%   | ⏳   |
+| 组件注册表      | 0%   | ⏳   |
+| 组件工厂        | 0%   | ⏳   |
+| 渲染上下文      | 0%   | ⏳   |
+| Dialog 组件     | 0%   | ⏳   |
+| Button 组件     | 0%   | ⏳   |
+| QuizSingle 组件 | 0%   | ⏳   |
+| 文本插值系统    | 0%   | ⏳   |
+| 样式系统集成    | 0%   | ⏳   |
+| Runtime 适配器  | 0%   | ⏳   |
+| 场景/节点渲染器 | 0%   | ⏳   |
+| 测试基础设施    | 0%   | ⏳   |
 
 ---
 
 ## 🎯 本周重点（2026-01-14 ~ 2026-01-20）
 
 ### 优先级 1：vvce-components 基础架构
+
 1. **组件协议定义** - 完成 `VVCEComponentMeta`、`VVCEComponentProps`、`VVCEEvent` 接口
 2. **组件注册表** - 实现 `ComponentRegistry` 类
 3. **渲染上下文** - 实现 `RenderContext` 和 `VVCEProvider`
 
 ### 优先级 2：基础组件实现
+
 4. **Dialog 组件** - 完成基础实现和测试
 5. **Button 组件** - 完成基础实现和测试
 
 ### 优先级 3：集成与验证
+
 6. **Runtime 适配器** - 桥接 vvce-core
 7. **简单集成测试** - 验证组件与 Runtime 交互
 
 ### 本周目标
+
 - vvce-components 进度从 5% 提升到 40%
 - 完成组件架构基础设施
 - 完成 Dialog 和 Button 两个组件
