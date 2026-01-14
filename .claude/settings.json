@@ -1,0 +1,136 @@
+{
+  "skills": {
+    "pre-commit-check": {
+      "triggers": [
+        "提交代码",
+        "commit",
+        "提交前检查",
+        "CI 检查",
+        "代码检查",
+        "准备提交"
+      ],
+      "auto": false
+    },
+    "todo-manager": {
+      "triggers": [
+        "TODO",
+        "待办",
+        "任务列表",
+        "完成了",
+        "做完了",
+        "更新进度",
+        "标记完成",
+        "本周任务"
+      ],
+      "auto": true
+    },
+    "pr-prepare": {
+      "triggers": [
+        "创建 PR",
+        "发起 PR",
+        "Pull Request",
+        "准备合并"
+      ],
+      "auto": false
+    },
+    "component-scaffold": {
+      "triggers": [
+        "创建组件",
+        "新组件",
+        "添加组件",
+        "生成组件"
+      ],
+      "auto": false
+    },
+    "dsl-validate": {
+      "triggers": [
+        "验证 DSL",
+        "检查 DSL",
+        "DSL 校验",
+        "课件检查"
+      ],
+      "auto": false
+    },
+    "debug-helper": {
+      "triggers": [
+        "调试",
+        "debug",
+        "问题排查",
+        "运行时错误",
+        "事件没触发",
+        "动作没执行"
+      ],
+      "auto": false
+    },
+    "test-runner": {
+      "triggers": [
+        "运行测试",
+        "跑测试",
+        "test",
+        "测试覆盖率",
+        "coverage",
+        "测试失败"
+      ],
+      "auto": false
+    },
+    "api-test": {
+      "triggers": [
+        "测试 API",
+        "API 测试",
+        "接口测试",
+        "后端测试"
+      ],
+      "auto": false
+    },
+    "release-prep": {
+      "triggers": [
+        "发布版本",
+        "release",
+        "发版",
+        "版本升级"
+      ],
+      "auto": false
+    },
+    "code-review": {
+      "triggers": [
+        "代码审查",
+        "code review",
+        "CR",
+        "审查代码"
+      ],
+      "auto": false
+    },
+    "project-init": {
+      "triggers": [
+        "创建项目",
+        "初始化项目",
+        "创建 app",
+        "创建 package"
+      ],
+      "auto": false
+    }
+  },
+  "workflows": {
+    "before-commit": [
+      "pre-commit-check"
+    ],
+    "after-feature-complete": [
+      "todo-manager",
+      "pre-commit-check"
+    ],
+    "before-pr": [
+      "pre-commit-check",
+      "pr-prepare"
+    ],
+    "before-release": [
+      "pre-commit-check",
+      "release-prep"
+    ]
+  },
+  "project": {
+    "type": "monorepo",
+    "packageManager": "pnpm",
+    "testRunner": "vitest",
+    "buildTool": "tsup"
+  }
+}

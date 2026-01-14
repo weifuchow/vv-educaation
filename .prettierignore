@@ -26,3 +26,6 @@ server/api/target/
 
 # Misc
 .husky/_
+
+# Claude AI configuration (skill files are for AI consumption, not strict formatting)
+.claude/
