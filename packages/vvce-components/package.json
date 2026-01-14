@@ -8,21 +8,41 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "test": "echo \"No tests yet\" && exit 0",
-    "test:ci": "echo \"No tests yet\" && exit 0"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "vvce",
-    "components"
+    "components",
+    "react"
   ],
   "author": "VV Education",
   "license": "MIT",
+  "dependencies": {
+    "clsx": "^2.1.0"
+  },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/react": "^14.2.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "@vv-education/vvce-core": "workspace:*",
     "@vv-education/vvce-schema": "workspace:*",
+    "jsdom": "^24.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
   },
   "peerDependencies": {
-    "@vv-education/vvce-schema": "workspace:*"
+    "@vv-education/vvce-core": "workspace:*",
+    "@vv-education/vvce-schema": "workspace:*",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   }
 }
