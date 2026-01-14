@@ -4,7 +4,6 @@
  * React hook for text interpolation with automatic updates
  */
 
-import { useMemo } from 'react';
 import { useResolveRef } from '../context/hooks';
 import { interpolate, extractRefs } from '../utils/interpolation';
 
@@ -25,13 +24,11 @@ import { interpolate, extractRefs } from '../utils/interpolation';
 export function useInterpolation(template: string): string {
   const resolveRef = useResolveRef();
 
-  return useMemo(() => {
-    if (!template || typeof template !== 'string') {
-      return template || '';
-    }
+  if (!template || typeof template !== 'string') {
+    return template || '';
+  }
 
-    return interpolate(template, resolveRef);
-  }, [template, resolveRef]);
+  return interpolate(template, resolveRef);
 }
 
 /**
@@ -47,16 +44,14 @@ export function useInterpolationRefs(template: string): {
 } {
   const resolveRef = useResolveRef();
 
-  return useMemo(() => {
-    const refs = extractRefs(template);
-    const values: Record<string, unknown> = {};
+  const refs = extractRefs(template);
+  const values: Record<string, unknown> = {};
 
-    for (const ref of refs) {
-      values[ref] = resolveRef(ref);
-    }
+  for (const ref of refs) {
+    values[ref] = resolveRef(ref);
+  }
 
-    const result = interpolate(template, resolveRef);
+  const result = interpolate(template, resolveRef);
 
-    return { refs, values, result };
-  }, [template, resolveRef]);
+  return { refs, values, result };
 }
