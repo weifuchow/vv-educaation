@@ -13,6 +13,12 @@ export const bezierCurveStyles = `
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   font-family: system-ui, -apple-system, sans-serif;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.bezier-animation-container * {
+  box-sizing: border-box;
 }
 
 .bezier-header {
@@ -87,10 +93,12 @@ export const bezierCurveStyles = `
 .bezier-status {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 32px;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  flex-wrap: wrap;
 }
 
 .status-item {
@@ -102,37 +110,122 @@ export const bezierCurveStyles = `
 .status-label {
   font-size: 14px;
   color: #64748b;
+  font-weight: 500;
 }
 
 .status-value {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1e40af;
   font-family: 'Fira Code', 'JetBrains Mono', monospace;
 }
 
+/* 控制按钮区域 */
+.bezier-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+/* 按钮基础样式 */
+.bezier-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: system-ui, -apple-system, sans-serif;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  outline: none;
+  white-space: nowrap;
+  min-width: 140px;
+}
+
+.bezier-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* 主要按钮样式 */
+.bezier-btn.bezier-btn-primary,
+.bezier-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.bezier-btn.bezier-btn-primary:hover,
+.bezier-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.bezier-btn.bezier-btn-primary:active,
+.bezier-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+/* 次要按钮样式 */
+.bezier-btn.bezier-btn-secondary,
+.bezier-btn-secondary {
+  background: white;
+  color: #3b82f6 !important;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.bezier-btn.bezier-btn-secondary:hover,
+.bezier-btn-secondary:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.bezier-btn.bezier-btn-secondary:active,
+.bezier-btn-secondary:active {
+  transform: translateY(0);
+  background: #dbeafe;
+}
+
+/* 图例区域 */
 .bezier-legend {
   display: flex;
   justify-content: center;
-  gap: 24px;
+  align-items: center;
+  gap: 28px;
   flex-wrap: wrap;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
 }
 
 .legend-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
   color: #475569;
+  white-space: nowrap;
 }
 
 .legend-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .legend-dot.control-point {
@@ -149,6 +242,7 @@ export const bezierCurveStyles = `
   width: 24px;
   height: 3px;
   border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .legend-line.auxiliary {
@@ -169,48 +263,45 @@ export const bezierCurveStyles = `
   color: #1e40af;
 }
 
-.bezier-controls {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 16px;
+/* 响应式样式 - 平板 */
+@media (max-width: 768px) {
+  .bezier-animation-container {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .bezier-title {
+    font-size: 22px;
+  }
+
+  .bezier-canvas-wrapper {
+    height: 420px;
+    min-height: 380px;
+  }
+
+  .bezier-status {
+    gap: 20px;
+    padding: 14px 16px;
+  }
+
+  .bezier-controls {
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .bezier-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    min-width: 120px;
+  }
+
+  .bezier-legend {
+    gap: 20px;
+    padding: 12px 16px;
+  }
 }
 
-.bezier-btn {
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.bezier-btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
-}
-
-.bezier-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.45);
-}
-
-.bezier-btn-primary:active {
-  transform: translateY(0);
-}
-
-.bezier-btn-secondary {
-  background: white;
-  color: #3b82f6;
-  border: 2px solid #3b82f6;
-}
-
-.bezier-btn-secondary:hover {
-  background: #eff6ff;
-}
-
+/* 响应式样式 - 手机 */
 @media (max-width: 640px) {
   .bezier-animation-container {
     padding: 12px;
@@ -236,16 +327,38 @@ export const bezierCurveStyles = `
 
   .bezier-status {
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
+    padding: 12px 14px;
+  }
+
+  .status-item {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 8px;
+  }
+
+  .bezier-controls {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .bezier-btn {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 15px;
   }
 
   .bezier-legend {
-    gap: 16px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px 16px;
   }
 
   .legend-item {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .bezier-info {
@@ -278,6 +391,7 @@ export const bezierCurveStyles = `
   animation: fade-in 0.5s ease-out;
 }
 
+/* 暗色主题 */
 .bezier-animation-container.dark {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
@@ -291,7 +405,7 @@ export const bezierCurveStyles = `
 }
 
 .bezier-animation-container.dark .bezier-status {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .bezier-animation-container.dark .status-label {
@@ -302,8 +416,22 @@ export const bezierCurveStyles = `
   color: #60a5fa;
 }
 
-.bezier-animation-container.dark .bezier-legend {
+.bezier-animation-container.dark .bezier-controls {
   background: rgba(15, 23, 42, 0.7);
+}
+
+.bezier-animation-container.dark .bezier-btn-secondary {
+  background: #1e293b;
+  border-color: #60a5fa;
+  color: #60a5fa !important;
+}
+
+.bezier-animation-container.dark .bezier-btn-secondary:hover {
+  background: #334155;
+}
+
+.bezier-animation-container.dark .bezier-legend {
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .bezier-animation-container.dark .legend-item {
