@@ -391,7 +391,6 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     if (!tooltip) return;
 
     const area = this.getDrawingArea();
-    const wrapper = this.container.querySelector('.bezier-canvas-wrapper') as HTMLElement;
 
     // 检查是否在绘图区域内
     if (
@@ -403,44 +402,25 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       // 转换为坐标值 (0-100)
       const coord = this.canvasToCoord(pos);
 
-      let tooltipContent = `x: ${coord.x.toFixed(1)}<br>y: ${coord.y.toFixed(1)}`;
+      let tooltipContent = `<div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">鼠标位置</div>`;
+      tooltipContent += `<div>x: <strong>${coord.x.toFixed(1)}</strong>  y: <strong>${coord.y.toFixed(1)}</strong></div>`;
 
       // 如果悬停在曲线点上，显示t值
       if (this.hoveredPoint) {
-        tooltipContent += `<br><span style="color: #ef4444; font-weight: bold;">t = ${this.hoveredPoint.t.toFixed(3)}</span>`;
-        tooltipContent += `<br><span style="color: #3b82f6;">曲线点: (${this.hoveredPoint.x.toFixed(1)}, ${this.hoveredPoint.y.toFixed(1)})</span>`;
+        tooltipContent += `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2);">`;
+        tooltipContent += `<div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">曲线点</div>`;
+        tooltipContent += `<div style="color: #ef4444; font-weight: bold;">t = ${this.hoveredPoint.t.toFixed(3)}</div>`;
+        tooltipContent += `<div style="color: #60a5fa;">(${this.hoveredPoint.x.toFixed(1)}, ${this.hoveredPoint.y.toFixed(1)})</div>`;
+        tooltipContent += `</div>`;
       }
 
       tooltip.innerHTML = tooltipContent;
       tooltip.style.display = 'block';
 
-      // 智能定位：优先显示在右侧，避免超出画布
-      const wrapperRect = wrapper?.getBoundingClientRect();
-      const tooltipWidth = 150; // 估计宽度
-      const tooltipHeight = 80; // 估计高度
-      const offsetX = 20;
-      const offsetY = 15;
-
-      let left = pos.x + offsetX;
-      let top = pos.y - offsetY;
-
-      // 如果右侧空间不足，显示在左侧
-      if (wrapperRect && pos.x + offsetX + tooltipWidth > wrapperRect.width) {
-        left = pos.x - tooltipWidth - 10;
-      }
-
-      // 如果底部空间不足，向上偏移
-      if (wrapperRect && pos.y + tooltipHeight > wrapperRect.height) {
-        top = pos.y - tooltipHeight - 10;
-      }
-
-      // 确保不超出顶部
-      if (top < 5) {
-        top = 5;
-      }
-
-      tooltip.style.left = `${left}px`;
-      tooltip.style.top = `${top}px`;
+      // 固定在画布右上角显示，避免重叠
+      tooltip.style.right = '10px';
+      tooltip.style.top = '10px';
+      tooltip.style.left = 'auto';
     } else {
       this.hideTooltip();
     }
