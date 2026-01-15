@@ -77,6 +77,9 @@ export const bezierCurveStyles = `
 
 .bezier-tooltip {
   position: absolute;
+  top: 10px;
+  right: 10px;
+  left: auto !important;
   padding: 10px 14px;
   background: rgba(30, 41, 59, 0.95);
   color: white;
@@ -89,6 +92,7 @@ export const bezierCurveStyles = `
   white-space: nowrap;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  display: none;
 }
 
 .bezier-status {

@@ -416,11 +416,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
       tooltip.innerHTML = tooltipContent;
       tooltip.style.display = 'block';
-
-      // 固定在画布右上角显示，避免重叠
-      tooltip.style.right = '10px';
-      tooltip.style.top = '10px';
-      tooltip.style.left = 'auto';
+      // 位置由CSS固定在右上角
     } else {
       this.hideTooltip();
     }
