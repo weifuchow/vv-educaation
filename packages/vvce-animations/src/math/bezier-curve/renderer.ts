@@ -122,16 +122,20 @@ export class BezierCurveRenderer implements IAnimationRenderer {
         </div>
         <div class="bezier-status">
           <div class="status-item">
-            <span class="status-label">当前 t 值:</span>
+            <span class="status-label">t 值:</span>
             <span class="status-value" id="t-display">0.00</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">曲线点:</span>
+            <span class="status-value" id="point-display" style="color: #ef4444;">-</span>
           </div>
           <div class="status-item">
             <span class="status-label">进度:</span>
             <span class="status-value" id="progress-display">0%</span>
           </div>
           <div class="status-item">
-            <span class="status-label">已生成点数:</span>
-            <span class="status-value" id="points-display">0 / ${this.bezierConfig.samplePoints}</span>
+            <span class="status-label">点数:</span>
+            <span class="status-value" id="points-display">0/${this.bezierConfig.samplePoints}</span>
           </div>
         </div>
         <div class="bezier-legend">
@@ -576,10 +580,21 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     const progressEl = this.container.querySelector('#progress-display');
     const pointsEl = this.container.querySelector('#points-display');
     const tEl = this.container.querySelector('#t-display');
+    const pointDisplayEl = this.container.querySelector('#point-display');
 
     if (progressEl) progressEl.textContent = `${progress}%`;
-    if (pointsEl) pointsEl.textContent = `${this.currentPointIndex} / ${samplePoints}`;
+    if (pointsEl) pointsEl.textContent = `${this.currentPointIndex}/${samplePoints}`;
     if (tEl) tEl.textContent = currentT.toFixed(2);
+
+    // 更新当前曲线点坐标显示
+    if (pointDisplayEl) {
+      if (this.drawnPoints.length > 0) {
+        const currentPoint = this.drawnPoints[this.drawnPoints.length - 1];
+        pointDisplayEl.textContent = `(${currentPoint.x.toFixed(1)}, ${currentPoint.y.toFixed(1)})`;
+      } else {
+        pointDisplayEl.textContent = '-';
+      }
+    }
   }
 
   private draw(): void {
