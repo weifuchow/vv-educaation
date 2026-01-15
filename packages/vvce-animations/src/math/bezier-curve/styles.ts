@@ -57,9 +57,15 @@ export const bezierCurveStyles = `
   font-size: 11px;
 }
 
+.bezier-main-area {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
 .bezier-canvas-wrapper {
   position: relative;
-  width: 100%;
+  flex: 1;
   height: 500px;
   min-height: 450px;
   background: white;
@@ -75,24 +81,28 @@ export const bezierCurveStyles = `
   cursor: crosshair;
 }
 
+.bezier-side-panel {
+  width: 160px;
+  flex-shrink: 0;
+}
+
 .bezier-tooltip {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  left: auto !important;
-  padding: 10px 14px;
+  width: 100%;
+  padding: 12px;
   background: rgba(30, 41, 59, 0.95);
   color: white;
   font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.5;
   border-radius: 8px;
-  pointer-events: none;
-  z-index: 1000;
-  white-space: nowrap;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  display: none;
+}
+
+.tooltip-placeholder {
+  color: #94a3b8;
+  text-align: center;
+  font-size: 11px;
 }
 
 .bezier-status {
