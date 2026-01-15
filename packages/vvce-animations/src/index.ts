@@ -12,10 +12,18 @@ export { webAnimationRegistry } from './standards/WebAnimationRegistry';
 export { AnimationBase } from './core/AnimationBase';
 export { AnimationRegistry, animationRegistry } from './core/registry';
 
-// ============= Web标准动画模块 =============
+// ============= 通用动画效果 =============
+export * from './common';
+export { commonModuleInfo } from './common';
+
+// ============= 学科动画模块 =============
+// 物理
 export { pisaTowerModule } from './physics/pisa-tower/index';
+// 地理
 export { earthSystemModule } from './geography/earth-system/index';
+// 数学
 export { bezierCurveModule } from './math/bezier-curve/index';
+export { mathModuleInfo, mathAnimations } from './math/index';
 
 // ============= 自动注册 =============
 import { webAnimationRegistry } from './standards/WebAnimationRegistry';

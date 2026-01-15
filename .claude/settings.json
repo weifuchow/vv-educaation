@@ -108,6 +108,21 @@
         "创建 package"
       ],
       "auto": false
+    },
+    "course-design": {
+      "triggers": [
+        "设计课程",
+        "创建课程",
+        "新课程",
+        "课程设计",
+        "生成课件",
+        "制作课件",
+        "design course",
+        "create course",
+        "示例课程",
+        "演示课程"
+      ],
+      "auto": false
     }
   },
   "workflows": {

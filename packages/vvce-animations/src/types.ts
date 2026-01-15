@@ -3,6 +3,7 @@
  */
 
 export type AnimationCategory =
+  | 'common'
   | 'physics'
   | 'geography'
   | 'chemistry'
