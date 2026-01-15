@@ -391,6 +391,7 @@ export class BezierCurveRenderer implements IAnimationRenderer {
     if (!tooltip) return;
 
     const area = this.getDrawingArea();
+    const wrapper = this.container.querySelector('.bezier-canvas-wrapper') as HTMLElement;
 
     // 检查是否在绘图区域内
     if (
@@ -412,8 +413,34 @@ export class BezierCurveRenderer implements IAnimationRenderer {
 
       tooltip.innerHTML = tooltipContent;
       tooltip.style.display = 'block';
-      tooltip.style.left = `${pos.x + 15}px`;
-      tooltip.style.top = `${pos.y - 10}px`;
+
+      // 智能定位：优先显示在右侧，避免超出画布
+      const wrapperRect = wrapper?.getBoundingClientRect();
+      const tooltipWidth = 150; // 估计宽度
+      const tooltipHeight = 80; // 估计高度
+      const offsetX = 20;
+      const offsetY = 15;
+
+      let left = pos.x + offsetX;
+      let top = pos.y - offsetY;
+
+      // 如果右侧空间不足，显示在左侧
+      if (wrapperRect && pos.x + offsetX + tooltipWidth > wrapperRect.width) {
+        left = pos.x - tooltipWidth - 10;
+      }
+
+      // 如果底部空间不足，向上偏移
+      if (wrapperRect && pos.y + tooltipHeight > wrapperRect.height) {
+        top = pos.y - tooltipHeight - 10;
+      }
+
+      // 确保不超出顶部
+      if (top < 5) {
+        top = 5;
+      }
+
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${top}px`;
     } else {
       this.hideTooltip();
     }
