@@ -456,18 +456,8 @@
     <div class="scene-selector" id="scene-selector">
       <div class="selector-title">📚 选择场景 / Scene Selection</div>
       <div class="scene-grid" id="scene-grid">
-        <div class="scene-card" data-scene="math-quiz">
-          <div class="scene-card-title">🧮 数学测验</div>
-          <div class="scene-card-desc">基础加法和乘法测试</div>
-        </div>
-        <div class="scene-card" data-scene="pisa-tower">
-          <div class="scene-card-title">🏛️ 比萨斜塔实验</div>
-          <div class="scene-card-desc">伽利略的自由落体实验</div>
-        </div>
-        <div class="scene-card" data-scene="earth-system">
-          <div class="scene-card-title">🌍 地球公转自转</div>
-          <div class="scene-card-desc">地球运动的互动模拟</div>
-        </div>
+        <!-- 场景卡片从 manifest.json 动态加载 -->
+        <div class="loading-scenes">正在加载场景列表...</div>
       </div>
     </div>
 
@@ -882,7 +872,43 @@
         }
       }
 
-      // Scene selector
+      // Load scene manifest and render scene cards dynamically
+      async function loadSceneManifest() {
+        try {
+          const response = await fetch('../scenes/manifest.json');
+          if (!response.ok) {
+            throw new Error('Failed to load manifest');
+          }
+          const manifest = await response.json();
+          const sceneGrid = document.getElementById('scene-grid');
+
+          // Generate scene cards from manifest
+          sceneGrid.innerHTML = manifest.scenes
+            .map(
+              (scene) => `
+            <div class="scene-card" data-scene="${scene.id}">
+              <div class="scene-card-title">${scene.icon} ${scene.title}</div>
+              <div class="scene-card-desc">${scene.description}</div>
+            </div>
+          `
+            )
+            .join('');
+
+          console.log(`✅ Loaded ${manifest.scenes.length} scenes from manifest`);
+        } catch (error) {
+          console.error('Failed to load scene manifest:', error);
+          document.getElementById('scene-grid').innerHTML = `
+            <div style="color: red; padding: 20px;">
+              ❌ 无法加载场景列表: ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      // Initialize: load manifest first
+      loadSceneManifest();
+
+      // Scene selector (using event delegation for dynamically loaded cards)
       document.getElementById('scene-grid').addEventListener('click', (e) => {
         const card = e.target.closest('.scene-card');
         if (!card) return;
