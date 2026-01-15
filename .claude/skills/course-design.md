@@ -12,7 +12,33 @@
 
 ## 输出目录
 
-生成的 DSL 文件保存到：`scene-viewer/scenes/` 目录
+- **课程 DSL**: `scene-viewer/scenes/` 目录
+- **动画定义**: `packages/vvce-animations/src/{category}/` 目录
+
+## 动画库结构
+
+动画资源保存在 `packages/vvce-animations/` 目录，按学科分类：
+
+```
+packages/vvce-animations/src/
+├── common/                    # 通用 UI 动画效果
+│   └── effects/
+│       ├── types.ts          # 类型定义
+│       ├── entrance.ts       # 入场动画 (17个)
+│       ├── emphasis.ts       # 强调动画 (15个)
+│       ├── exit.ts           # 退场动画 (15个)
+│       └── index.ts          # 导出
+├── physics/                   # 物理实验动画
+│   └── pisa-tower/           # 比萨斜塔实验
+├── geography/                 # 地理动画
+│   └── earth-system/         # 地球系统
+├── math/                      # 数学动画
+│   ├── bezier-curve/         # 贝塞尔曲线
+│   └── index.ts
+├── chemistry/                 # 化学动画（预留）
+├── biology/                   # 生物动画（预留）
+└── index.ts                   # 主入口
+```
 
 ## 设计流程
 
@@ -25,6 +51,7 @@
 - 课程标题
 - 课程描述
 - 目标学习者
+- 学科分类：physics | geography | math | chemistry | biology
 
 **内容设计：**
 - 场景数量（推荐 3-8 个）
@@ -41,9 +68,109 @@
 - 是否需要自定义动画
 - 场景过渡效果
 
-### 2. DSL 结构模板
+### 2. 动画库使用
 
-#### 完整课程结构（带动画和样式）
+#### 引用动画库
+
+```typescript
+import {
+  // 通用动画效果
+  fadeIn, fadeInUp, bounceIn, zoomIn,
+  pulse, shake, celebrate, tada,
+  fadeOut, slideOutLeft,
+  // 注册表
+  effectsRegistry,
+  getEffect,
+  // 学科动画
+  pisaTowerModule,
+  earthSystemModule,
+} from '@vv-education/vvce-animations';
+```
+
+#### 通用动画效果 (common)
+
+##### 入场动画 (entrance) - 17 个
+| ID | 名称 | 描述 | 推荐用途 |
+|----|------|------|----------|
+| `common.fadeIn` | 淡入 | 从透明到不透明 | 通用入场 |
+| `common.fadeInUp` | 向上淡入 | 从下方淡入 | 内容展示 |
+| `common.fadeInDown` | 向下淡入 | 从上方淡入 | 标题入场 |
+| `common.fadeInLeft` | 从左淡入 | 从左侧淡入 | 列表项 |
+| `common.fadeInRight` | 从右淡入 | 从右侧淡入 | 列表项 |
+| `common.slideInLeft` | 左侧滑入 | 从左侧滑入 | 下一步内容 |
+| `common.slideInRight` | 右侧滑入 | 从右侧滑入 | 返回内容 |
+| `common.slideInUp` | 底部滑入 | 从底部滑入 | 弹窗 |
+| `common.slideInDown` | 顶部滑入 | 从顶部滑入 | 通知 |
+| `common.bounceIn` | 弹跳入场 | 弹跳效果 | 强调元素 |
+| `common.bounceInUp` | 向上弹跳入场 | 从底部弹跳 | 重要提示 |
+| `common.bounceInDown` | 向下弹跳入场 | 从顶部弹跳 | 警告 |
+| `common.zoomIn` | 缩放入场 | 从小到大 | 图片展示 |
+| `common.zoomInUp` | 向上缩放入场 | 从底部缩放 | 卡片 |
+| `common.rotateIn` | 旋转入场 | 旋转进入 | 特效 |
+| `common.flipInX` | X轴翻转入场 | 沿X轴翻转 | 卡片翻转 |
+| `common.flipInY` | Y轴翻转入场 | 沿Y轴翻转 | 卡片翻转 |
+
+##### 强调动画 (emphasis) - 15 个
+| ID | 名称 | 描述 | 推荐用途 |
+|----|------|------|----------|
+| `common.pulse` | 脉冲 | 脉冲放大缩小 | 提示可点击 |
+| `common.shake` | 抖动 | 左右抖动 | **错误反馈** |
+| `common.shakeX` | 水平抖动 | 剧烈水平抖动 | 警告 |
+| `common.shakeY` | 垂直抖动 | 垂直方向抖动 | 提醒 |
+| `common.bounce` | 弹跳 | 上下弹跳 | 吸引注意 |
+| `common.wobble` | 摇摆 | 左右摇摆 | 趣味强调 |
+| `common.swing` | 摆动 | 钟摆摆动 | 轻微提示 |
+| `common.tada` | 惊喜 | 惊喜效果 | **完成奖励** |
+| `common.heartbeat` | 心跳 | 心跳效果 | 重要提示 |
+| `common.celebrate` | 庆祝 | 庆祝效果 | **答对庆祝** |
+| `common.flash` | 闪烁 | 快速闪烁 | 警告提示 |
+| `common.rubberBand` | 橡皮筋 | 弹性效果 | 点击反馈 |
+| `common.jello` | 果冻 | 果冻扭曲 | 趣味效果 |
+| `common.headShake` | 摇头 | 否定效果 | **答错否定** |
+| `common.attention` | 注意 | 吸引注意 | 重要内容 |
+
+##### 退场动画 (exit) - 15 个
+| ID | 名称 | 描述 |
+|----|------|------|
+| `common.fadeOut` | 淡出 | 通用退场 |
+| `common.fadeOutUp` | 向上淡出 | 向上消失 |
+| `common.fadeOutDown` | 向下淡出 | 向下消失 |
+| `common.fadeOutLeft` | 向左淡出 | 向左消失 |
+| `common.fadeOutRight` | 向右淡出 | 向右消失 |
+| `common.slideOutLeft` | 左侧滑出 | 滑出左侧 |
+| `common.slideOutRight` | 右侧滑出 | 滑出右侧 |
+| `common.slideOutUp` | 顶部滑出 | 滑出顶部 |
+| `common.slideOutDown` | 底部滑出 | 滑出底部 |
+| `common.bounceOut` | 弹跳退场 | 弹跳消失 |
+| `common.zoomOut` | 缩放退场 | 缩小消失 |
+| `common.zoomOutUp` | 向上缩放退场 | 向上缩小消失 |
+| `common.rotateOut` | 旋转退场 | 旋转消失 |
+| `common.flipOutX` | X轴翻转退场 | X轴翻转消失 |
+| `common.flipOutY` | Y轴翻转退场 | Y轴翻转消失 |
+
+#### 学科动画模块
+
+##### 物理 (physics)
+| ID | 名称 | 描述 |
+|----|------|------|
+| `physics.pisa-tower` | 比萨斜塔实验 | 伽利略自由落体实验 |
+
+##### 地理 (geography)
+| ID | 名称 | 描述 |
+|----|------|------|
+| `geography.earth-system` | 地球系统 | 地球结构和运动 |
+
+##### 数学 (math)
+| ID | 名称 | 描述 |
+|----|------|------|
+| `math.bezier-curve` | 贝塞尔曲线 | 交互式贝塞尔曲线演示 |
+| `math.geometry-transform` | 几何变换 | 平移、旋转、缩放（预留） |
+| `math.function-graph` | 函数图像 | 函数可视化（预留） |
+| `math.pythagorean` | 勾股定理 | 勾股定理证明（预留） |
+
+### 3. DSL 结构模板
+
+#### 完整课程结构（引用动画库）
 
 ```json
 {
@@ -53,7 +180,8 @@
     "version": "1.0.0",
     "title": "课程标题",
     "author": "VV Education",
-    "description": "课程描述"
+    "description": "课程描述",
+    "category": "physics"
   },
   "globals": {
     "vars": {
@@ -72,82 +200,13 @@
         "error": "#EF4444"
       },
       "spacing": {
-        "xs": 4,
-        "sm": 8,
-        "md": 16,
-        "lg": 24,
-        "xl": 32
+        "xs": 4, "sm": 8, "md": 16, "lg": 24, "xl": 32
       }
     },
-    "animations": {
-      "fadeInUp": {
-        "keyframes": [
-          { "offset": 0, "properties": { "opacity": 0, "translateY": 20 } },
-          { "offset": 100, "properties": { "opacity": 1, "translateY": 0 } }
-        ],
-        "duration": 400,
-        "easing": "ease-out"
-      },
-      "pulse": {
-        "keyframes": [
-          { "offset": 0, "properties": { "scale": 1 } },
-          { "offset": 50, "properties": { "scale": 1.05 } },
-          { "offset": 100, "properties": { "scale": 1 } }
-        ],
-        "duration": 1000,
-        "iterations": -1
-      },
-      "shake": {
-        "keyframes": [
-          { "offset": 0, "properties": { "translateX": 0 } },
-          { "offset": 25, "properties": { "translateX": -10 } },
-          { "offset": 50, "properties": { "translateX": 10 } },
-          { "offset": 75, "properties": { "translateX": -5 } },
-          { "offset": 100, "properties": { "translateX": 0 } }
-        ],
-        "duration": 400,
-        "easing": "ease-out"
-      },
-      "bounceIn": {
-        "keyframes": [
-          { "offset": 0, "properties": { "scale": 0, "opacity": 0 } },
-          { "offset": 60, "properties": { "scale": 1.1, "opacity": 1 } },
-          { "offset": 80, "properties": { "scale": 0.95 } },
-          { "offset": 100, "properties": { "scale": 1 } }
-        ],
-        "duration": 600,
-        "easing": "ease-out"
-      },
-      "celebrate": {
-        "keyframes": [
-          { "offset": 0, "properties": { "scale": 1, "rotate": 0 } },
-          { "offset": 25, "properties": { "scale": 1.2, "rotate": -10 } },
-          { "offset": 50, "properties": { "scale": 1.2, "rotate": 10 } },
-          { "offset": 75, "properties": { "scale": 1.1, "rotate": -5 } },
-          { "offset": 100, "properties": { "scale": 1, "rotate": 0 } }
-        ],
-        "duration": 800,
-        "easing": "ease-out"
-      }
-    },
-    "transitions": {
-      "slideLeft": {
-        "type": "slide",
-        "direction": "left",
-        "duration": 400,
-        "easing": "ease-in-out"
-      },
-      "fade": {
-        "type": "fade",
-        "duration": 300,
-        "easing": "ease"
-      },
-      "zoom": {
-        "type": "zoom",
-        "duration": 400,
-        "easing": "ease-out"
-      }
-    },
+    "animationImports": [
+      "@vv-education/vvce-animations/common",
+      "@vv-education/vvce-animations/physics/pisa-tower"
+    ],
     "styles": {
       "card": {
         "base": {
@@ -166,23 +225,8 @@
           "fontSize": 16,
           "fontWeight": 600
         },
-        "hover": {
-          "backgroundColor": "#4338CA",
-          "scale": 1.02
-        },
-        "active": {
-          "scale": 0.98
-        }
-      },
-      "button-secondary": {
-        "base": {
-          "padding": [10, 20],
-          "borderRadius": 8,
-          "backgroundColor": "transparent",
-          "borderWidth": 2,
-          "borderColor": "$colors.primary",
-          "color": "$colors.primary"
-        }
+        "hover": { "backgroundColor": "#4338CA", "scale": 1.02 },
+        "active": { "scale": 0.98 }
       }
     }
   },
@@ -192,7 +236,7 @@
 }
 ```
 
-### 3. 场景模板库
+### 4. 场景模板库
 
 #### 引入场景 (intro)
 
@@ -212,99 +256,29 @@
       "type": "Dialog",
       "props": {
         "speaker": "VV老师",
-        "text": "欢迎来到{{globals.vars.courseName}}！",
-        "avatar": "teacher"
+        "text": "欢迎来到{{globals.vars.courseName}}！"
       },
-      "style": {
-        "animation": "fadeInUp"
-      }
+      "style": { "animation": "common.fadeInUp" }
     },
     {
       "id": "start-btn",
       "type": "Button",
-      "props": {
-        "text": "开始学习"
-      },
+      "props": { "text": "开始学习" },
       "styleClass": ["button-primary"],
-      "style": {
-        "animation": "bounceIn",
-        "animationDelay": 500
-      }
+      "style": { "animation": "common.bounceIn", "animationDelay": 500 }
     }
   ],
   "triggers": [
     {
       "on": { "event": "click", "target": "start-btn" },
       "then": [
-        { "action": "playAnimation", "target": "start-btn", "animation": "pulse" },
+        { "action": "playAnimation", "target": "start-btn", "animation": "common.pulse" },
         { "action": "delay", "ms": 300 },
         { "action": "gotoScene", "sceneId": "content-1" }
       ]
     }
   ],
-  "transition": {
-    "type": "fade",
-    "duration": 300
-  }
-}
-```
-
-#### 内容场景 (content)
-
-```json
-{
-  "id": "content-1",
-  "layout": {
-    "type": "stack",
-    "direction": "vertical",
-    "gap": 20,
-    "padding": 24
-  },
-  "nodes": [
-    {
-      "id": "title",
-      "type": "Dialog",
-      "props": {
-        "speaker": "VV老师",
-        "text": "第一部分：核心概念"
-      },
-      "style": {
-        "animation": "slideInLeft"
-      }
-    },
-    {
-      "id": "content-text",
-      "type": "Dialog",
-      "props": {
-        "text": "这里是内容讲解..."
-      },
-      "style": {
-        "animation": "fadeInUp",
-        "animationDelay": 200
-      }
-    },
-    {
-      "id": "next-btn",
-      "type": "Button",
-      "props": {
-        "text": "下一步 →"
-      },
-      "styleClass": ["button-primary"]
-    }
-  ],
-  "triggers": [
-    {
-      "on": { "event": "click", "target": "next-btn" },
-      "then": [
-        { "action": "gotoScene", "sceneId": "quiz-1" }
-      ]
-    }
-  ],
-  "transition": {
-    "type": "slide",
-    "direction": "left",
-    "duration": 400
-  }
+  "transition": { "type": "fade", "duration": 300 }
 }
 ```
 
@@ -319,20 +293,12 @@
     "gap": 16,
     "padding": 24
   },
-  "vars": {
-    "feedbackShown": false
-  },
   "nodes": [
     {
       "id": "quiz-dialog",
       "type": "Dialog",
-      "props": {
-        "speaker": "VV老师",
-        "text": "来检验一下学习成果吧！"
-      },
-      "style": {
-        "animation": "fadeInUp"
-      }
+      "props": { "speaker": "VV老师", "text": "来检验一下学习成果吧！" },
+      "style": { "animation": "common.fadeInUp" }
     },
     {
       "id": "quiz-question",
@@ -342,49 +308,14 @@
         "options": ["选项A", "选项B", "选项C", "选项D"],
         "answerKey": "选项B"
       },
-      "style": {
-        "animation": "fadeInUp",
-        "animationDelay": 200
-      }
+      "style": { "animation": "common.fadeInUp", "animationDelay": 200 }
     },
     {
       "id": "submit-btn",
       "type": "Button",
-      "props": {
-        "text": "提交答案"
-      },
+      "props": { "text": "提交答案" },
       "styleClass": ["button-primary"],
-      "style": {
-        "animation": "bounceIn",
-        "animationDelay": 400
-      }
-    },
-    {
-      "id": "anim-test-correct",
-      "type": "Button",
-      "props": {
-        "text": "测试正确动画"
-      },
-      "styleClass": ["button-secondary"],
-      "visible": true
-    },
-    {
-      "id": "anim-test-wrong",
-      "type": "Button",
-      "props": {
-        "text": "测试错误动画"
-      },
-      "styleClass": ["button-secondary"],
-      "visible": true
-    },
-    {
-      "id": "anim-test-celebrate",
-      "type": "Button",
-      "props": {
-        "text": "测试庆祝动画"
-      },
-      "styleClass": ["button-secondary"],
-      "visible": true
+      "style": { "animation": "common.bounceIn", "animationDelay": 400 }
     }
   ],
   "triggers": [
@@ -399,253 +330,79 @@
       ],
       "then": [
         { "action": "addScore", "value": 10 },
-        { "action": "playAnimation", "target": "quiz-question", "animation": "celebrate" },
+        { "action": "playAnimation", "target": "quiz-question", "animation": "common.celebrate" },
         { "action": "toast", "text": "回答正确！+10分" },
         { "action": "delay", "ms": 1500 },
         { "action": "gotoScene", "sceneId": "summary" }
       ],
       "else": [
         { "action": "incVar", "path": "globals.vars.attempt", "by": 1 },
-        { "action": "playAnimation", "target": "quiz-question", "animation": "shake" },
+        { "action": "playAnimation", "target": "quiz-question", "animation": "common.shake" },
         { "action": "toast", "text": "再想想～" }
-      ]
-    },
-    {
-      "on": { "event": "click", "target": "anim-test-correct" },
-      "then": [
-        { "action": "playAnimation", "target": "quiz-question", "animation": "bounceIn" },
-        { "action": "toast", "text": "播放 bounceIn 动画" }
-      ]
-    },
-    {
-      "on": { "event": "click", "target": "anim-test-wrong" },
-      "then": [
-        { "action": "playAnimation", "target": "quiz-question", "animation": "shake" },
-        { "action": "toast", "text": "播放 shake 动画" }
-      ]
-    },
-    {
-      "on": { "event": "click", "target": "anim-test-celebrate" },
-      "then": [
-        { "action": "playAnimation", "target": "quiz-question", "animation": "celebrate" },
-        { "action": "toast", "text": "播放 celebrate 动画" }
       ]
     }
   ]
 }
 ```
 
-#### 总结场景 (summary)
+#### 实验场景 (experiment)
 
 ```json
 {
-  "id": "summary",
-  "layout": {
-    "type": "stack",
-    "direction": "vertical",
-    "gap": 20,
-    "padding": 24,
-    "align": "center"
-  },
+  "id": "experiment-1",
+  "layout": { "type": "stack", "direction": "vertical", "gap": 16, "padding": 24 },
   "nodes": [
     {
-      "id": "complete-dialog",
+      "id": "exp-title",
       "type": "Dialog",
-      "props": {
-        "speaker": "VV老师",
-        "text": "恭喜完成学习！你的最终得分：{{globals.vars.score}}分"
-      },
-      "style": {
-        "animation": "bounceIn"
-      }
+      "props": { "speaker": "VV老师", "text": "让我们来做一个实验！" },
+      "style": { "animation": "common.fadeInDown" }
     },
     {
-      "id": "restart-btn",
-      "type": "Button",
+      "id": "animation-player",
+      "type": "Animation",
       "props": {
-        "text": "重新学习"
+        "type": "physics.pisa-tower",
+        "autoplay": false
       },
-      "styleClass": ["button-secondary"]
+      "style": { "animation": "common.zoomIn", "animationDelay": 300 }
     },
     {
-      "id": "test-all-animations",
+      "id": "play-btn",
       "type": "Button",
-      "props": {
-        "text": "测试所有动画"
-      },
+      "props": { "text": "开始实验" },
       "styleClass": ["button-primary"]
     }
   ],
   "triggers": [
     {
-      "on": { "event": "click", "target": "restart-btn" },
+      "on": { "event": "click", "target": "play-btn" },
       "then": [
-        { "action": "setVar", "path": "globals.vars.score", "value": 0 },
-        { "action": "setVar", "path": "globals.vars.attempt", "value": 0 },
-        { "action": "gotoScene", "sceneId": "intro" }
+        { "action": "playAnimation", "target": "animation-player", "animation": "start" },
+        { "action": "toast", "text": "实验开始..." }
       ]
-    },
-    {
-      "on": { "event": "click", "target": "test-all-animations" },
-      "then": [
-        { "action": "playAnimation", "target": "complete-dialog", "animation": "fadeInUp" },
-        { "action": "delay", "ms": 500 },
-        { "action": "playAnimation", "target": "complete-dialog", "animation": "pulse" },
-        { "action": "delay", "ms": 1200 },
-        { "action": "playAnimation", "target": "complete-dialog", "animation": "shake" },
-        { "action": "delay", "ms": 500 },
-        { "action": "playAnimation", "target": "complete-dialog", "animation": "celebrate" }
-      ]
-    }
-  ],
-  "onEnter": [
-    { "action": "playAnimation", "target": "complete-dialog", "animation": "bounceIn" }
-  ]
-}
-```
-
-### 4. 动画验证按钮模板
-
-为了方便快速验证动画效果，每个场景可添加测试按钮组：
-
-```json
-{
-  "id": "animation-test-panel",
-  "type": "Container",
-  "props": {
-    "title": "动画测试面板"
-  },
-  "style": {
-    "position": "fixed",
-    "bottom": 20,
-    "right": 20,
-    "padding": 12,
-    "backgroundColor": "rgba(0,0,0,0.8)",
-    "borderRadius": 8
-  },
-  "children": [
-    {
-      "id": "test-fade",
-      "type": "Button",
-      "props": { "text": "fadeIn" },
-      "style": { "margin": 4 }
-    },
-    {
-      "id": "test-bounce",
-      "type": "Button",
-      "props": { "text": "bounce" },
-      "style": { "margin": 4 }
-    },
-    {
-      "id": "test-shake",
-      "type": "Button",
-      "props": { "text": "shake" },
-      "style": { "margin": 4 }
-    },
-    {
-      "id": "test-pulse",
-      "type": "Button",
-      "props": { "text": "pulse" },
-      "style": { "margin": 4 }
-    },
-    {
-      "id": "test-celebrate",
-      "type": "Button",
-      "props": { "text": "celebrate" },
-      "style": { "margin": 4 }
     }
   ]
 }
 ```
 
-对应的 triggers：
-
-```json
-[
-  {
-    "on": { "event": "click", "target": "test-fade" },
-    "then": [
-      { "action": "playAnimation", "target": "main-content", "animation": "fadeInUp" }
-    ]
-  },
-  {
-    "on": { "event": "click", "target": "test-bounce" },
-    "then": [
-      { "action": "playAnimation", "target": "main-content", "animation": "bounceIn" }
-    ]
-  },
-  {
-    "on": { "event": "click", "target": "test-shake" },
-    "then": [
-      { "action": "playAnimation", "target": "main-content", "animation": "shake" }
-    ]
-  },
-  {
-    "on": { "event": "click", "target": "test-pulse" },
-    "then": [
-      { "action": "playAnimation", "target": "main-content", "animation": "pulse" }
-    ]
-  },
-  {
-    "on": { "event": "click", "target": "test-celebrate" },
-    "then": [
-      { "action": "playAnimation", "target": "main-content", "animation": "celebrate" }
-    ]
-  }
-]
-```
-
-### 5. 内置动画库
-
-#### 入场动画
-| 名称 | 描述 | 用途 |
-|------|------|------|
-| `fadeIn` | 淡入 | 通用入场 |
-| `fadeInUp` | 从下淡入 | 内容展示 |
-| `fadeInDown` | 从上淡入 | 标题入场 |
-| `slideInLeft` | 左侧滑入 | 下一步内容 |
-| `slideInRight` | 右侧滑入 | 返回内容 |
-| `bounceIn` | 弹跳入场 | 强调元素 |
-| `zoomIn` | 缩放入场 | 图片展示 |
-
-#### 强调动画
-| 名称 | 描述 | 用途 |
-|------|------|------|
-| `pulse` | 脉冲 | 提示点击 |
-| `shake` | 抖动 | 错误反馈 |
-| `bounce` | 弹跳 | 吸引注意 |
-| `wobble` | 摇摆 | 趣味强调 |
-| `tada` | 惊喜 | 完成奖励 |
-| `heartbeat` | 心跳 | 重要提示 |
-| `celebrate` | 庆祝 | 正确答案 |
-
-#### 退场动画
-| 名称 | 描述 |
-|------|------|
-| `fadeOut` | 淡出 |
-| `slideOutLeft` | 左侧滑出 |
-| `slideOutRight` | 右侧滑出 |
-| `zoomOut` | 缩放退出 |
-
-### 6. 布局系统
+### 5. 布局系统
 
 #### Stack 布局（线性）
-
 ```json
 {
   "layout": {
     "type": "stack",
-    "direction": "vertical",  // vertical | horizontal
+    "direction": "vertical",
     "gap": 16,
     "padding": 24,
-    "align": "center",        // start | center | end | stretch
-    "justify": "start"        // start | center | end | space-between | space-around
+    "align": "center",
+    "justify": "start"
   }
 }
 ```
 
 #### Grid 布局
-
 ```json
 {
   "layout": {
@@ -657,89 +414,82 @@
 }
 ```
 
-#### Absolute 布局（自由定位）
-
-```json
-{
-  "layout": {
-    "type": "absolute"
-  }
-}
-```
-
-节点使用位置样式：
-```json
-{
-  "style": {
-    "position": "absolute",
-    "top": 100,
-    "left": 50,
-    "width": 200
-  }
-}
-```
-
-### 7. 生成流程
+### 6. 生成流程
 
 1. **收集需求** - 通过对话了解课程设计需求
 2. **选择模板** - 根据场景类型选择合适模板
-3. **组装 DSL** - 将各场景组装成完整课程
-4. **添加测试按钮** - 在关键场景添加动画测试按钮
+3. **引用动画库** - 使用 `common.xxx` 或 `{category}.xxx` 引用动画
+4. **组装 DSL** - 将各场景组装成完整课程
 5. **保存文件** - 写入 `scene-viewer/scenes/{course-id}.json`
 6. **验证** - 使用 dsl-validate 验证生成的 DSL
+
+### 7. 新增动画到库
+
+如需创建新的学科动画，遵循以下步骤：
+
+```bash
+# 1. 创建动画目录
+packages/vvce-animations/src/{category}/{animation-name}/
+├── index.ts      # 模块入口
+├── renderer.ts   # 渲染逻辑
+└── styles.ts     # 样式定义
+
+# 2. 在主入口注册
+# packages/vvce-animations/src/index.ts
+export { myNewModule } from './{category}/{animation-name}/index';
+```
 
 ## 输出示例
 
 ```
 === 课程设计完成 ===
 
-文件已创建: scene-viewer/scenes/my-course.json
+文件已创建: scene-viewer/scenes/physics-free-fall.json
 
 课程概览:
-- ID: my-course
-- 标题: 我的课程
+- ID: physics-free-fall
+- 标题: 自由落体运动
+- 学科: physics
 - 场景数: 4
-- 主题: playful
+- 主题: academic
+
+引用的动画:
+- common: fadeInUp, bounceIn, shake, celebrate, pulse
+- physics: pisa-tower
 
 场景列表:
-1. intro - 欢迎引入
-2. content-1 - 核心概念
-3. quiz-1 - 知识测验
-4. summary - 总结回顾
-
-内置动画测试按钮:
-- 每个场景包含动画测试按钮
-- 可快速验证 fadeIn, bounce, shake, pulse, celebrate 等效果
+1. intro - 课程引入
+2. content-1 - 理论讲解
+3. experiment - 比萨斜塔实验
+4. quiz-1 - 知识测验
+5. summary - 总结
 
 下一步:
 1. 使用 scene-viewer 预览课程
 2. 运行 "验证 DSL" 检查课程完整性
-3. 根据需要调整内容和动画
 ```
 
-## 快速生成命令
+## 快速查找动画
 
-### 生成示例课程（含所有动画测试）
+```typescript
+import { getEffect, listEffectIds, getEffectsByCategory } from '@vv-education/vvce-animations';
 
-```
-用户: 设计一个演示课程，包含所有动画效果
+// 获取单个动画
+const shake = getEffect('common.shake');
 
-AI: 好的，我来为你生成一个演示课程，包含完整的动画测试功能...
-```
+// 列出所有动画 ID
+const allIds = listEffectIds();
 
-### 生成特定主题课程
-
-```
-用户: 创建一个数学课程，3个场景，playful 主题
-
-AI: 好的，让我为你设计这个数学课程...
+// 按类别获取
+const entranceAnimations = getEffectsByCategory('entrance');
+const emphasisAnimations = getEffectsByCategory('emphasis');
 ```
 
 ## 注意事项
 
+- 动画 ID 格式：`{category}.{name}`，如 `common.fadeIn`、`physics.pisa-tower`
 - 课程 ID 使用 kebab-case
 - 确保所有 sceneId 引用正确
-- 动画名称区分大小写
-- 测试按钮仅用于开发验证，正式发布前可移除
+- 新动画应保存到 `packages/vvce-animations/src/` 对应目录
 - 场景过渡时间建议 300-500ms
 - 动画时长建议 300-800ms
