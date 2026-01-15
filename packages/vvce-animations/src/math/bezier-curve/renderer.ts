@@ -408,16 +408,16 @@ export class BezierCurveRenderer implements IAnimationRenderer {
       // 转换为坐标值 (0-100)
       const coord = this.canvasToCoord(pos);
 
-      let tooltipContent = `<div style="font-size: 11px; color: #94a3b8; margin-bottom: 6px;">鼠标位置</div>`;
+      let tooltipContent = `<div style="font-size: 16px; color: #91baf3; margin-bottom: 6px;">鼠标位置</div>`;
       tooltipContent += `<div style="margin-bottom: 4px;">x: <strong>${coord.x.toFixed(1)}</strong></div>`;
       tooltipContent += `<div>y: <strong>${coord.y.toFixed(1)}</strong></div>`;
 
       // 如果悬停在曲线点上，显示t值
       if (this.hoveredPoint) {
         tooltipContent += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2);">`;
-        tooltipContent += `<div style="font-size: 11px; color: #94a3b8; margin-bottom: 6px;">曲线点</div>`;
+        tooltipContent += `<div style="font-size: 16px; color: #91baf3; margin-bottom: 6px;">曲线点</div>`;
         tooltipContent += `<div style="color: #ef4444; font-weight: bold; margin-bottom: 4px;">t = ${this.hoveredPoint.t.toFixed(3)}</div>`;
-        tooltipContent += `<div style="color: #60a5fa;">P(${this.hoveredPoint.x.toFixed(1)}, ${this.hoveredPoint.y.toFixed(1)})</div>`;
+        tooltipContent += `<div style="color: #60a5fa;">P(${this.hoveredPoint.x.toFixed(1)}, ${this.hoveredPoint.y.toFixed(1)})<br>--------------------</div>`;
         tooltipContent += `</div>`;
       }
 
