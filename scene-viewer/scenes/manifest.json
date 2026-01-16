@@ -24,6 +24,12 @@
       "title": "贝塞尔曲线",
       "icon": "📐",
       "description": "De Casteljau算法可视化教学"
+    },
+    {
+      "id": "biology-blood-circulation",
+      "title": "血液循环",
+      "icon": "🫀",
+      "description": "展示心脏、肺循环与体循环的血液流向"
     }
   ]
 }

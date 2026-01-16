@@ -1,0 +1,538 @@
+{
+  "schema": "vvce.dsl.v1",
+  "meta": {
+    "id": "biology-blood-circulation",
+    "version": "0.1.0",
+    "title": "生物课程：血液循环",
+    "description": "通过通用动画和基础组件了解血液循环的路径与功能。",
+    "author": "VV Education"
+  },
+  "globals": {
+    "vars": {
+      "score": 0,
+      "attempt": 0
+    }
+  },
+  "resources": {
+    "variables": {
+      "colors": {
+        "primary": "#3B82F6",
+        "secondary": "#10B981",
+        "accent": "#F59E0B"
+      },
+      "spacing": {
+        "md": 16,
+        "lg": 24
+      },
+      "radii": {
+        "md": 12
+      }
+    },
+    "styles": {
+      "card": {
+        "base": {
+          "padding": 16,
+          "borderRadius": "$radii.md",
+          "backgroundColor": "#FFFFFF",
+          "boxShadow": "0 8px 20px rgba(15, 23, 42, 0.08)"
+        }
+      },
+      "primary-button": {
+        "base": {
+          "padding": [12, 24],
+          "borderRadius": 10,
+          "backgroundColor": "$colors.primary",
+          "color": "#FFFFFF",
+          "fontWeight": 600
+        },
+        "hover": {
+          "backgroundColor": "#2563EB"
+        },
+        "active": {
+          "scale": 0.98
+        }
+      },
+      "secondary-button": {
+        "base": {
+          "padding": [12, 24],
+          "borderRadius": 10,
+          "backgroundColor": "#E0F2FE",
+          "color": "#1E3A8A",
+          "fontWeight": 600
+        },
+        "hover": {
+          "backgroundColor": "#BAE6FD"
+        }
+      }
+    }
+  },
+  "theme": "academic",
+  "startSceneId": "intro",
+  "scenes": [
+    {
+      "id": "intro",
+      "title": "开场",
+      "layout": {
+        "type": "stack",
+        "padding": 24,
+        "gap": 16,
+        "align": "center"
+      },
+      "enterTransition": {
+        "type": "fade",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "intro-title",
+          "type": "Dialog",
+          "props": {
+            "text": "欢迎进入生物课堂：血液循环",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 500
+          }
+        },
+        {
+          "id": "intro-hook",
+          "type": "Dialog",
+          "props": {
+            "text": "今天我们将认识心脏如何驱动血液在全身循环。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "slideInUp",
+            "duration": 500
+          }
+        },
+        {
+          "id": "intro-start",
+          "type": "Button",
+          "props": {
+            "text": "开始学习",
+            "variant": "primary"
+          },
+          "styleClass": "primary-button",
+          "enterAnimation": {
+            "type": "bounceIn",
+            "duration": 600
+          },
+          "interactions": [
+            {
+              "trigger": "hover",
+              "animation": "pulse",
+              "duration": 300
+            }
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "intro-start" },
+          "then": [
+            {
+              "action": "playAnimation",
+              "target": "intro-title",
+              "animation": "heartbeat",
+              "duration": 600
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "overview",
+              "transition": { "type": "slide", "direction": "right" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overview",
+      "title": "循环概览",
+      "layout": {
+        "type": "stack",
+        "padding": 24,
+        "gap": 16
+      },
+      "enterTransition": {
+        "type": "slide",
+        "direction": "right",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "overview-title",
+          "type": "Dialog",
+          "props": {
+            "text": "血液循环由心脏、动脉、静脉与毛细血管共同完成。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 400
+          }
+        },
+        {
+          "id": "overview-detail",
+          "type": "Dialog",
+          "props": {
+            "text": "动脉将富氧血输送到全身，静脉将缺氧血带回心脏。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "slideInLeft",
+            "duration": 500
+          }
+        },
+        {
+          "id": "overview-next",
+          "type": "Button",
+          "props": {
+            "text": "查看循环路径",
+            "variant": "secondary"
+          },
+          "styleClass": "secondary-button",
+          "enterAnimation": {
+            "type": "slideInUp",
+            "duration": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "overview-next" },
+          "then": [
+            {
+              "action": "sequence",
+              "actions": [
+                {
+                  "action": "playAnimation",
+                  "target": "overview-detail",
+                  "animation": "glow",
+                  "duration": 500
+                },
+                { "action": "delay", "duration": 200 },
+                {
+                  "action": "gotoScene",
+                  "sceneId": "path",
+                  "transition": { "type": "fade" }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "path",
+      "title": "循环路径",
+      "layout": {
+        "type": "stack",
+        "padding": 24,
+        "gap": 16
+      },
+      "enterTransition": {
+        "type": "fade",
+        "duration": 300
+      },
+      "nodes": [
+        {
+          "id": "circulation-animation",
+          "type": "Animation",
+          "props": {
+            "type": "biology.blood-circulation",
+            "autoplay": true
+          },
+          "enterAnimation": {
+            "type": "zoomIn",
+            "duration": 400
+          }
+        },
+        {
+          "id": "circulation-controls",
+          "type": "Controls",
+          "props": {
+            "buttons": [
+              { "id": "control-both", "text": "体循环+肺循环" },
+              { "id": "control-systemic", "text": "体循环" },
+              { "id": "control-pulmonary", "text": "肺循环" },
+              { "id": "control-stop", "text": "暂停" }
+            ]
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 300
+          }
+        },
+        {
+          "id": "path-step1",
+          "type": "Dialog",
+          "props": {
+            "text": "步骤 1：右心房接收来自静脉的缺氧血。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "zoomIn",
+            "duration": 350
+          }
+        },
+        {
+          "id": "path-step2",
+          "type": "Dialog",
+          "props": {
+            "text": "步骤 2：右心室将血液泵向肺部进行气体交换。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "zoomIn",
+            "duration": 350
+          }
+        },
+        {
+          "id": "path-step3",
+          "type": "Dialog",
+          "props": {
+            "text": "步骤 3：左心房收集富氧血，左心室将血液泵向全身。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "zoomIn",
+            "duration": 350
+          }
+        },
+        {
+          "id": "path-next",
+          "type": "Button",
+          "props": {
+            "text": "进入小测验",
+            "variant": "primary"
+          },
+          "styleClass": "primary-button",
+          "enterAnimation": {
+            "type": "slideInUp",
+            "duration": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "path-next" },
+          "then": [
+            {
+              "action": "parallel",
+              "actions": [
+                {
+                  "action": "playAnimation",
+                  "target": "path-step1",
+                  "animation": "pulse",
+                  "duration": 300
+                },
+                {
+                  "action": "playAnimation",
+                  "target": "path-step3",
+                  "animation": "pulse",
+                  "duration": 300
+                }
+              ]
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "quiz",
+              "transition": { "type": "slide", "direction": "right" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quiz",
+      "title": "理解检测",
+      "layout": {
+        "type": "stack",
+        "padding": 24,
+        "gap": 16
+      },
+      "enterTransition": {
+        "type": "slide",
+        "direction": "right",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "quiz-dialog",
+          "type": "Dialog",
+          "props": {
+            "text": "检验一下你对血液循环的理解！",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 400
+          }
+        },
+        {
+          "id": "quiz-question",
+          "type": "QuizSingle",
+          "props": {
+            "question": "富氧血从哪一侧的心室泵向全身？",
+            "options": ["右心室", "左心室", "右心房", "左心房"],
+            "answerKey": "左心室"
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "duration": 400
+          }
+        },
+        {
+          "id": "quiz-submit",
+          "type": "Button",
+          "props": {
+            "text": "提交答案",
+            "variant": "primary"
+          },
+          "styleClass": "primary-button",
+          "enterAnimation": {
+            "type": "bounceIn",
+            "duration": 500
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "quiz-submit" },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "quiz-question.state.selected" },
+              "right": "左心室"
+            }
+          ],
+          "then": [
+            { "action": "addScore", "value": 10 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-question",
+              "animation": "tada",
+              "duration": 700
+            },
+            {
+              "action": "toast",
+              "text": "回答正确！",
+              "variant": "success",
+              "position": "bottom"
+            },
+            {
+              "action": "gotoScene",
+              "sceneId": "ending",
+              "transition": { "type": "zoom" }
+            }
+          ],
+          "else": [
+            { "action": "incVar", "path": "globals.vars.attempt", "by": 1 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-question",
+              "animation": "shake",
+              "duration": 500
+            },
+            {
+              "action": "toast",
+              "text": "再想一想：左心室负责将富氧血泵向全身。",
+              "variant": "warning",
+              "position": "center"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "结束",
+      "layout": {
+        "type": "stack",
+        "padding": 24,
+        "gap": 16,
+        "align": "center"
+      },
+      "enterTransition": {
+        "type": "fade",
+        "duration": 400
+      },
+      "nodes": [
+        {
+          "id": "ending-summary",
+          "type": "Dialog",
+          "props": {
+            "text": "你已完成血液循环课程，总得分：{{globals.vars.score}}。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 500
+          },
+          "exitAnimation": {
+            "type": "fadeOut",
+            "duration": 400
+          }
+        },
+        {
+          "id": "ending-note",
+          "type": "Dialog",
+          "props": {
+            "text": "记住：心脏与血管共同维持氧气与养分的运输。",
+            "speaker": "课程导师"
+          },
+          "styleClass": "card",
+          "enterAnimation": {
+            "type": "slideInUp",
+            "duration": 400
+          }
+        },
+        {
+          "id": "ending-restart",
+          "type": "Button",
+          "props": {
+            "text": "重新学习",
+            "variant": "secondary"
+          },
+          "styleClass": "secondary-button",
+          "enterAnimation": {
+            "type": "bounceIn",
+            "duration": 500
+          },
+          "interactions": [
+            {
+              "trigger": "hover",
+              "animation": "pulse",
+              "duration": 300
+            }
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "ending-restart" },
+          "then": [
+            { "action": "setVar", "path": "globals.vars.score", "value": 0 },
+            { "action": "setVar", "path": "globals.vars.attempt", "value": 0 },
+            {
+              "action": "gotoScene",
+              "sceneId": "intro",
+              "transition": { "type": "fade" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
