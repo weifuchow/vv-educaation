@@ -24,18 +24,22 @@ export { earthSystemModule } from './geography/earth-system/index';
 // 数学
 export { bezierCurveModule } from './math/bezier-curve/index';
 export { mathModuleInfo, mathAnimations } from './math/index';
+// 生物
+export { bloodCirculationModule } from './biology/blood-circulation/index';
 
 // ============= 自动注册 =============
 import { webAnimationRegistry } from './standards/WebAnimationRegistry';
 import { pisaTowerModule } from './physics/pisa-tower/index';
 import { earthSystemModule } from './geography/earth-system/index';
 import { bezierCurveModule } from './math/bezier-curve/index';
+import { bloodCirculationModule } from './biology/blood-circulation/index';
 
 // 自动注册所有Web动画模块
 webAnimationRegistry.registerBatch([
   pisaTowerModule,
   earthSystemModule,
   bezierCurveModule,
+  bloodCirculationModule,
 ]);
 
 // ============= 便捷函数 =============
