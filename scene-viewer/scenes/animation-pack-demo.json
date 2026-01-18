@@ -1,0 +1,352 @@
+{
+  "schema": "vvce.dsl.v1",
+  "meta": {
+    "id": "animation-pack-demo",
+    "version": "1.0.0",
+    "title": "动画包演示",
+    "author": "VV Education",
+    "description": "演示动画包系统的使用"
+  },
+
+  "imports": [
+    { "pack": "@vvce/science" },
+    { "pack": "@vvce/math" }
+  ],
+
+  "globals": {
+    "vars": {
+      "score": 0,
+      "currentDemo": "basic"
+    }
+  },
+
+  "startSceneId": "welcome",
+
+  "scenes": [
+    {
+      "id": "welcome",
+      "nodes": [
+        {
+          "id": "title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV 课堂",
+            "text": "欢迎来到动画包演示！本演示展示了如何在 DSL 中使用动画包系统。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 600
+          }
+        },
+        {
+          "id": "desc",
+          "type": "Dialog",
+          "props": {
+            "text": "动画包系统允许 AI 通过引用预定义的动画名称和参数来创建丰富的动画效果，而无需编写复杂的 keyframe 定义。"
+          },
+          "enterAnimation": {
+            "type": "slideInLeft",
+            "duration": 500,
+            "delay": 200
+          }
+        },
+        {
+          "id": "btn-basic",
+          "type": "Button",
+          "props": {
+            "text": "基础动画演示 →"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "btn-basic" },
+          "then": [
+            { "action": "gotoScene", "sceneId": "basic-demo" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "basic-demo",
+      "nodes": [
+        {
+          "id": "basic-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "基础动画",
+            "text": "这些是内置的基础动画效果，可以直接使用动画名称引用。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn"
+          }
+        },
+        {
+          "id": "demo-fade",
+          "type": "Dialog",
+          "props": {
+            "text": "fadeIn - 渐入效果"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 800,
+            "delay": 100
+          }
+        },
+        {
+          "id": "demo-slide",
+          "type": "Dialog",
+          "props": {
+            "text": "slideInRight - 从右侧滑入"
+          },
+          "enterAnimation": {
+            "type": "slideInRight",
+            "params": { "distance": 150 },
+            "delay": 300
+          }
+        },
+        {
+          "id": "demo-bounce",
+          "type": "Dialog",
+          "props": {
+            "text": "bounceIn - 弹跳进入"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 500
+          }
+        },
+        {
+          "id": "demo-pulse",
+          "type": "Dialog",
+          "props": {
+            "text": "pulse - 脉冲效果 (持续)"
+          },
+          "enterAnimation": {
+            "type": "scaleIn",
+            "delay": 700
+          },
+          "animation": {
+            "type": "pulse",
+            "params": { "intensity": 1.05 },
+            "iterations": -1
+          }
+        },
+        {
+          "id": "btn-science",
+          "type": "Button",
+          "props": {
+            "text": "科学动画演示 →"
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "delay": 900
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "btn-science" },
+          "then": [
+            { "action": "gotoScene", "sceneId": "science-demo" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "science-demo",
+      "nodes": [
+        {
+          "id": "science-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "科学动画 (@vvce/science)",
+            "text": "这些是科学领域的专业动画，适用于天文、物理、化学等科普课程。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn"
+          }
+        },
+        {
+          "id": "demo-wave",
+          "type": "Dialog",
+          "props": {
+            "text": "@science/wave - 波浪运动 (声波、水波)"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "delay": 200
+          },
+          "animation": {
+            "type": "@science/wave",
+            "params": { "amplitude": 15 },
+            "duration": 1200
+          }
+        },
+        {
+          "id": "demo-vibrate",
+          "type": "Dialog",
+          "props": {
+            "text": "@science/vibrate - 分子振动效果"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "delay": 400
+          },
+          "animation": {
+            "type": "@science/vibrate",
+            "params": { "intensity": 4 }
+          }
+        },
+        {
+          "id": "demo-glow",
+          "type": "Dialog",
+          "props": {
+            "text": "@science/glow - 发光效果 (恒星、能量)"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "delay": 600
+          },
+          "animation": {
+            "type": "@science/glow",
+            "params": { "color": "#ff6b35", "intensity": 15 }
+          }
+        },
+        {
+          "id": "btn-math",
+          "type": "Button",
+          "props": {
+            "text": "数学动画演示 →"
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "delay": 800
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "btn-math" },
+          "then": [
+            { "action": "gotoScene", "sceneId": "math-demo" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "math-demo",
+      "nodes": [
+        {
+          "id": "math-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "数学动画 (@vvce/math)",
+            "text": "这些是数学领域的动画，适用于几何、代数、数据可视化等课程。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn"
+          }
+        },
+        {
+          "id": "demo-morph",
+          "type": "Dialog",
+          "props": {
+            "text": "@math/morphShape - 形状变换"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "delay": 200
+          },
+          "animation": {
+            "type": "@math/morphShape",
+            "params": { "scaleX": 1.3, "scaleY": 0.7 },
+            "duration": 2000
+          }
+        },
+        {
+          "id": "demo-highlight",
+          "type": "Dialog",
+          "props": {
+            "text": "@math/highlight - 高亮强调效果"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "delay": 400
+          },
+          "animation": {
+            "type": "@math/highlight",
+            "params": { "color": "#4fc3f7" },
+            "iterations": 3
+          }
+        },
+        {
+          "id": "btn-end",
+          "type": "Button",
+          "props": {
+            "text": "完成演示 ✓"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 600
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "btn-end" },
+          "then": [
+            { "action": "gotoScene", "sceneId": "summary" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "summary",
+      "nodes": [
+        {
+          "id": "summary-title",
+          "type": "Conclusion",
+          "props": {
+            "title": "演示完成！",
+            "text": "动画包系统的核心特点：\n\n1. AI 只需引用动画名称 + 传参数\n2. 支持 @vvce/basic (内置)、@vvce/science、@vvce/math 等动画包\n3. 可以在 enterAnimation 和 animation 属性中使用\n4. 支持参数化定制动画效果\n5. 动画包可热更新，无需重新发布前端"
+          },
+          "enterAnimation": {
+            "type": "scaleIn"
+          }
+        },
+        {
+          "id": "btn-restart",
+          "type": "Button",
+          "props": {
+            "text": "重新开始"
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "delay": 500
+          },
+          "animation": {
+            "type": "float",
+            "params": { "distance": 5 }
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "btn-restart" },
+          "then": [
+            { "action": "gotoScene", "sceneId": "welcome" }
+          ]
+        }
+      ]
+    }
+  ]
+}

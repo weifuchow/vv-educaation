@@ -1,0 +1,168 @@
+{
+  "name": "@vvce/science",
+  "version": "1.0.0",
+  "description": "Science animations for astronomy, physics, chemistry courses",
+  "author": "VV Education",
+
+  "animations": {
+    "orbit": {
+      "name": "orbit",
+      "description": "Elliptical orbit motion, for planets, electrons, etc.",
+      "category": "motion",
+      "tags": ["orbit", "planet", "astronomy", "physics", "loop"],
+      "params": [
+        { "name": "radiusX", "type": "number", "description": "X-axis radius (px)", "default": 100, "min": 20, "max": 500 },
+        { "name": "radiusY", "type": "number", "description": "Y-axis radius (px)", "default": 80, "min": 20, "max": 500 },
+        { "name": "clockwise", "type": "boolean", "description": "Clockwise direction", "default": true }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateX": "${radiusX}", "translateY": 0 } },
+        { "offset": 25, "properties": { "translateX": 0, "translateY": "${clockwise ? radiusY : -radiusY}" } },
+        { "offset": 50, "properties": { "translateX": "${-radiusX}", "translateY": 0 } },
+        { "offset": 75, "properties": { "translateX": 0, "translateY": "${clockwise ? -radiusY : radiusY}" } },
+        { "offset": 100, "properties": { "translateX": "${radiusX}", "translateY": 0 } }
+      ],
+      "duration": 4000,
+      "easing": "linear",
+      "iterations": -1
+    },
+
+    "wave": {
+      "name": "wave",
+      "description": "Wave motion, for sound waves, water waves, EM waves",
+      "category": "motion",
+      "tags": ["wave", "physics", "sound", "water", "loop"],
+      "params": [
+        { "name": "amplitude", "type": "number", "description": "Wave amplitude (px)", "default": 20, "min": 5, "max": 100 },
+        { "name": "horizontal", "type": "boolean", "description": "Horizontal wave (vs vertical)", "default": false }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateY": 0, "translateX": 0 } },
+        { "offset": 25, "properties": { "translateY": "${horizontal ? 0 : amplitude}", "translateX": "${horizontal ? amplitude : 0}" } },
+        { "offset": 50, "properties": { "translateY": 0, "translateX": 0 } },
+        { "offset": 75, "properties": { "translateY": "${horizontal ? 0 : -amplitude}", "translateX": "${horizontal ? -amplitude : 0}" } },
+        { "offset": 100, "properties": { "translateY": 0, "translateX": 0 } }
+      ],
+      "duration": 1000,
+      "easing": "ease-in-out",
+      "iterations": -1
+    },
+
+    "vibrate": {
+      "name": "vibrate",
+      "description": "Molecular vibration effect, for thermal motion",
+      "category": "attention",
+      "tags": ["vibrate", "molecule", "chemistry", "physics", "thermal"],
+      "params": [
+        { "name": "intensity", "type": "number", "description": "Vibration intensity (px)", "default": 3, "min": 1, "max": 15 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateX": 0, "translateY": 0 } },
+        { "offset": 15, "properties": { "translateX": "${intensity}", "translateY": "${-intensity * 0.7}" } },
+        { "offset": 30, "properties": { "translateX": "${-intensity * 0.8}", "translateY": "${intensity}" } },
+        { "offset": 45, "properties": { "translateX": "${intensity * 0.6}", "translateY": "${intensity * 0.5}" } },
+        { "offset": 60, "properties": { "translateX": "${-intensity * 0.5}", "translateY": "${-intensity * 0.8}" } },
+        { "offset": 75, "properties": { "translateX": "${intensity * 0.7}", "translateY": "${-intensity * 0.3}" } },
+        { "offset": 90, "properties": { "translateX": "${-intensity * 0.3}", "translateY": "${intensity * 0.6}" } },
+        { "offset": 100, "properties": { "translateX": 0, "translateY": 0 } }
+      ],
+      "duration": 300,
+      "easing": "linear",
+      "iterations": -1
+    },
+
+    "spiral": {
+      "name": "spiral",
+      "description": "Spiral motion, expanding or contracting",
+      "category": "motion",
+      "tags": ["spiral", "galaxy", "astronomy", "loop"],
+      "params": [
+        { "name": "startRadius", "type": "number", "description": "Starting radius (px)", "default": 20 },
+        { "name": "endRadius", "type": "number", "description": "Ending radius (px)", "default": 100 },
+        { "name": "turns", "type": "number", "description": "Number of turns", "default": 3 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateX": "${startRadius}", "translateY": 0, "rotate": 0 } },
+        { "offset": 25, "properties": { "translateX": 0, "translateY": "${startRadius + (endRadius - startRadius) * 0.25}", "rotate": "${90 * turns}" } },
+        { "offset": 50, "properties": { "translateX": "${-(startRadius + (endRadius - startRadius) * 0.5)}", "translateY": 0, "rotate": "${180 * turns}" } },
+        { "offset": 75, "properties": { "translateX": 0, "translateY": "${-(startRadius + (endRadius - startRadius) * 0.75)}", "rotate": "${270 * turns}" } },
+        { "offset": 100, "properties": { "translateX": "${endRadius}", "translateY": 0, "rotate": "${360 * turns}" } }
+      ],
+      "duration": 5000,
+      "easing": "linear",
+      "iterations": -1
+    },
+
+    "pendulum": {
+      "name": "pendulum",
+      "description": "Pendulum swing motion",
+      "category": "motion",
+      "tags": ["pendulum", "physics", "gravity", "loop"],
+      "params": [
+        { "name": "angle", "type": "number", "description": "Swing angle (degrees)", "default": 30, "min": 5, "max": 60 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "rotate": "${-angle}" } },
+        { "offset": 50, "properties": { "rotate": "${angle}" } },
+        { "offset": 100, "properties": { "rotate": "${-angle}" } }
+      ],
+      "duration": 2000,
+      "easing": "ease-in-out",
+      "iterations": -1,
+      "transformOrigin": "top center"
+    },
+
+    "glow": {
+      "name": "glow",
+      "description": "Glowing effect, for stars, energy, etc.",
+      "category": "attention",
+      "tags": ["glow", "star", "energy", "light", "loop"],
+      "params": [
+        { "name": "color", "type": "string", "description": "Glow color", "default": "#ffcc00" },
+        { "name": "intensity", "type": "number", "description": "Glow intensity (blur radius)", "default": 20 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "boxShadow": "0 0 ${intensity * 0.5}px ${color}", "opacity": 0.8 } },
+        { "offset": 50, "properties": { "boxShadow": "0 0 ${intensity}px ${color}", "opacity": 1 } },
+        { "offset": 100, "properties": { "boxShadow": "0 0 ${intensity * 0.5}px ${color}", "opacity": 0.8 } }
+      ],
+      "duration": 1500,
+      "easing": "ease-in-out",
+      "iterations": -1
+    },
+
+    "expand": {
+      "name": "expand",
+      "description": "Expanding outward effect, for explosions, big bang",
+      "category": "transition",
+      "tags": ["expand", "explosion", "astronomy", "physics"],
+      "params": [
+        { "name": "scale", "type": "number", "description": "Final scale factor", "default": 3 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "scale": 1, "opacity": 1 } },
+        { "offset": 100, "properties": { "scale": "${scale}", "opacity": 0 } }
+      ],
+      "duration": 1000,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "collapse": {
+      "name": "collapse",
+      "description": "Collapsing inward effect, for black holes, gravity",
+      "category": "transition",
+      "tags": ["collapse", "gravity", "blackhole", "astronomy"],
+      "params": [
+        { "name": "scale", "type": "number", "description": "Final scale factor", "default": 0 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "scale": 1, "opacity": 1 } },
+        { "offset": 100, "properties": { "scale": "${scale}", "opacity": 0 } }
+      ],
+      "duration": 800,
+      "easing": "ease-in",
+      "fillMode": "forwards"
+    }
+  }
+}

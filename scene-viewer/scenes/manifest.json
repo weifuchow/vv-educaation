@@ -2,6 +2,12 @@
   "version": "1.0.0",
   "scenes": [
     {
+      "id": "animation-pack-demo",
+      "title": "动画包演示",
+      "icon": "🎬",
+      "description": "演示动画包系统的使用方式"
+    },
+    {
       "id": "math-quiz",
       "title": "数学测验",
       "icon": "🧮",

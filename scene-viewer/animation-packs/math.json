@@ -1,0 +1,182 @@
+{
+  "name": "@vvce/math",
+  "version": "1.0.0",
+  "description": "Math animations for geometry, algebra, and data visualization",
+  "author": "VV Education",
+
+  "animations": {
+    "countUp": {
+      "name": "countUp",
+      "description": "Number counting up animation effect",
+      "category": "data",
+      "tags": ["count", "number", "data", "statistics"],
+      "params": [
+        { "name": "steps", "type": "number", "description": "Number of counting steps", "default": 10 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "opacity": 0.5, "scale": 0.9 } },
+        { "offset": 50, "properties": { "opacity": 1, "scale": 1.05 } },
+        { "offset": 100, "properties": { "opacity": 1, "scale": 1 } }
+      ],
+      "duration": 100,
+      "easing": "ease-out",
+      "iterations": "${steps}"
+    },
+
+    "drawLine": {
+      "name": "drawLine",
+      "description": "Line drawing animation (stroke-dasharray)",
+      "category": "geometry",
+      "tags": ["draw", "line", "geometry", "path"],
+      "params": [
+        { "name": "length", "type": "number", "description": "Line length", "default": 200 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "strokeDashoffset": "${length}" } },
+        { "offset": 100, "properties": { "strokeDashoffset": 0 } }
+      ],
+      "duration": 1500,
+      "easing": "ease-in-out",
+      "fillMode": "forwards"
+    },
+
+    "morphShape": {
+      "name": "morphShape",
+      "description": "Shape morphing transformation",
+      "category": "geometry",
+      "tags": ["morph", "transform", "geometry", "shape"],
+      "params": [
+        { "name": "scaleX", "type": "number", "description": "X scale factor", "default": 1.5 },
+        { "name": "scaleY", "type": "number", "description": "Y scale factor", "default": 0.8 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "scaleX": 1, "scaleY": 1 } },
+        { "offset": 50, "properties": { "scaleX": "${scaleX}", "scaleY": "${scaleY}" } },
+        { "offset": 100, "properties": { "scaleX": 1, "scaleY": 1 } }
+      ],
+      "duration": 2000,
+      "easing": "ease-in-out",
+      "iterations": -1
+    },
+
+    "rotateShape": {
+      "name": "rotateShape",
+      "description": "Shape rotation for symmetry demonstrations",
+      "category": "geometry",
+      "tags": ["rotate", "symmetry", "geometry", "transform"],
+      "params": [
+        { "name": "degrees", "type": "number", "description": "Rotation degrees", "default": 90 },
+        { "name": "steps", "type": "number", "description": "Step rotation", "default": 4 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "rotate": 0 } },
+        { "offset": 100, "properties": { "rotate": "${degrees}" } }
+      ],
+      "duration": 500,
+      "easing": "ease-in-out",
+      "fillMode": "forwards"
+    },
+
+    "flipHorizontal": {
+      "name": "flipHorizontal",
+      "description": "Horizontal flip for reflection demonstrations",
+      "category": "geometry",
+      "tags": ["flip", "reflection", "geometry", "symmetry"],
+      "params": [],
+      "keyframes": [
+        { "offset": 0, "properties": { "scaleX": 1 } },
+        { "offset": 50, "properties": { "scaleX": 0 } },
+        { "offset": 100, "properties": { "scaleX": -1 } }
+      ],
+      "duration": 600,
+      "easing": "ease-in-out",
+      "fillMode": "forwards"
+    },
+
+    "flipVertical": {
+      "name": "flipVertical",
+      "description": "Vertical flip for reflection demonstrations",
+      "category": "geometry",
+      "tags": ["flip", "reflection", "geometry", "symmetry"],
+      "params": [],
+      "keyframes": [
+        { "offset": 0, "properties": { "scaleY": 1 } },
+        { "offset": 50, "properties": { "scaleY": 0 } },
+        { "offset": 100, "properties": { "scaleY": -1 } }
+      ],
+      "duration": 600,
+      "easing": "ease-in-out",
+      "fillMode": "forwards"
+    },
+
+    "highlight": {
+      "name": "highlight",
+      "description": "Highlight effect for important elements",
+      "category": "attention",
+      "tags": ["highlight", "focus", "attention", "emphasis"],
+      "params": [
+        { "name": "color", "type": "string", "description": "Highlight color", "default": "#ffeb3b" }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "backgroundColor": "transparent", "scale": 1 } },
+        { "offset": 30, "properties": { "backgroundColor": "${color}", "scale": 1.05 } },
+        { "offset": 70, "properties": { "backgroundColor": "${color}", "scale": 1.05 } },
+        { "offset": 100, "properties": { "backgroundColor": "transparent", "scale": 1 } }
+      ],
+      "duration": 1000,
+      "easing": "ease-in-out"
+    },
+
+    "slideCompare": {
+      "name": "slideCompare",
+      "description": "Slide for comparison (A vs B)",
+      "category": "transition",
+      "tags": ["compare", "slide", "transition", "versus"],
+      "params": [
+        { "name": "direction", "type": "string", "description": "Direction: left or right", "default": "left" }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateX": 0 } },
+        { "offset": 100, "properties": { "translateX": "${direction === 'left' ? -100 : 100}" } }
+      ],
+      "duration": 400,
+      "easing": "ease-in-out",
+      "fillMode": "forwards"
+    },
+
+    "stackIn": {
+      "name": "stackIn",
+      "description": "Stack cards animation for sequences",
+      "category": "entrance",
+      "tags": ["stack", "sequence", "cards", "entrance"],
+      "params": [
+        { "name": "offsetY", "type": "number", "description": "Y offset per item (px)", "default": 5 },
+        { "name": "offsetX", "type": "number", "description": "X offset per item (px)", "default": 3 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateY": -50, "translateX": "${offsetX * 2}", "opacity": 0, "scale": 0.9 } },
+        { "offset": 100, "properties": { "translateY": "${offsetY}", "translateX": "${offsetX}", "opacity": 1, "scale": 1 } }
+      ],
+      "duration": 400,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "progressFill": {
+      "name": "progressFill",
+      "description": "Progress bar filling animation",
+      "category": "data",
+      "tags": ["progress", "fill", "bar", "data"],
+      "params": [
+        { "name": "percent", "type": "number", "description": "Fill percentage", "default": 100 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "width": "0%" } },
+        { "offset": 100, "properties": { "width": "${percent}%" } }
+      ],
+      "duration": 1500,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    }
+  }
+}

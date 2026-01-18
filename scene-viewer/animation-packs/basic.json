@@ -1,0 +1,198 @@
+{
+  "name": "@vvce/basic",
+  "version": "1.0.0",
+  "description": "Basic entrance, exit, and attention animations",
+  "author": "VV Education",
+
+  "animations": {
+    "fadeIn": {
+      "name": "fadeIn",
+      "description": "Fade in from transparent to opaque",
+      "category": "entrance",
+      "tags": ["fade", "entrance", "basic"],
+      "params": [
+        { "name": "duration", "type": "number", "description": "Animation duration (ms)", "default": 500 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "opacity": 0 } },
+        { "offset": 100, "properties": { "opacity": 1 } }
+      ],
+      "duration": 500,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "fadeOut": {
+      "name": "fadeOut",
+      "description": "Fade out from opaque to transparent",
+      "category": "exit",
+      "tags": ["fade", "exit", "basic"],
+      "params": [],
+      "keyframes": [
+        { "offset": 0, "properties": { "opacity": 1 } },
+        { "offset": 100, "properties": { "opacity": 0 } }
+      ],
+      "duration": 500,
+      "easing": "ease-in",
+      "fillMode": "forwards"
+    },
+
+    "slideInLeft": {
+      "name": "slideInLeft",
+      "description": "Slide in from left side",
+      "category": "entrance",
+      "tags": ["slide", "entrance", "horizontal"],
+      "params": [
+        { "name": "distance", "type": "number", "description": "Slide distance (px)", "default": 100 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateX": "${-distance}", "opacity": 0 } },
+        { "offset": 100, "properties": { "translateX": 0, "opacity": 1 } }
+      ],
+      "duration": 600,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "slideInRight": {
+      "name": "slideInRight",
+      "description": "Slide in from right side",
+      "category": "entrance",
+      "tags": ["slide", "entrance", "horizontal"],
+      "params": [
+        { "name": "distance", "type": "number", "description": "Slide distance (px)", "default": 100 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateX": "${distance}", "opacity": 0 } },
+        { "offset": 100, "properties": { "translateX": 0, "opacity": 1 } }
+      ],
+      "duration": 600,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "slideInUp": {
+      "name": "slideInUp",
+      "description": "Slide in from bottom",
+      "category": "entrance",
+      "tags": ["slide", "entrance", "vertical"],
+      "params": [
+        { "name": "distance", "type": "number", "description": "Slide distance (px)", "default": 50 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateY": "${distance}", "opacity": 0 } },
+        { "offset": 100, "properties": { "translateY": 0, "opacity": 1 } }
+      ],
+      "duration": 600,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "scaleIn": {
+      "name": "scaleIn",
+      "description": "Scale in from small to full size",
+      "category": "entrance",
+      "tags": ["scale", "entrance", "zoom"],
+      "params": [
+        { "name": "startScale", "type": "number", "description": "Starting scale", "default": 0.5 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "scale": "${startScale}", "opacity": 0 } },
+        { "offset": 100, "properties": { "scale": 1, "opacity": 1 } }
+      ],
+      "duration": 500,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "bounceIn": {
+      "name": "bounceIn",
+      "description": "Bounce in with elastic effect",
+      "category": "entrance",
+      "tags": ["bounce", "entrance", "playful"],
+      "params": [],
+      "keyframes": [
+        { "offset": 0, "properties": { "scale": 0, "opacity": 0 } },
+        { "offset": 50, "properties": { "scale": 1.2, "opacity": 0.8 } },
+        { "offset": 70, "properties": { "scale": 0.9, "opacity": 0.9 } },
+        { "offset": 100, "properties": { "scale": 1, "opacity": 1 } }
+      ],
+      "duration": 600,
+      "easing": "ease-out",
+      "fillMode": "forwards"
+    },
+
+    "pulse": {
+      "name": "pulse",
+      "description": "Pulsing attention effect",
+      "category": "attention",
+      "tags": ["pulse", "attention", "highlight"],
+      "params": [
+        { "name": "intensity", "type": "number", "description": "Pulse scale factor", "default": 1.1 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "scale": 1 } },
+        { "offset": 50, "properties": { "scale": "${intensity}" } },
+        { "offset": 100, "properties": { "scale": 1 } }
+      ],
+      "duration": 500,
+      "easing": "ease-in-out",
+      "iterations": 1
+    },
+
+    "shake": {
+      "name": "shake",
+      "description": "Horizontal shake effect",
+      "category": "attention",
+      "tags": ["shake", "attention", "error"],
+      "params": [
+        { "name": "distance", "type": "number", "description": "Shake distance (px)", "default": 10 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateX": 0 } },
+        { "offset": 20, "properties": { "translateX": "${-distance}" } },
+        { "offset": 40, "properties": { "translateX": "${distance}" } },
+        { "offset": 60, "properties": { "translateX": "${-distance}" } },
+        { "offset": 80, "properties": { "translateX": "${distance}" } },
+        { "offset": 100, "properties": { "translateX": 0 } }
+      ],
+      "duration": 500,
+      "easing": "ease-in-out"
+    },
+
+    "float": {
+      "name": "float",
+      "description": "Gentle floating up and down",
+      "category": "loop",
+      "tags": ["float", "loop", "gentle"],
+      "params": [
+        { "name": "distance", "type": "number", "description": "Float distance (px)", "default": 10 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "translateY": 0 } },
+        { "offset": 50, "properties": { "translateY": "${-distance}" } },
+        { "offset": 100, "properties": { "translateY": 0 } }
+      ],
+      "duration": 2000,
+      "easing": "ease-in-out",
+      "iterations": -1
+    },
+
+    "rotate": {
+      "name": "rotate",
+      "description": "Continuous rotation",
+      "category": "loop",
+      "tags": ["rotate", "loop", "spin"],
+      "params": [
+        { "name": "degrees", "type": "number", "description": "Rotation degrees", "default": 360 }
+      ],
+      "keyframes": [
+        { "offset": 0, "properties": { "rotate": 0 } },
+        { "offset": 100, "properties": { "rotate": "${degrees}" } }
+      ],
+      "duration": 2000,
+      "easing": "linear",
+      "iterations": -1
+    }
+  }
+}

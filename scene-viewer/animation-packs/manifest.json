@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "description": "VVCE Animation Packs - Keyframe-based animations for AI-generated courses",
+  "packs": [
+    {
+      "id": "@vvce/basic",
+      "file": "basic.json",
+      "description": "Basic entrance, exit, and attention animations",
+      "builtIn": true
+    },
+    {
+      "id": "@vvce/science",
+      "file": "science.json",
+      "description": "Science animations: orbit, wave, vibrate, etc."
+    },
+    {
+      "id": "@vvce/math",
+      "file": "math.json",
+      "description": "Math animations: draw, count, transform, etc."
+    }
+  ]
+}
