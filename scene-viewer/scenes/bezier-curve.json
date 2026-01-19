@@ -1,0 +1,536 @@
+{
+  "schema": "vvce.dsl.v1",
+  "meta": {
+    "id": "bezier-curve-interactive",
+    "version": "1.0.0",
+    "title": "贝塞尔曲线交互式课程",
+    "author": "VV Education",
+    "description": "探索贝塞尔曲线的生成原理，通过交互式动画理解 de Casteljau 算法",
+    "category": "math"
+  },
+  "imports": [{ "pack": "@vvce/math" }],
+  "globals": {
+    "vars": {
+      "score": 0,
+      "attempt": 0,
+      "progress": 0
+    }
+  },
+  "resources": {
+    "styles": {
+      "card": {
+        "padding": 20,
+        "borderRadius": 12,
+        "backgroundColor": "rgba(255, 255, 255, 0.05)",
+        "backdropFilter": "blur(10px)"
+      }
+    }
+  },
+  "theme": "tech",
+  "startSceneId": "intro",
+  "scenes": [
+    {
+      "id": "intro",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 20,
+        "padding": 24,
+        "align": "center"
+      },
+      "nodes": [
+        {
+          "id": "welcome-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "欢迎来到贝塞尔曲线课程！🎨\n\n贝塞尔曲线是计算机图形学中最重要的曲线之一，广泛应用于：\n• 字体设计（TrueType、OpenType）\n• 矢量图形（SVG、AI、PS）\n• 动画缓动函数\n• 汽车和飞机外形设计"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 600
+          }
+        },
+        {
+          "id": "intro-btn",
+          "type": "Button",
+          "props": {
+            "text": "开始探索 →"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "intro-btn" },
+          "then": [{ "action": "gotoScene", "sceneId": "concept" }]
+        }
+      ],
+      "transition": { "type": "fade", "duration": 400 }
+    },
+    {
+      "id": "concept",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 16,
+        "padding": 24
+      },
+      "nodes": [
+        {
+          "id": "concept-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "📐 什么是贝塞尔曲线？\n\n贝塞尔曲线由若干个「控制点」定义：\n• 2个控制点 → 一次贝塞尔（直线）\n• 3个控制点 → 二次贝塞尔（抛物线）\n• 4个控制点 → 三次贝塞尔（最常用）\n\n曲线的形状完全由这些控制点决定！"
+          },
+          "enterAnimation": {
+            "type": "slideInLeft",
+            "duration": 400
+          }
+        },
+        {
+          "id": "thinking-box",
+          "type": "Thinking",
+          "props": {
+            "title": "🤔 思考一下",
+            "text": "为什么只需要几个控制点就能定义一条平滑的曲线？\n秘密在于一个优雅的算法——de Casteljau 算法！"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "delay": 300
+          }
+        },
+        {
+          "id": "next-btn-1",
+          "type": "Button",
+          "props": {
+            "text": "了解算法原理 →"
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "delay": 500
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "next-btn-1" },
+          "then": [{ "action": "gotoScene", "sceneId": "algorithm" }]
+        }
+      ]
+    },
+    {
+      "id": "algorithm",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 16,
+        "padding": 24
+      },
+      "nodes": [
+        {
+          "id": "algo-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "🔬 de Casteljau 算法\n\n这个算法用递归的方式计算曲线上的每一个点：\n\n1. 在每条控制线段上，按比例 t 取一个点\n2. 连接这些新点，形成新的线段\n3. 重复步骤1-2，直到只剩一个点\n4. 这个点就在贝塞尔曲线上！\n\nt 从 0 到 1 变化时，就能画出整条曲线。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 400
+          }
+        },
+        {
+          "id": "formula-box",
+          "type": "Conclusion",
+          "props": {
+            "title": "📝 数学公式",
+            "text": "B(t) = Σ C(n,i) · (1-t)^(n-i) · t^i · P_i\n\n其中 n 是曲线阶数，P_i 是控制点\n\n但别担心！我们马上用可视化来理解它 ✨"
+          },
+          "enterAnimation": {
+            "type": "scaleIn",
+            "delay": 200
+          }
+        },
+        {
+          "id": "start-demo-btn",
+          "type": "Button",
+          "props": {
+            "text": "开始交互演示 →"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "start-demo-btn" },
+          "then": [{ "action": "gotoScene", "sceneId": "interactive" }]
+        }
+      ]
+    },
+    {
+      "id": "interactive",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 12,
+        "padding": 16
+      },
+      "nodes": [
+        {
+          "id": "demo-title",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "🎮 交互式贝塞尔曲线\n拖拽红色控制点，观察曲线如何变化！播放动画看 de Casteljau 算法的构造过程。悬停在曲线上查看 t 值和坐标。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn",
+            "duration": 300
+          }
+        },
+        {
+          "id": "bezier-animation",
+          "type": "Animation",
+          "props": {
+            "type": "math.bezier-curve",
+            "autoplay": false
+          },
+          "enterAnimation": {
+            "type": "scaleIn",
+            "duration": 500
+          }
+        },
+        {
+          "id": "demo-controls",
+          "type": "Controls",
+          "props": {
+            "buttons": [{ "id": "quiz-btn", "text": "📝 去做测验" }]
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "delay": 300
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "demo-controls" },
+          "if": [
+            {
+              "op": "equals",
+              "left": "quiz-btn",
+              "right": "quiz-btn"
+            }
+          ],
+          "then": [{ "action": "gotoScene", "sceneId": "quiz-1" }]
+        }
+      ]
+    },
+    {
+      "id": "quiz-1",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 16,
+        "padding": 24
+      },
+      "nodes": [
+        {
+          "id": "quiz-1-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "📝 测验时间！让我们检验一下你的理解。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn"
+          }
+        },
+        {
+          "id": "quiz-1-question",
+          "type": "QuizSingle",
+          "props": {
+            "question": "一条三次贝塞尔曲线需要几个控制点？",
+            "options": ["2个", "3个", "4个", "5个"],
+            "answerKey": "4个"
+          },
+          "enterAnimation": {
+            "type": "slideInLeft",
+            "delay": 200
+          }
+        },
+        {
+          "id": "submit-btn-1",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "submit-btn-1" },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz-1-question.selected" },
+              "right": "4个"
+            }
+          ],
+          "then": [
+            { "action": "addScore", "value": 10 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-1-question",
+              "animation": "pulse"
+            },
+            { "action": "toast", "text": "回答正确！+10分 🎉" },
+            { "action": "delay", "ms": 1500 },
+            { "action": "gotoScene", "sceneId": "quiz-2" }
+          ],
+          "else": [
+            { "action": "incVar", "path": "globals.vars.attempt", "by": 1 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-1-question",
+              "animation": "shake"
+            },
+            { "action": "toast", "text": "提示：三次 = n次，需要 n+1 个控制点 🤔" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quiz-2",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 16,
+        "padding": 24
+      },
+      "nodes": [
+        {
+          "id": "quiz-2-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "很好！继续下一题。"
+          },
+          "enterAnimation": {
+            "type": "fadeIn"
+          }
+        },
+        {
+          "id": "quiz-2-question",
+          "type": "QuizSingle",
+          "props": {
+            "question": "当参数 t = 0 时，贝塞尔曲线上的点在哪里？",
+            "options": ["曲线中点", "第一个控制点", "最后一个控制点", "不确定"],
+            "answerKey": "第一个控制点"
+          },
+          "enterAnimation": {
+            "type": "slideInLeft",
+            "delay": 200
+          }
+        },
+        {
+          "id": "submit-btn-2",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "submit-btn-2" },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz-2-question.selected" },
+              "right": "第一个控制点"
+            }
+          ],
+          "then": [
+            { "action": "addScore", "value": 10 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-2-question",
+              "animation": "pulse"
+            },
+            { "action": "toast", "text": "完全正确！+10分 🎉" },
+            { "action": "delay", "ms": 1500 },
+            { "action": "gotoScene", "sceneId": "quiz-3" }
+          ],
+          "else": [
+            { "action": "incVar", "path": "globals.vars.attempt", "by": 1 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-2-question",
+              "animation": "shake"
+            },
+            { "action": "toast", "text": "提示：t=0 时，曲线从起点开始 🤔" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quiz-3",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 16,
+        "padding": 24
+      },
+      "nodes": [
+        {
+          "id": "quiz-3-dialog",
+          "type": "Dialog",
+          "props": {
+            "speaker": "VV老师",
+            "text": "最后一题，加油！"
+          },
+          "enterAnimation": {
+            "type": "fadeIn"
+          }
+        },
+        {
+          "id": "quiz-3-question",
+          "type": "QuizSingle",
+          "props": {
+            "question": "de Casteljau 算法的核心思想是什么？",
+            "options": [
+              "直接计算曲线方程",
+              "递归地在线段上取比例点",
+              "用傅里叶变换",
+              "随机采样"
+            ],
+            "answerKey": "递归地在线段上取比例点"
+          },
+          "enterAnimation": {
+            "type": "slideInLeft",
+            "delay": 200
+          }
+        },
+        {
+          "id": "submit-btn-3",
+          "type": "Button",
+          "props": {
+            "text": "提交答案"
+          },
+          "enterAnimation": {
+            "type": "bounceIn",
+            "delay": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "submit-btn-3" },
+          "if": [
+            {
+              "op": "equals",
+              "left": { "ref": "nodes.quiz-3-question.selected" },
+              "right": "递归地在线段上取比例点"
+            }
+          ],
+          "then": [
+            { "action": "addScore", "value": 10 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-3-question",
+              "animation": "pulse"
+            },
+            { "action": "toast", "text": "太棒了！+10分 🎉" },
+            { "action": "delay", "ms": 1500 },
+            { "action": "gotoScene", "sceneId": "summary" }
+          ],
+          "else": [
+            { "action": "incVar", "path": "globals.vars.attempt", "by": 1 },
+            {
+              "action": "playAnimation",
+              "target": "quiz-3-question",
+              "animation": "shake"
+            },
+            { "action": "toast", "text": "回想一下动画中的构造过程 🤔" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "summary",
+      "layout": {
+        "type": "stack",
+        "direction": "vertical",
+        "gap": 16,
+        "padding": 24,
+        "align": "center"
+      },
+      "nodes": [
+        {
+          "id": "summary-title",
+          "type": "Conclusion",
+          "props": {
+            "title": "🎓 课程完成！",
+            "text": "恭喜你完成了贝塞尔曲线的学习！\n\n你的得分：{{globals.vars.score}} 分\n\n📚 今天你学到了：\n• 贝塞尔曲线由控制点定义\n• n次贝塞尔曲线需要 n+1 个控制点\n• de Casteljau 算法通过递归取比例点构造曲线\n• t 从 0 到 1 遍历整条曲线"
+          },
+          "enterAnimation": {
+            "type": "scaleIn"
+          }
+        },
+        {
+          "id": "back-to-demo-btn",
+          "type": "Button",
+          "props": {
+            "text": "🎮 再玩一次交互演示"
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "delay": 300
+          }
+        },
+        {
+          "id": "restart-btn",
+          "type": "Button",
+          "props": {
+            "text": "↺ 重新学习"
+          },
+          "enterAnimation": {
+            "type": "slideInUp",
+            "delay": 400
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "on": { "event": "click", "target": "back-to-demo-btn" },
+          "then": [{ "action": "gotoScene", "sceneId": "interactive" }]
+        },
+        {
+          "on": { "event": "click", "target": "restart-btn" },
+          "then": [
+            { "action": "setVar", "path": "globals.vars.score", "value": 0 },
+            { "action": "setVar", "path": "globals.vars.attempt", "value": 0 },
+            { "action": "gotoScene", "sceneId": "intro" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,17 @@ export { AnimationRegistry, animationRegistry } from './core/registry';
 export * from './common';
 export { commonModuleInfo } from './common';
 
+// ============= 数学动画模块 =============
+export * from './math';
+export { mathModuleInfo } from './math';
+
+// ============= 自动注册动画模块 =============
+import { webAnimationRegistry } from './standards/WebAnimationRegistry';
+import { BezierCurveModule } from './math';
+
+// 注册数学动画模块
+webAnimationRegistry.register(BezierCurveModule);
+
 // ============= 便捷函数 =============
 import { webAnimationRegistry as registry } from './standards/WebAnimationRegistry';
 

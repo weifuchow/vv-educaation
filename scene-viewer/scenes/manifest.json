@@ -2,6 +2,12 @@
   "version": "1.0.0",
   "scenes": [
     {
+      "id": "bezier-curve",
+      "title": "贝塞尔曲线",
+      "icon": "📐",
+      "description": "交互式贝塞尔曲线可视化，展示 de Casteljau 算法"
+    },
+    {
       "id": "animation-pack-demo",
       "title": "动画包演示",
       "icon": "🎬",
