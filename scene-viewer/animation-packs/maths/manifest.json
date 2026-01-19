@@ -1,0 +1,16 @@
+{
+  "id": "@vvce/maths",
+  "name": "数学动画包",
+  "version": "1.0.0",
+  "description": "数学学科交互式动画：贝塞尔曲线、函数图像、几何变换等",
+  "type": "subject-pack",
+  "dependencies": ["@vvce/core"],
+  "animations": {
+    "bezier-curve": {
+      "id": "maths.bezier-curve",
+      "path": "./bezier-curve/",
+      "type": "interactive"
+    }
+  },
+  "keyframes": "./keyframes.json"
+}

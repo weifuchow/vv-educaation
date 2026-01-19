@@ -1,0 +1,20 @@
+{
+  "id": "@vvce/core",
+  "name": "VVCE 核心动画库",
+  "version": "1.0.0",
+  "description": "可复用的动画基础设施：坐标系、网格、点、曲线、交互组件等",
+  "type": "library",
+  "exports": {
+    "CanvasRenderer": "./lib/CanvasRenderer.js",
+    "CoordinateSystem": "./lib/CoordinateSystem.js",
+    "Grid": "./lib/Grid.js",
+    "Point": "./lib/Point.js",
+    "Curve": "./lib/Curve.js",
+    "Tooltip": "./lib/Tooltip.js",
+    "Controls": "./lib/Controls.js",
+    "math/bezier": "./lib/math/bezier.js",
+    "math/interpolation": "./lib/math/interpolation.js",
+    "math/vector": "./lib/math/vector.js"
+  },
+  "styles": ["./styles/core.css"]
+}
