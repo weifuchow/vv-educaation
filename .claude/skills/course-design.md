@@ -13,19 +13,33 @@
 ## 输出目录
 
 - **课程 DSL**: `scene-viewer/scenes/` 目录
-- **动画包**: `scene-viewer/animation-packs/` 目录
+- **效果包**: `scene-viewer/content-packs/effects/` 目录
+- **可视化**: `scene-viewer/content-packs/visualizations/` 目录
 
-## 动画包系统
+## 内容包架构
 
-动画资源采用 **动画包架构**，支持热加载和按需加载：
+内容资源采用 **双层架构**：
 
 ```
-scene-viewer/animation-packs/
-├── manifest.json         # 动画包清单
-├── basic.json            # 基础动画包 (内置)
-├── science.json          # 科学动画包
-└── math.json             # 数学动画包
+scene-viewer/content-packs/
+├── manifest.json              # 内容包清单
+├── effects/                   # 关键帧动画（CSS动画，JSON定义）
+│   ├── basic.json             # 基础动画包 (内置)
+│   ├── science.json           # 科学动画包
+│   └── math.json              # 数学动画包
+└── visualizations/            # 交互式可视化（Canvas/JS）
+    └── math/
+        └── bezier-curve/      # 贝塞尔曲线可视化
+            ├── renderer.js
+            └── styles.css
 ```
+
+### 两类动画
+
+| 类型 | 存储 | 运行 | 复杂度 | 适用场景 |
+|------|------|------|--------|----------|
+| **关键帧动画** | JSON | CSS Animation | 低 | 淡入、弹跳、闪烁等简单效果 |
+| **交互式可视化** | JS + CSS | Canvas API | 高 | 贝塞尔曲线、函数图像、物理模拟 |
 
 ### 架构特点
 
@@ -36,8 +50,9 @@ scene-viewer/animation-packs/
 | **热更新** | 动画包可独立更新，无需重新发布前端 |
 | **按需加载** | 只加载课程需要的动画包 |
 | **参数化** | 支持参数插值定制动画效果 |
+| **TypeScript** | 核心渲染库提供完整类型定义 |
 
-## 动画包列表
+## 关键帧动画包
 
 ### @vvce/basic (内置基础动画)
 
@@ -100,6 +115,86 @@ scene-viewer/animation-packs/
 | `@math/highlight` | 高亮强调 | color | 重点标记 |
 | `@math/progressFill` | 进度填充 | percent | 进度条 |
 
+## 交互式可视化
+
+复杂交互动画使用 Canvas 实现，存放在 `visualizations/` 目录：
+
+### 可用可视化
+
+| 类型 | 描述 | 参数 |
+|------|------|------|
+| `interactive/math.bezier-curve` | 贝塞尔曲线 | controlPoints, showConstruction, autoplay |
+
+### 在 DSL 中使用
+
+```json
+{
+  "id": "bezier-demo",
+  "type": "Animation",
+  "props": {
+    "type": "interactive/math.bezier-curve",
+    "autoplay": false,
+    "params": {
+      "showConstruction": true,
+      "showGrid": true,
+      "controlPoints": [
+        [100, 400],
+        [200, 100],
+        [400, 100],
+        [500, 400]
+      ]
+    }
+  }
+}
+```
+
+### 支持的类型格式
+
+以下格式等效：
+- `interactive/math.bezier-curve` (推荐)
+- `math.bezier-curve` (简写)
+- `@vvce/math/bezier-curve` (包格式)
+
+## 双输出系统
+
+课程创建时可生成两个 JSON：
+
+### course.dsl.json (课程 DSL)
+
+引用已有动画和可视化。
+
+### extensions.json (扩展定义)
+
+当内置库不满足需求时，定义新动画：
+
+```json
+{
+  "schema": "vvce.animation-pack.v1",
+  "keyframes": [
+    {
+      "id": "custom.highlightPath",
+      "keyframes": [
+        { "offset": 0, "properties": { "strokeWidth": 2, "opacity": 0.5 } },
+        { "offset": 50, "properties": { "strokeWidth": 4, "opacity": 1 } },
+        { "offset": 100, "properties": { "strokeWidth": 2, "opacity": 0.5 } }
+      ],
+      "duration": 1000,
+      "iterations": -1
+    }
+  ],
+  "interactive": [
+    {
+      "id": "custom.specialCurve",
+      "type": "interactive",
+      "status": "needs-development",
+      "description": "需要开发：特殊曲线动画",
+      "requirements": ["显示自定义曲线", "支持拖拽控制点"],
+      "suggestedBase": "math.bezier-curve"
+    }
+  ]
+}
+```
+
 ## 设计流程
 
 ### 1. 收集课程信息
@@ -125,6 +220,7 @@ scene-viewer/animation-packs/
 **样式配置：**
 - 主题选择：default | playful | academic | minimal | vibrant | dark | nature | tech | retro
 - 需要的动画包：basic(内置)、science、math
+- 是否需要交互式可视化
 - 场景过渡效果
 
 ### 2. DSL 结构模板
@@ -274,6 +370,54 @@ scene-viewer/animation-packs/
 }
 ```
 
+#### 交互式可视化场景
+
+```json
+{
+  "id": "bezier-demo",
+  "layout": { "type": "stack", "direction": "vertical", "gap": 16, "padding": 24 },
+  "nodes": [
+    {
+      "id": "intro-dialog",
+      "type": "Dialog",
+      "props": {
+        "speaker": "VV老师",
+        "text": "贝塞尔曲线是计算机图形学的基础！试着拖动控制点看看效果。"
+      },
+      "enterAnimation": { "type": "fadeIn" }
+    },
+    {
+      "id": "bezier-animation",
+      "type": "Animation",
+      "props": {
+        "type": "interactive/math.bezier-curve",
+        "autoplay": false,
+        "params": {
+          "showConstruction": true,
+          "showGrid": true,
+          "curveColor": "#4ecdc4",
+          "controlPointColor": "#ff6b6b"
+        }
+      }
+    },
+    {
+      "id": "next-btn",
+      "type": "Button",
+      "props": { "text": "继续学习" },
+      "enterAnimation": { "type": "slideInUp", "delay": 300 }
+    }
+  ],
+  "triggers": [
+    {
+      "on": { "event": "click", "target": "next-btn" },
+      "then": [
+        { "action": "gotoScene", "sceneId": "quiz-1" }
+      ]
+    }
+  ]
+}
+```
+
 #### 测验场景 (quiz)
 
 ```json
@@ -317,7 +461,7 @@ scene-viewer/animation-packs/
       "then": [
         { "action": "addScore", "value": 10 },
         { "action": "playAnimation", "target": "quiz-question", "animation": "pulse", "params": { "intensity": 1.2 } },
-        { "action": "toast", "text": "回答正确！+10分 🎉" },
+        { "action": "toast", "text": "回答正确！+10分" },
         { "action": "delay", "ms": 1500 },
         { "action": "gotoScene", "sceneId": "summary" }
       ],
@@ -462,15 +606,16 @@ scene-viewer/animation-packs/
 2. **选择模板** - 根据场景类型选择合适模板
 3. **声明动画包** - 在 imports 中声明需要的动画包
 4. **引用动画** - 使用 `enterAnimation` 和 `animation` 属性
-5. **组装 DSL** - 将各场景组装成完整课程
-6. **保存文件** - 写入 `scene-viewer/scenes/{course-id}.json`
-7. **验证** - 使用 dsl-validate 验证生成的 DSL
+5. **添加可视化** - 如需交互式可视化，使用 Animation 组件
+6. **组装 DSL** - 将各场景组装成完整课程
+7. **保存文件** - 写入 `scene-viewer/scenes/{course-id}.json`
+8. **验证** - 使用 dsl-validate 验证生成的 DSL
 
-### 7. 新增动画到动画包
+### 7. 新增动画到效果包
 
 如需扩展动画库：
 
-1. **编辑动画包 JSON** (`scene-viewer/animation-packs/{pack}.json`)
+1. **编辑效果包 JSON** (`scene-viewer/content-packs/effects/{pack}.json`)
 2. **定义新动画**:
 ```json
 {
@@ -497,27 +642,30 @@ scene-viewer/animation-packs/
 ```
 === 课程设计完成 ===
 
-文件已创建: scene-viewer/scenes/solar-system.json
+文件已创建: scene-viewer/scenes/bezier-intro.json
 
 课程概览:
-- ID: solar-system
-- 标题: 太阳系探索
-- 学科: astronomy
+- ID: bezier-intro
+- 标题: 贝塞尔曲线入门
+- 学科: math
 - 场景数: 4
 - 主题: academic
 
 引用的动画包:
 - @vvce/basic (内置)
-- @vvce/science
+- @vvce/math
 
 使用的动画:
 - 入场: fadeIn, slideInLeft, scaleIn, bounceIn
-- 持续: @science/orbit, @science/glow
+- 持续: float
 - 交互: shake, pulse
+
+交互式可视化:
+- interactive/math.bezier-curve
 
 场景列表:
 1. intro - 课程引入
-2. content-1 - 太阳系概览
+2. content-1 - 贝塞尔曲线演示
 3. quiz-1 - 知识测验
 4. summary - 总结
 
@@ -531,6 +679,7 @@ scene-viewer/animation-packs/
 - 基础动画 (fadeIn, shake 等) 无需前缀，直接使用名称
 - 科学/数学动画使用 `@science/xxx` 或 `@math/xxx` 格式
 - 需要科学/数学动画时，必须在 `imports` 中声明对应的包
+- 交互式可视化使用 `interactive/subject.name` 格式
 - 课程 ID 使用 kebab-case
 - 确保所有 sceneId 引用正确
 - 场景过渡时间建议 300-500ms
