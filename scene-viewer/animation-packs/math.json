@@ -11,7 +11,12 @@
       "category": "data",
       "tags": ["count", "number", "data", "statistics"],
       "params": [
-        { "name": "steps", "type": "number", "description": "Number of counting steps", "default": 10 }
+        {
+          "name": "steps",
+          "type": "number",
+          "description": "Number of counting steps",
+          "default": 10
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "opacity": 0.5, "scale": 0.9 } },
@@ -29,7 +34,12 @@
       "category": "geometry",
       "tags": ["draw", "line", "geometry", "path"],
       "params": [
-        { "name": "length", "type": "number", "description": "Line length", "default": 200 }
+        {
+          "name": "length",
+          "type": "number",
+          "description": "Line length",
+          "default": 200
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "strokeDashoffset": "${length}" } },
@@ -46,8 +56,18 @@
       "category": "geometry",
       "tags": ["morph", "transform", "geometry", "shape"],
       "params": [
-        { "name": "scaleX", "type": "number", "description": "X scale factor", "default": 1.5 },
-        { "name": "scaleY", "type": "number", "description": "Y scale factor", "default": 0.8 }
+        {
+          "name": "scaleX",
+          "type": "number",
+          "description": "X scale factor",
+          "default": 1.5
+        },
+        {
+          "name": "scaleY",
+          "type": "number",
+          "description": "Y scale factor",
+          "default": 0.8
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "scaleX": 1, "scaleY": 1 } },
@@ -65,8 +85,18 @@
       "category": "geometry",
       "tags": ["rotate", "symmetry", "geometry", "transform"],
       "params": [
-        { "name": "degrees", "type": "number", "description": "Rotation degrees", "default": 90 },
-        { "name": "steps", "type": "number", "description": "Step rotation", "default": 4 }
+        {
+          "name": "degrees",
+          "type": "number",
+          "description": "Rotation degrees",
+          "default": 90
+        },
+        {
+          "name": "steps",
+          "type": "number",
+          "description": "Step rotation",
+          "default": 4
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "rotate": 0 } },
@@ -115,7 +145,12 @@
       "category": "attention",
       "tags": ["highlight", "focus", "attention", "emphasis"],
       "params": [
-        { "name": "color", "type": "string", "description": "Highlight color", "default": "#ffeb3b" }
+        {
+          "name": "color",
+          "type": "string",
+          "description": "Highlight color",
+          "default": "#ffeb3b"
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "backgroundColor": "transparent", "scale": 1 } },
@@ -133,11 +168,19 @@
       "category": "transition",
       "tags": ["compare", "slide", "transition", "versus"],
       "params": [
-        { "name": "direction", "type": "string", "description": "Direction: left or right", "default": "left" }
+        {
+          "name": "direction",
+          "type": "string",
+          "description": "Direction: left or right",
+          "default": "left"
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "translateX": 0 } },
-        { "offset": 100, "properties": { "translateX": "${direction === 'left' ? -100 : 100}" } }
+        {
+          "offset": 100,
+          "properties": { "translateX": "${direction === 'left' ? -100 : 100}" }
+        }
       ],
       "duration": 400,
       "easing": "ease-in-out",
@@ -150,12 +193,38 @@
       "category": "entrance",
       "tags": ["stack", "sequence", "cards", "entrance"],
       "params": [
-        { "name": "offsetY", "type": "number", "description": "Y offset per item (px)", "default": 5 },
-        { "name": "offsetX", "type": "number", "description": "X offset per item (px)", "default": 3 }
+        {
+          "name": "offsetY",
+          "type": "number",
+          "description": "Y offset per item (px)",
+          "default": 5
+        },
+        {
+          "name": "offsetX",
+          "type": "number",
+          "description": "X offset per item (px)",
+          "default": 3
+        }
       ],
       "keyframes": [
-        { "offset": 0, "properties": { "translateY": -50, "translateX": "${offsetX * 2}", "opacity": 0, "scale": 0.9 } },
-        { "offset": 100, "properties": { "translateY": "${offsetY}", "translateX": "${offsetX}", "opacity": 1, "scale": 1 } }
+        {
+          "offset": 0,
+          "properties": {
+            "translateY": -50,
+            "translateX": "${offsetX * 2}",
+            "opacity": 0,
+            "scale": 0.9
+          }
+        },
+        {
+          "offset": 100,
+          "properties": {
+            "translateY": "${offsetY}",
+            "translateX": "${offsetX}",
+            "opacity": 1,
+            "scale": 1
+          }
+        }
       ],
       "duration": 400,
       "easing": "ease-out",
@@ -168,7 +237,12 @@
       "category": "data",
       "tags": ["progress", "fill", "bar", "data"],
       "params": [
-        { "name": "percent", "type": "number", "description": "Fill percentage", "default": 100 }
+        {
+          "name": "percent",
+          "type": "number",
+          "description": "Fill percentage",
+          "default": 100
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "width": "0%" } },

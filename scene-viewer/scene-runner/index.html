@@ -1177,8 +1177,26 @@
               // Handle keyframe animations on any node (enterAnimation, animation)
               const nodeElement = this.sceneContainer.querySelector(`[data-node-id="${node.id}"]`);
               if (nodeElement) {
+                const hasEnterAnimation = !!node.enterAnimation;
+                const hasContinuousAnimation = !!node.animation;
+
+                // Function to start continuous animation
+                const startContinuousAnimation = () => {
+                  if (hasContinuousAnimation) {
+                    const animRef = node.animation.type;
+                    const params = {
+                      ...node.animation.params,
+                      duration: node.animation.duration,
+                      delay: node.animation.delay,
+                      easing: node.animation.easing,
+                      iterations: node.animation.iterations ?? -1, // Loop by default
+                    };
+                    keyframeEngine.play(nodeElement, animRef, params);
+                  }
+                };
+
                 // Enter animation
-                if (node.enterAnimation) {
+                if (hasEnterAnimation) {
                   const animRef = node.enterAnimation.type;
                   const params = {
                     ...node.enterAnimation.params,
@@ -1187,19 +1205,18 @@
                     easing: node.enterAnimation.easing,
                   };
                   keyframeEngine.play(nodeElement, animRef, params);
-                }
 
-                // Continuous animation
-                if (node.animation) {
-                  const animRef = node.animation.type;
-                  const params = {
-                    ...node.animation.params,
-                    duration: node.animation.duration,
-                    delay: node.animation.delay,
-                    easing: node.animation.easing,
-                    iterations: node.animation.iterations ?? -1, // Loop by default
-                  };
-                  keyframeEngine.play(nodeElement, animRef, params);
+                  // If both enter and continuous animations exist, sequence them
+                  if (hasContinuousAnimation) {
+                    nodeElement.addEventListener('animationend', function onAnimEnd(e) {
+                      // Only trigger once for this element
+                      nodeElement.removeEventListener('animationend', onAnimEnd);
+                      startContinuousAnimation();
+                    });
+                  }
+                } else {
+                  // No enter animation, start continuous immediately
+                  startContinuousAnimation();
                 }
               }
             });

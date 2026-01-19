@@ -8,10 +8,7 @@
     "description": "演示动画包系统的使用"
   },
 
-  "imports": [
-    { "pack": "@vvce/science" },
-    { "pack": "@vvce/math" }
-  ],
+  "imports": [{ "pack": "@vvce/science" }, { "pack": "@vvce/math" }],
 
   "globals": {
     "vars": {
@@ -65,9 +62,7 @@
       "triggers": [
         {
           "on": { "event": "click", "target": "btn-basic" },
-          "then": [
-            { "action": "gotoScene", "sceneId": "basic-demo" }
-          ]
+          "then": [{ "action": "gotoScene", "sceneId": "basic-demo" }]
         }
       ]
     },
@@ -152,9 +147,7 @@
       "triggers": [
         {
           "on": { "event": "click", "target": "btn-science" },
-          "then": [
-            { "action": "gotoScene", "sceneId": "science-demo" }
-          ]
+          "then": [{ "action": "gotoScene", "sceneId": "science-demo" }]
         }
       ]
     },
@@ -234,9 +227,7 @@
       "triggers": [
         {
           "on": { "event": "click", "target": "btn-math" },
-          "then": [
-            { "action": "gotoScene", "sceneId": "math-demo" }
-          ]
+          "then": [{ "action": "gotoScene", "sceneId": "math-demo" }]
         }
       ]
     },
@@ -302,9 +293,7 @@
       "triggers": [
         {
           "on": { "event": "click", "target": "btn-end" },
-          "then": [
-            { "action": "gotoScene", "sceneId": "summary" }
-          ]
+          "then": [{ "action": "gotoScene", "sceneId": "summary" }]
         }
       ]
     },
@@ -342,9 +331,7 @@
       "triggers": [
         {
           "on": { "event": "click", "target": "btn-restart" },
-          "then": [
-            { "action": "gotoScene", "sceneId": "welcome" }
-          ]
+          "then": [{ "action": "gotoScene", "sceneId": "welcome" }]
         }
       ]
     }

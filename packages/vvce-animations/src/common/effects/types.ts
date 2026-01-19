@@ -34,11 +34,7 @@ export type EasingFunction =
   | 'bounce'
   | 'elastic';
 
-export type AnimationDirection =
-  | 'normal'
-  | 'reverse'
-  | 'alternate'
-  | 'alternate-reverse';
+export type AnimationDirection = 'normal' | 'reverse' | 'alternate' | 'alternate-reverse';
 
 export type AnimationFillMode = 'none' | 'forwards' | 'backwards' | 'both';
 

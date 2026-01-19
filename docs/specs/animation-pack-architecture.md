@@ -11,6 +11,7 @@
 VV Education 的核心业务是通过 AI 生成高质量教育课件。当用户描述想学习的知识点时，系统通过 VVCE 引擎生成课件并配合 AI 讲解。
 
 **核心挑战：**
+
 - AI 擅长理解语义和组织内容，但不擅长编写复杂动画的 keyframes
 - 科普、数学等领域需要专业动画（轨道运动、波浪、分子振动等）
 - 动画库需要持续扩展，但不能每次都重新发布前端
@@ -18,13 +19,13 @@ VV Education 的核心业务是通过 AI 生成高质量教育课件。当用户
 
 ### 1.2 设计目标
 
-| 目标 | 说明 |
-|------|------|
-| **AI 友好** | AI 只需引用动画名称 + 传参数，不编写 keyframes |
-| **质量可控** | 所有动画由专业团队预先实现，效果稳定 |
-| **热更新** | 动画包可独立更新，无需重新发布前端 |
-| **按需加载** | 只加载课程需要的动画包，控制体积 |
-| **持续扩展** | 客户有新需求时，后台补充动画库即可 |
+| 目标         | 说明                                           |
+| ------------ | ---------------------------------------------- |
+| **AI 友好**  | AI 只需引用动画名称 + 传参数，不编写 keyframes |
+| **质量可控** | 所有动画由专业团队预先实现，效果稳定           |
+| **热更新**   | 动画包可独立更新，无需重新发布前端             |
+| **按需加载** | 只加载课程需要的动画包，控制体积               |
+| **持续扩展** | 客户有新需求时，后台补充动画库即可             |
 
 ---
 
@@ -119,13 +120,13 @@ interface CourseDSL {
 
 interface AnimationImport {
   // 包名称
-  pack: string;                    // "@vvce/science"
+  pack: string; // "@vvce/science"
 
   // 版本约束 (可选)
-  version?: string;                // "1.2.0" | "^1.0.0" | "latest"
+  version?: string; // "1.2.0" | "^1.0.0" | "latest"
 
   // 别名 (可选，用于简化引用)
-  alias?: string;                  // "sci" → 可用 "@sci/orbit"
+  alias?: string; // "sci" → 可用 "@sci/orbit"
 }
 ```
 
@@ -151,7 +152,7 @@ interface AnimationImport {
 ```typescript
 interface NodeAnimation {
   // 动画类型：内置动画 | 动画包动画
-  type: BuiltinAnimation | string;   // "fadeIn" | "@science/orbit"
+  type: BuiltinAnimation | string; // "fadeIn" | "@science/orbit"
 
   // 动画参数 (用于参数化动画)
   params?: Record<string, any>;
@@ -205,9 +206,9 @@ interface NodeDSL {
 ```typescript
 interface PlayAnimationAction {
   action: 'playAnimation';
-  target: string;                    // 目标节点 ID
-  animation: BuiltinAnimation | string;  // "pulse" | "@science/wave"
-  params?: Record<string, any>;      // 动画参数
+  target: string; // 目标节点 ID
+  animation: BuiltinAnimation | string; // "pulse" | "@science/wave"
+  params?: Record<string, any>; // 动画参数
   duration?: number;
   easing?: EasingFunction;
   delay?: number;
@@ -219,18 +220,20 @@ interface PlayAnimationAction {
 
 ```json
 {
-  "triggers": [{
-    "on": { "event": "click", "target": "explainBtn" },
-    "then": [
-      {
-        "action": "playAnimation",
-        "target": "molecule",
-        "animation": "@science/vibrate",
-        "params": { "intensity": 5 },
-        "iterations": 3
-      }
-    ]
-  }]
+  "triggers": [
+    {
+      "on": { "event": "click", "target": "explainBtn" },
+      "then": [
+        {
+          "action": "playAnimation",
+          "target": "molecule",
+          "animation": "@science/vibrate",
+          "params": { "intensity": 5 },
+          "iterations": 3
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -243,24 +246,24 @@ interface PlayAnimationAction {
 ```typescript
 interface AnimationPack {
   // 包元信息
-  name: string;                      // "@vvce/science"
-  version: string;                   // "1.2.0"
-  description: string;               // "科普类动画包，包含轨道、波浪等效果"
+  name: string; // "@vvce/science"
+  version: string; // "1.2.0"
+  description: string; // "科普类动画包，包含轨道、波浪等效果"
   author?: string;
 
   // 动画定义
   animations: Record<string, AnimationTemplate>;
 
   // 依赖的其他包 (可选)
-  dependencies?: string[];           // ["@vvce/basic"]
+  dependencies?: string[]; // ["@vvce/basic"]
 }
 
 interface AnimationTemplate {
   // 元信息 (供 AI 理解)
-  name: string;                      // "orbit"
-  description: string;               // "椭圆轨道运动，用于展示行星公转"
-  category?: string;                 // "motion" | "attention" | "transition"
-  tags?: string[];                   // ["科普", "天文", "循环"]
+  name: string; // "orbit"
+  description: string; // "椭圆轨道运动，用于展示行星公转"
+  category?: string; // "motion" | "attention" | "transition"
+  tags?: string[]; // ["科普", "天文", "循环"]
 
   // 参数定义
   params: ParamDefinition[];
@@ -277,17 +280,17 @@ interface AnimationTemplate {
 }
 
 interface ParamDefinition {
-  name: string;                      // "radiusX"
+  name: string; // "radiusX"
   type: 'number' | 'string' | 'boolean' | 'color';
-  description: string;               // "椭圆X轴半径"
-  default: any;                      // 100
-  min?: number;                      // 0
-  max?: number;                      // 1000
+  description: string; // "椭圆X轴半径"
+  default: any; // 100
+  min?: number; // 0
+  max?: number; // 1000
 }
 
 interface AnimationKeyframe {
-  offset: number;                    // 0-100
-  properties: Record<string, any>;   // 支持 "${paramName}" 插值
+  offset: number; // 0-100
+  properties: Record<string, any>; // 支持 "${paramName}" 插值
 }
 ```
 
@@ -333,9 +336,21 @@ interface AnimationKeyframe {
 
       "keyframes": [
         { "offset": 0, "properties": { "translateX": "${radiusX}", "translateY": 0 } },
-        { "offset": 25, "properties": { "translateX": 0, "translateY": "${radiusY * (clockwise ? 1 : -1)}" } },
+        {
+          "offset": 25,
+          "properties": {
+            "translateX": 0,
+            "translateY": "${radiusY * (clockwise ? 1 : -1)}"
+          }
+        },
         { "offset": 50, "properties": { "translateX": "${-radiusX}", "translateY": 0 } },
-        { "offset": 75, "properties": { "translateX": 0, "translateY": "${radiusY * (clockwise ? -1 : 1)}" } },
+        {
+          "offset": 75,
+          "properties": {
+            "translateX": 0,
+            "translateY": "${radiusY * (clockwise ? -1 : 1)}"
+          }
+        },
         { "offset": 100, "properties": { "translateX": "${radiusX}", "translateY": 0 } }
       ],
 
@@ -353,7 +368,12 @@ interface AnimationKeyframe {
 
       "params": [
         { "name": "amplitude", "type": "number", "description": "振幅", "default": 20 },
-        { "name": "frequency", "type": "number", "description": "频率(周期数)", "default": 2 }
+        {
+          "name": "frequency",
+          "type": "number",
+          "description": "频率(周期数)",
+          "default": 2
+        }
       ],
 
       "keyframes": [
@@ -376,15 +396,40 @@ interface AnimationKeyframe {
       "tags": ["科普", "化学", "物理"],
 
       "params": [
-        { "name": "intensity", "type": "number", "description": "振动强度", "default": 3, "min": 1, "max": 10 }
+        {
+          "name": "intensity",
+          "type": "number",
+          "description": "振动强度",
+          "default": 3,
+          "min": 1,
+          "max": 10
+        }
       ],
 
       "keyframes": [
         { "offset": 0, "properties": { "translateX": 0, "translateY": 0 } },
-        { "offset": 20, "properties": { "translateX": "${intensity}", "translateY": "${-intensity}" } },
-        { "offset": 40, "properties": { "translateX": "${-intensity}", "translateY": "${intensity}" } },
-        { "offset": 60, "properties": { "translateX": "${intensity * 0.5}", "translateY": "${intensity}" } },
-        { "offset": 80, "properties": { "translateX": "${-intensity * 0.5}", "translateY": "${-intensity * 0.5}" } },
+        {
+          "offset": 20,
+          "properties": { "translateX": "${intensity}", "translateY": "${-intensity}" }
+        },
+        {
+          "offset": 40,
+          "properties": { "translateX": "${-intensity}", "translateY": "${intensity}" }
+        },
+        {
+          "offset": 60,
+          "properties": {
+            "translateX": "${intensity * 0.5}",
+            "translateY": "${intensity}"
+          }
+        },
+        {
+          "offset": 80,
+          "properties": {
+            "translateX": "${-intensity * 0.5}",
+            "translateY": "${-intensity * 0.5}"
+          }
+        },
         { "offset": 100, "properties": { "translateX": 0, "translateY": 0 } }
       ],
 
@@ -502,7 +547,7 @@ class AnimationRegistry {
    * 获取动画包信息 (供 AI 使用)
    */
   getPackManifest(): PackManifest[] {
-    return Array.from(this.loadedPacks.values()).map(pack => ({
+    return Array.from(this.loadedPacks.values()).map((pack) => ({
       name: pack.name,
       version: pack.version,
       description: pack.description,
@@ -518,8 +563,8 @@ class AnimationRegistry {
   private parsePackRef(ref: string): [string, string] {
     // "@vvce/science/orbit" → ["@vvce/science", "orbit"]
     // "@science/orbit" (使用别名) → ["@vvce/science", "orbit"]
-    const match = ref.match(/^(@[\w-]+\/[\w-]+)\/([\w-]+)$/)
-               || ref.match(/^(@[\w-]+)\/([\w-]+)$/);
+    const match =
+      ref.match(/^(@[\w-]+\/[\w-]+)\/([\w-]+)$/) || ref.match(/^(@[\w-]+)\/([\w-]+)$/);
     if (!match) {
       throw new Error(`Invalid animation reference: ${ref}`);
     }
@@ -541,19 +586,19 @@ class AnimationRegistry {
  */
 interface LoaderConfig {
   // CDN 基础路径
-  cdnBase: string;                   // "https://cdn.vveducation.com/animations"
+  cdnBase: string; // "https://cdn.vveducation.com/animations"
 
   // 缓存策略
   cacheStrategy: 'memory' | 'indexeddb' | 'localstorage';
 
   // 缓存有效期 (毫秒)
-  maxCacheAge: number;               // 24 * 60 * 60 * 1000 (24小时)
+  maxCacheAge: number; // 24 * 60 * 60 * 1000 (24小时)
 
   // 请求超时 (毫秒)
-  timeout: number;                   // 10000
+  timeout: number; // 10000
 
   // 重试次数
-  retries: number;                   // 3
+  retries: number; // 3
 }
 
 class AnimationLoader {
@@ -678,7 +723,7 @@ class AnimationLoader {
    * 预加载常用动画包 (可选优化)
    */
   async preload(packs: string[]): Promise<void> {
-    await Promise.all(packs.map(pack => this.loadPack(pack)));
+    await Promise.all(packs.map((pack) => this.loadPack(pack)));
   }
 
   /**
@@ -703,7 +748,7 @@ class AnimationLoader {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
@@ -731,12 +776,15 @@ class ParamInterpolator {
   /**
    * 将参数化模板转换为具体的动画定义
    */
-  interpolate(template: AnimationTemplate, params: Record<string, any>): AnimationDefinition {
+  interpolate(
+    template: AnimationTemplate,
+    params: Record<string, any>
+  ): AnimationDefinition {
     // 合并默认参数
     const mergedParams = this.mergeWithDefaults(template.params, params);
 
     // 插值 keyframes
-    const keyframes = template.keyframes.map(kf => ({
+    const keyframes = template.keyframes.map((kf) => ({
       offset: kf.offset,
       properties: this.interpolateProperties(kf.properties, mergedParams),
     }));
@@ -869,10 +917,16 @@ class VVCERuntime {
       const result = await this.animationLoader.loadImports(dsl.imports);
 
       if (result.failed.length > 0) {
-        this.logger.warn('animation', `Failed to load packs: ${result.failed.map(f => f.pack).join(', ')}`);
+        this.logger.warn(
+          'animation',
+          `Failed to load packs: ${result.failed.map((f) => f.pack).join(', ')}`
+        );
       }
 
-      this.logger.info('animation', `Loaded animation packs: ${result.success.join(', ')}`);
+      this.logger.info(
+        'animation',
+        `Loaded animation packs: ${result.success.join(', ')}`
+      );
     }
 
     // 3. 初始化状态
@@ -1036,55 +1090,64 @@ Response:
 
 当 AI 生成课程时，需要知道可用的动画。系统应提供动画清单：
 
-```markdown
+````markdown
 ## 可用动画库
 
 ### 内置基础动画 (无需 import)
+
 - 入场: fadeIn, slideInLeft, slideInRight, slideInUp, slideInDown, scaleIn, bounceIn, zoomIn
 - 退场: fadeOut, slideOutLeft, slideOutRight, scaleOut, bounceOut, zoomOut
 - 强调: pulse, shake, wobble, swing, tada, heartbeat
 - 循环: float, glow, rotate
 
 ### @vvce/science (科普动画包)
+
 需要在 imports 中声明: { "pack": "@vvce/science" }
 
-| 动画名 | 描述 | 参数 |
-|--------|------|------|
-| orbit | 椭圆轨道运动，用于行星公转 | radiusX, radiusY, clockwise |
-| wave | 波浪运动，用于声波、水波 | amplitude, frequency |
-| vibrate | 分子振动，用于热运动展示 | intensity |
-| explode | 爆炸扩散效果 | radius, particles |
-| spiral | 螺旋运动 | radius, turns |
+| 动画名  | 描述                       | 参数                        |
+| ------- | -------------------------- | --------------------------- |
+| orbit   | 椭圆轨道运动，用于行星公转 | radiusX, radiusY, clockwise |
+| wave    | 波浪运动，用于声波、水波   | amplitude, frequency        |
+| vibrate | 分子振动，用于热运动展示   | intensity                   |
+| explode | 爆炸扩散效果               | radius, particles           |
+| spiral  | 螺旋运动                   | radius, turns               |
 
 ### @vvce/math (数学动画包)
+
 需要在 imports 中声明: { "pack": "@vvce/math" }
 
-| 动画名 | 描述 | 参数 |
-|--------|------|------|
-| draw | 路径绘制动画 | path, strokeWidth |
-| morph | 形状变换 | from, to |
-| count | 数字滚动 | from, to |
-| graph | 函数图像绘制 | function, range |
+| 动画名 | 描述         | 参数              |
+| ------ | ------------ | ----------------- |
+| draw   | 路径绘制动画 | path, strokeWidth |
+| morph  | 形状变换     | from, to          |
+| count  | 数字滚动     | from, to          |
+| graph  | 函数图像绘制 | function, range   |
 
 ## 使用示例
 
 ```json
 {
   "imports": [{ "pack": "@vvce/science" }],
-  "scenes": [{
-    "nodes": [{
-      "id": "earth",
-      "type": "Image",
-      "props": { "src": "earth.png" },
-      "animation": {
-        "type": "@science/orbit",
-        "params": { "radiusX": 200, "radiusY": 150 },
-        "iterations": -1
-      }
-    }]
-  }]
+  "scenes": [
+    {
+      "nodes": [
+        {
+          "id": "earth",
+          "type": "Image",
+          "props": { "src": "earth.png" },
+          "animation": {
+            "type": "@science/orbit",
+            "params": { "radiusX": 200, "radiusY": 150 },
+            "iterations": -1
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
+````
+
 ```
 
 ### 7.2 动画选择建议
@@ -1152,3 +1215,4 @@ AI 应根据课程内容选择合适的动画：
 2. **快速生成** - AI 只需选择 + 传参
 3. **持续进化** - 动画库不断丰富
 4. **差异化壁垒** - 积累的动画库是核心资产
+```

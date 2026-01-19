@@ -11,7 +11,12 @@
       "category": "entrance",
       "tags": ["fade", "entrance", "basic"],
       "params": [
-        { "name": "duration", "type": "number", "description": "Animation duration (ms)", "default": 500 }
+        {
+          "name": "duration",
+          "type": "number",
+          "description": "Animation duration (ms)",
+          "default": 500
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "opacity": 0 } },
@@ -43,7 +48,12 @@
       "category": "entrance",
       "tags": ["slide", "entrance", "horizontal"],
       "params": [
-        { "name": "distance", "type": "number", "description": "Slide distance (px)", "default": 100 }
+        {
+          "name": "distance",
+          "type": "number",
+          "description": "Slide distance (px)",
+          "default": 100
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "translateX": "${-distance}", "opacity": 0 } },
@@ -60,7 +70,12 @@
       "category": "entrance",
       "tags": ["slide", "entrance", "horizontal"],
       "params": [
-        { "name": "distance", "type": "number", "description": "Slide distance (px)", "default": 100 }
+        {
+          "name": "distance",
+          "type": "number",
+          "description": "Slide distance (px)",
+          "default": 100
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "translateX": "${distance}", "opacity": 0 } },
@@ -77,7 +92,12 @@
       "category": "entrance",
       "tags": ["slide", "entrance", "vertical"],
       "params": [
-        { "name": "distance", "type": "number", "description": "Slide distance (px)", "default": 50 }
+        {
+          "name": "distance",
+          "type": "number",
+          "description": "Slide distance (px)",
+          "default": 50
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "translateY": "${distance}", "opacity": 0 } },
@@ -94,7 +114,12 @@
       "category": "entrance",
       "tags": ["scale", "entrance", "zoom"],
       "params": [
-        { "name": "startScale", "type": "number", "description": "Starting scale", "default": 0.5 }
+        {
+          "name": "startScale",
+          "type": "number",
+          "description": "Starting scale",
+          "default": 0.5
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "scale": "${startScale}", "opacity": 0 } },
@@ -128,7 +153,12 @@
       "category": "attention",
       "tags": ["pulse", "attention", "highlight"],
       "params": [
-        { "name": "intensity", "type": "number", "description": "Pulse scale factor", "default": 1.1 }
+        {
+          "name": "intensity",
+          "type": "number",
+          "description": "Pulse scale factor",
+          "default": 1.1
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "scale": 1 } },
@@ -146,7 +176,12 @@
       "category": "attention",
       "tags": ["shake", "attention", "error"],
       "params": [
-        { "name": "distance", "type": "number", "description": "Shake distance (px)", "default": 10 }
+        {
+          "name": "distance",
+          "type": "number",
+          "description": "Shake distance (px)",
+          "default": 10
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "translateX": 0 } },
@@ -166,7 +201,12 @@
       "category": "loop",
       "tags": ["float", "loop", "gentle"],
       "params": [
-        { "name": "distance", "type": "number", "description": "Float distance (px)", "default": 10 }
+        {
+          "name": "distance",
+          "type": "number",
+          "description": "Float distance (px)",
+          "default": 10
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "translateY": 0 } },
@@ -184,7 +224,12 @@
       "category": "loop",
       "tags": ["rotate", "loop", "spin"],
       "params": [
-        { "name": "degrees", "type": "number", "description": "Rotation degrees", "default": 360 }
+        {
+          "name": "degrees",
+          "type": "number",
+          "description": "Rotation degrees",
+          "default": 360
+        }
       ],
       "keyframes": [
         { "offset": 0, "properties": { "rotate": 0 } },
