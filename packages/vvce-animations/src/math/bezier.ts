@@ -3,10 +3,22 @@
  * 贝塞尔曲线数学计算工具
  */
 
+import type { Point2D } from './vector';
+
+export interface ClosestPointResult {
+  t: number;
+  point: Point2D;
+  distance: number;
+}
+
+export interface SampledPoint extends Point2D {
+  t: number;
+}
+
 /**
  * 计算二项式系数 C(n, k)
  */
-export function binomial(n, k) {
+export function binomial(n: number, k: number): number {
   if (k < 0 || k > n) return 0;
   if (k === 0 || k === n) return 1;
 
@@ -21,11 +33,11 @@ export function binomial(n, k) {
  * 计算贝塞尔曲线上的点 (Bernstein 多项式形式)
  * B(t) = Σ C(n,i) * (1-t)^(n-i) * t^i * P_i
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {number} t - 参数 t (0-1)
- * @returns {{x: number, y: number}} 曲线上的点
+ * @param controlPoints - 控制点数组
+ * @param t - 参数 t (0-1)
+ * @returns 曲线上的点
  */
-export function bezierPoint(controlPoints, t) {
+export function bezierPoint(controlPoints: Point2D[], t: number): Point2D {
   const n = controlPoints.length - 1;
   let x = 0;
   let y = 0;
@@ -40,19 +52,29 @@ export function bezierPoint(controlPoints, t) {
 }
 
 /**
+ * 2D 线性插值
+ */
+export function lerp2D(p1: Point2D, p2: Point2D, t: number): Point2D {
+  return {
+    x: p1.x + (p2.x - p1.x) * t,
+    y: p1.y + (p2.y - p1.y) * t,
+  };
+}
+
+/**
  * 使用 de Casteljau 算法计算贝塞尔曲线上的点
  * 递归地在控制线段上取比例点
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {number} t - 参数 t (0-1)
- * @returns {{x: number, y: number}} 曲线上的点
+ * @param controlPoints - 控制点数组
+ * @param t - 参数 t (0-1)
+ * @returns 曲线上的点
  */
-export function deCasteljau(controlPoints, t) {
+export function deCasteljau(controlPoints: Point2D[], t: number): Point2D {
   if (controlPoints.length === 1) {
     return controlPoints[0];
   }
 
-  const newPoints = [];
+  const newPoints: Point2D[] = [];
   for (let i = 0; i < controlPoints.length - 1; i++) {
     newPoints.push(lerp2D(controlPoints[i], controlPoints[i + 1], t));
   }
@@ -64,16 +86,16 @@ export function deCasteljau(controlPoints, t) {
  * 获取 de Casteljau 算法的所有中间层
  * 用于可视化构造过程
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {number} t - 参数 t (0-1)
- * @returns {Array<Array<{x: number, y: number}>>} 所有层级的点
+ * @param controlPoints - 控制点数组
+ * @param t - 参数 t (0-1)
+ * @returns 所有层级的点
  */
-export function deCasteljauLevels(controlPoints, t) {
-  const levels = [controlPoints];
+export function deCasteljauLevels(controlPoints: Point2D[], t: number): Point2D[][] {
+  const levels: Point2D[][] = [controlPoints];
   let currentLevel = controlPoints;
 
   while (currentLevel.length > 1) {
-    const newLevel = [];
+    const newLevel: Point2D[] = [];
     for (let i = 0; i < currentLevel.length - 1; i++) {
       newLevel.push(lerp2D(currentLevel[i], currentLevel[i + 1], t));
     }
@@ -85,28 +107,18 @@ export function deCasteljauLevels(controlPoints, t) {
 }
 
 /**
- * 2D 线性插值
- */
-export function lerp2D(p1, p2, t) {
-  return {
-    x: p1.x + (p2.x - p1.x) * t,
-    y: p1.y + (p2.y - p1.y) * t,
-  };
-}
-
-/**
  * 计算贝塞尔曲线的一阶导数（切向量）
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {number} t - 参数 t (0-1)
- * @returns {{x: number, y: number}} 切向量
+ * @param controlPoints - 控制点数组
+ * @param t - 参数 t (0-1)
+ * @returns 切向量
  */
-export function bezierDerivative(controlPoints, t) {
+export function bezierDerivative(controlPoints: Point2D[], t: number): Point2D {
   const n = controlPoints.length - 1;
   if (n < 1) return { x: 0, y: 0 };
 
   // 导数控制点
-  const derivativePoints = [];
+  const derivativePoints: Point2D[] = [];
   for (let i = 0; i < n; i++) {
     derivativePoints.push({
       x: n * (controlPoints[i + 1].x - controlPoints[i].x),
@@ -120,11 +132,11 @@ export function bezierDerivative(controlPoints, t) {
 /**
  * 计算曲线在某点的法向量
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {number} t - 参数 t (0-1)
- * @returns {{x: number, y: number}} 单位法向量
+ * @param controlPoints - 控制点数组
+ * @param t - 参数 t (0-1)
+ * @returns 单位法向量
  */
-export function bezierNormal(controlPoints, t) {
+export function bezierNormal(controlPoints: Point2D[], t: number): Point2D {
   const derivative = bezierDerivative(controlPoints, t);
   const length = Math.sqrt(derivative.x ** 2 + derivative.y ** 2);
 
@@ -140,11 +152,11 @@ export function bezierNormal(controlPoints, t) {
 /**
  * 计算曲线的总弧长（数值积分）
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {number} steps - 积分步数
- * @returns {number} 弧长
+ * @param controlPoints - 控制点数组
+ * @param steps - 积分步数
+ * @returns 弧长
  */
-export function bezierArcLength(controlPoints, steps = 100) {
+export function bezierArcLength(controlPoints: Point2D[], steps = 100): number {
   let length = 0;
   let prevPoint = bezierPoint(controlPoints, 0);
 
@@ -161,15 +173,19 @@ export function bezierArcLength(controlPoints, steps = 100) {
 /**
  * 查找曲线上最近的 t 值
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {{x: number, y: number}} target - 目标点
- * @param {number} samples - 采样数
- * @returns {{t: number, point: {x: number, y: number}, distance: number}}
+ * @param controlPoints - 控制点数组
+ * @param target - 目标点
+ * @param samples - 采样数
+ * @returns 最近点信息
  */
-export function findClosestT(controlPoints, target, samples = 100) {
+export function findClosestT(
+  controlPoints: Point2D[],
+  target: Point2D,
+  samples = 100
+): ClosestPointResult {
   let minDist = Infinity;
   let closestT = 0;
-  let closestPoint = null;
+  let closestPoint: Point2D = { x: 0, y: 0 };
 
   // 粗搜索
   for (let i = 0; i <= samples; i++) {
@@ -210,12 +226,12 @@ export function findClosestT(controlPoints, target, samples = 100) {
 /**
  * 生成贝塞尔曲线的采样点数组
  *
- * @param {Array<{x: number, y: number}>} controlPoints - 控制点数组
- * @param {number} samples - 采样数
- * @returns {Array<{x: number, y: number, t: number}>}
+ * @param controlPoints - 控制点数组
+ * @param samples - 采样数
+ * @returns 采样点数组
  */
-export function sampleBezier(controlPoints, samples = 100) {
-  const points = [];
+export function sampleBezier(controlPoints: Point2D[], samples = 100): SampledPoint[] {
+  const points: SampledPoint[] = [];
 
   for (let i = 0; i <= samples; i++) {
     const t = i / samples;
@@ -225,16 +241,3 @@ export function sampleBezier(controlPoints, samples = 100) {
 
   return points;
 }
-
-export default {
-  binomial,
-  bezierPoint,
-  deCasteljau,
-  deCasteljauLevels,
-  lerp2D,
-  bezierDerivative,
-  bezierNormal,
-  bezierArcLength,
-  findClosestT,
-  sampleBezier,
-};

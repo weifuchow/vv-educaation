@@ -2,42 +2,53 @@
  * Point - 可交互的点
  * 支持拖拽、悬停效果、标签显示
  */
-export class Point {
-  constructor(x, y, options = {}) {
+
+import type { Point2D } from '../math/vector';
+
+export interface PointOptions {
+  radius?: number;
+  color?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  hoverRadius?: number;
+  hoverColor?: string;
+  draggable?: boolean;
+  label?: string | null;
+  labelFont?: string;
+  labelColor?: string;
+  labelOffset?: Point2D;
+}
+
+export class Point implements Point2D {
+  x: number;
+  y: number;
+  options: Required<PointOptions>;
+  isHovered = false;
+  isDragging = false;
+
+  constructor(x: number, y: number, options: PointOptions = {}) {
     this.x = x;
     this.y = y;
     this.options = {
-      // 基础样式
       radius: 10,
       color: '#ff6b6b',
       borderColor: '#fff',
       borderWidth: 2,
-
-      // 悬停效果
       hoverRadius: 15,
       hoverColor: 'rgba(255, 107, 107, 0.3)',
-
-      // 拖拽
       draggable: true,
-
-      // 标签
       label: null,
       labelFont: 'bold 11px sans-serif',
       labelColor: '#fff',
       labelOffset: { x: 0, y: 0 },
-
       ...options,
     };
-
-    // 状态
-    this.isHovered = false;
-    this.isDragging = false;
   }
 
   /**
    * 设置位置
    */
-  setPosition(x, y) {
+  setPosition(x: number, y: number): void {
     this.x = x;
     this.y = y;
   }
@@ -45,7 +56,7 @@ export class Point {
   /**
    * 检测点击
    */
-  hitTest(mouseX, mouseY) {
+  hitTest(mouseX: number, mouseY: number): boolean {
     const dist = Math.sqrt((this.x - mouseX) ** 2 + (this.y - mouseY) ** 2);
     return dist < this.options.hoverRadius;
   }
@@ -53,7 +64,7 @@ export class Point {
   /**
    * 绘制点
    */
-  draw(ctx) {
+  draw(ctx: CanvasRenderingContext2D): void {
     const { radius, color, borderColor, borderWidth, hoverRadius, hoverColor, label } =
       this.options;
 
@@ -94,27 +105,37 @@ export class Point {
   }
 }
 
-/**
- * PointManager - 管理多个可拖拽点
- */
+// ============= PointManager =============
+
+export interface PointManagerOptions {
+  onDragStart?: ((index: number, point: Point) => void) | null;
+  onDrag?: ((index: number, point: Point) => void) | null;
+  onDragEnd?: ((index: number, point: Point) => void) | null;
+}
+
+export interface PointData extends Point2D {
+  options?: PointOptions;
+}
+
 export class PointManager {
-  constructor(options = {}) {
-    this.points = [];
+  points: Point[] = [];
+  private options: Required<PointManagerOptions>;
+  private draggingIndex = -1;
+  private hoveredIndex = -1;
+
+  constructor(options: PointManagerOptions = {}) {
     this.options = {
       onDragStart: null,
       onDrag: null,
       onDragEnd: null,
       ...options,
     };
-
-    this.draggingIndex = -1;
-    this.hoveredIndex = -1;
   }
 
   /**
    * 添加点
    */
-  addPoint(x, y, options = {}) {
+  addPoint(x: number, y: number, options: PointOptions = {}): Point {
     const point = new Point(x, y, options);
     this.points.push(point);
     return point;
@@ -123,7 +144,7 @@ export class PointManager {
   /**
    * 设置多个点
    */
-  setPoints(pointsData, options = {}) {
+  setPoints(pointsData: PointData[], options: PointOptions = {}): void {
     this.points = pointsData.map((p, i) => {
       return new Point(p.x, p.y, {
         label: `P${i}`,
@@ -136,14 +157,14 @@ export class PointManager {
   /**
    * 获取所有点的坐标
    */
-  getPositions() {
+  getPositions(): Point2D[] {
     return this.points.map((p) => ({ x: p.x, y: p.y }));
   }
 
   /**
    * 处理鼠标移动
    */
-  handleMouseMove(mousePos) {
+  handleMouseMove(mousePos: Point2D | null): void {
     if (!mousePos) {
       this.hoveredIndex = -1;
       this.points.forEach((p) => (p.isHovered = false));
@@ -176,7 +197,7 @@ export class PointManager {
   /**
    * 处理鼠标按下
    */
-  handleMouseDown(mousePos) {
+  handleMouseDown(mousePos: Point2D | null): void {
     if (!mousePos) return;
 
     for (let i = 0; i < this.points.length; i++) {
@@ -196,7 +217,7 @@ export class PointManager {
   /**
    * 处理鼠标释放
    */
-  handleMouseUp() {
+  handleMouseUp(): void {
     if (this.draggingIndex >= 0) {
       const point = this.points[this.draggingIndex];
       point.isDragging = false;
@@ -212,14 +233,14 @@ export class PointManager {
   /**
    * 绘制所有点
    */
-  draw(ctx) {
+  draw(ctx: CanvasRenderingContext2D): void {
     this.points.forEach((point) => point.draw(ctx));
   }
 
   /**
    * 获取当前光标样式
    */
-  getCursor() {
+  getCursor(): string {
     if (this.draggingIndex >= 0) {
       return 'grabbing';
     }
@@ -229,5 +250,3 @@ export class PointManager {
     return 'default';
   }
 }
-
-export default Point;

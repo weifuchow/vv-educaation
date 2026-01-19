@@ -2,34 +2,44 @@
  * CanvasRenderer - Canvas 渲染器基类
  * 提供 Canvas 初始化、高 DPI 支持、事件处理等基础能力
  */
+
+import type { Point2D } from '../math/vector';
+
+export interface CanvasRendererOptions {
+  backgroundColor?: string;
+  padding?: number;
+}
+
+export type CanvasEventHandler = (pos: Point2D | null) => void;
+
 export class CanvasRenderer {
-  constructor(container, options = {}) {
+  protected container: HTMLElement;
+  protected options: Required<CanvasRendererOptions>;
+  protected canvas: HTMLCanvasElement | null = null;
+  protected ctx: CanvasRenderingContext2D | null = null;
+  protected width = 0;
+  protected height = 0;
+  protected dpr: number;
+  protected isInitialized = false;
+  protected animationId: number | null = null;
+  protected isPlaying = false;
+  protected eventHandlers = new Map<string, CanvasEventHandler[]>();
+  private _resizeHandler: (() => void) | null = null;
+
+  constructor(container: HTMLElement, options: CanvasRendererOptions = {}) {
     this.container = container;
     this.options = {
       backgroundColor: 'transparent',
       padding: 40,
       ...options,
     };
-
-    this.canvas = null;
-    this.ctx = null;
-    this.width = 0;
-    this.height = 0;
-    this.dpr = window.devicePixelRatio || 1;
-
-    // 状态
-    this.isInitialized = false;
-    this.animationId = null;
-    this.isPlaying = false;
-
-    // 事件回调
-    this.eventHandlers = new Map();
+    this.dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
   }
 
   /**
    * 初始化 Canvas
    */
-  initialize() {
+  initialize(): void {
     if (this.isInitialized) return;
 
     // 创建 Canvas 元素
@@ -55,7 +65,9 @@ export class CanvasRenderer {
   /**
    * 调整 Canvas 尺寸（支持高 DPI）
    */
-  resize() {
+  resize(): void {
+    if (!this.canvas || !this.ctx) return;
+
     const rect = this.container.getBoundingClientRect();
     this.width = rect.width;
     this.height = rect.height;
@@ -75,7 +87,9 @@ export class CanvasRenderer {
   /**
    * 绑定鼠标事件
    */
-  _bindMouseEvents() {
+  private _bindMouseEvents(): void {
+    if (!this.canvas) return;
+
     this.canvas.addEventListener('mousemove', (e) => {
       const pos = this._getMousePos(e);
       this._emit('mousemove', pos);
@@ -104,7 +118,8 @@ export class CanvasRenderer {
   /**
    * 获取鼠标位置
    */
-  _getMousePos(e) {
+  private _getMousePos(e: MouseEvent): Point2D {
+    if (!this.canvas) return { x: 0, y: 0 };
     const rect = this.canvas.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
@@ -115,17 +130,17 @@ export class CanvasRenderer {
   /**
    * 注册事件处理器
    */
-  on(event, handler) {
+  on(event: string, handler: CanvasEventHandler): void {
     if (!this.eventHandlers.has(event)) {
       this.eventHandlers.set(event, []);
     }
-    this.eventHandlers.get(event).push(handler);
+    this.eventHandlers.get(event)!.push(handler);
   }
 
   /**
    * 触发事件
    */
-  _emit(event, data) {
+  protected _emit(event: string, data: Point2D | null): void {
     const handlers = this.eventHandlers.get(event);
     if (handlers) {
       handlers.forEach((handler) => handler(data));
@@ -135,18 +150,19 @@ export class CanvasRenderer {
   /**
    * 清空画布
    */
-  clear() {
+  clear(): void {
+    if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
   /**
    * 开始动画循环
    */
-  startAnimation(callback) {
+  startAnimation(callback: () => void): void {
     if (this.isPlaying) return;
     this.isPlaying = true;
 
-    const animate = () => {
+    const animate = (): void => {
       if (!this.isPlaying) return;
       callback();
       this.animationId = requestAnimationFrame(animate);
@@ -158,7 +174,7 @@ export class CanvasRenderer {
   /**
    * 停止动画循环
    */
-  stopAnimation() {
+  stopAnimation(): void {
     this.isPlaying = false;
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
@@ -169,16 +185,18 @@ export class CanvasRenderer {
   /**
    * 渲染（子类实现）
    */
-  render() {
+  render(): void {
     // 子类实现
   }
 
   /**
    * 销毁
    */
-  destroy() {
+  destroy(): void {
     this.stopAnimation();
-    window.removeEventListener('resize', this._resizeHandler);
+    if (this._resizeHandler) {
+      window.removeEventListener('resize', this._resizeHandler);
+    }
     if (this.canvas && this.canvas.parentNode) {
       this.canvas.parentNode.removeChild(this.canvas);
     }
@@ -186,5 +204,3 @@ export class CanvasRenderer {
     this.isInitialized = false;
   }
 }
-
-export default CanvasRenderer;

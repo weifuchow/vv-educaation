@@ -2,8 +2,25 @@
  * Curve - 曲线绘制工具
  * 支持多种曲线类型：直线、贝塞尔、样条、函数曲线等
  */
+
+import type { Point2D } from '../math/vector';
+
+export interface CurveOptions {
+  color?: string;
+  width?: number;
+  lineCap?: CanvasLineCap;
+  lineJoin?: CanvasLineJoin;
+  dash?: number[];
+  glow?: boolean;
+  glowColor?: string | null;
+  glowBlur?: number;
+}
+
 export class Curve {
-  constructor(ctx, options = {}) {
+  private ctx: CanvasRenderingContext2D;
+  private options: Required<CurveOptions>;
+
+  constructor(ctx: CanvasRenderingContext2D, options: CurveOptions = {}) {
     this.ctx = ctx;
     this.options = {
       color: '#4ecdc4',
@@ -11,12 +28,9 @@ export class Curve {
       lineCap: 'round',
       lineJoin: 'round',
       dash: [],
-
-      // 发光效果
       glow: false,
       glowColor: null,
       glowBlur: 10,
-
       ...options,
     };
   }
@@ -24,14 +38,14 @@ export class Curve {
   /**
    * 设置样式
    */
-  setStyle(options) {
+  setStyle(options: Partial<CurveOptions>): void {
     Object.assign(this.options, options);
   }
 
   /**
    * 开始绘制路径
    */
-  beginPath() {
+  beginPath(): void {
     const ctx = this.ctx;
     const { color, width, lineCap, lineJoin, dash, glow, glowColor, glowBlur } =
       this.options;
@@ -59,7 +73,7 @@ export class Curve {
   /**
    * 结束绘制路径
    */
-  stroke() {
+  stroke(): void {
     this.ctx.stroke();
     this.ctx.restore();
   }
@@ -67,7 +81,7 @@ export class Curve {
   /**
    * 绘制直线
    */
-  drawLine(x1, y1, x2, y2) {
+  drawLine(x1: number, y1: number, x2: number, y2: number): void {
     this.beginPath();
     this.ctx.moveTo(x1, y1);
     this.ctx.lineTo(x2, y2);
@@ -77,7 +91,7 @@ export class Curve {
   /**
    * 绘制折线
    */
-  drawPolyline(points) {
+  drawPolyline(points: Point2D[]): void {
     if (points.length < 2) return;
 
     this.beginPath();
@@ -92,12 +106,17 @@ export class Curve {
 
   /**
    * 绘制参数化曲线
-   * @param {Function} paramFn - 参数方程 (t) => {x, y}
-   * @param {number} tStart - 起始参数值
-   * @param {number} tEnd - 结束参数值
-   * @param {number} steps - 采样点数
+   * @param paramFn - 参数方程 (t) => {x, y}
+   * @param tStart - 起始参数值
+   * @param tEnd - 结束参数值
+   * @param steps - 采样点数
    */
-  drawParametric(paramFn, tStart = 0, tEnd = 1, steps = 100) {
+  drawParametric(
+    paramFn: (t: number) => Point2D,
+    tStart = 0,
+    tEnd = 1,
+    steps = 100
+  ): void {
     this.beginPath();
 
     const dt = (tEnd - tStart) / steps;
@@ -116,7 +135,12 @@ export class Curve {
   /**
    * 绘制函数曲线 y = f(x)
    */
-  drawFunction(fn, xStart, xEnd, steps = 100) {
+  drawFunction(
+    fn: (x: number) => number,
+    xStart: number,
+    xEnd: number,
+    steps = 100
+  ): void {
     this.drawParametric(
       (t) => ({
         x: t,
@@ -131,7 +155,14 @@ export class Curve {
   /**
    * 绘制圆弧
    */
-  drawArc(cx, cy, radius, startAngle, endAngle, counterclockwise = false) {
+  drawArc(
+    cx: number,
+    cy: number,
+    radius: number,
+    startAngle: number,
+    endAngle: number,
+    counterclockwise = false
+  ): void {
     this.beginPath();
     this.ctx.arc(cx, cy, radius, startAngle, endAngle, counterclockwise);
     this.stroke();
@@ -140,18 +171,24 @@ export class Curve {
   /**
    * 绘制圆
    */
-  drawCircle(cx, cy, radius) {
+  drawCircle(cx: number, cy: number, radius: number): void {
     this.drawArc(cx, cy, radius, 0, Math.PI * 2);
   }
 
   /**
    * 绘制椭圆
    */
-  drawEllipse(cx, cy, radiusX, radiusY, rotation = 0, startAngle = 0, endAngle = Math.PI * 2) {
+  drawEllipse(
+    cx: number,
+    cy: number,
+    radiusX: number,
+    radiusY: number,
+    rotation = 0,
+    startAngle = 0,
+    endAngle = Math.PI * 2
+  ): void {
     this.beginPath();
     this.ctx.ellipse(cx, cy, radiusX, radiusY, rotation, startAngle, endAngle);
     this.stroke();
   }
 }
-
-export default Curve;

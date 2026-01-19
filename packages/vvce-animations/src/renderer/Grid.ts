@@ -2,29 +2,35 @@
  * Grid - 网格绘制
  * 支持多种网格样式：点阵、线格、等距线等
  */
+
+export interface GridOptions {
+  type?: 'lines' | 'dots' | 'crosses';
+  size?: number;
+  color?: string;
+  lineWidth?: number;
+  showSubGrid?: boolean;
+  subGridDivisions?: number;
+  subGridColor?: string;
+  showOrigin?: boolean;
+  originColor?: string;
+}
+
 export class Grid {
-  constructor(ctx, options = {}) {
+  private ctx: CanvasRenderingContext2D;
+  private options: Required<GridOptions>;
+
+  constructor(ctx: CanvasRenderingContext2D, options: GridOptions = {}) {
     this.ctx = ctx;
     this.options = {
-      // 网格类型
-      type: 'lines', // 'lines' | 'dots' | 'crosses'
-
-      // 网格大小
+      type: 'lines',
       size: 50,
-
-      // 主网格样式
       color: 'rgba(255, 255, 255, 0.08)',
       lineWidth: 1,
-
-      // 次网格（细分）
       showSubGrid: false,
       subGridDivisions: 5,
       subGridColor: 'rgba(255, 255, 255, 0.03)',
-
-      // 是否显示原点
       showOrigin: false,
       originColor: 'rgba(255, 255, 255, 0.3)',
-
       ...options,
     };
   }
@@ -32,7 +38,7 @@ export class Grid {
   /**
    * 绘制网格
    */
-  draw(width, height, offsetX = 0, offsetY = 0) {
+  draw(width: number, height: number, offsetX = 0, offsetY = 0): void {
     const { type } = this.options;
 
     switch (type) {
@@ -51,7 +57,12 @@ export class Grid {
   /**
    * 绘制线格
    */
-  _drawLines(width, height, offsetX, offsetY) {
+  private _drawLines(
+    width: number,
+    height: number,
+    offsetX: number,
+    offsetY: number
+  ): void {
     const ctx = this.ctx;
     const { size, color, lineWidth, showSubGrid, subGridDivisions, subGridColor } =
       this.options;
@@ -103,7 +114,12 @@ export class Grid {
   /**
    * 绘制点阵
    */
-  _drawDots(width, height, offsetX, offsetY) {
+  private _drawDots(
+    width: number,
+    height: number,
+    offsetX: number,
+    offsetY: number
+  ): void {
     const ctx = this.ctx;
     const { size, color } = this.options;
 
@@ -121,7 +137,12 @@ export class Grid {
   /**
    * 绘制十字标记
    */
-  _drawCrosses(width, height, offsetX, offsetY) {
+  private _drawCrosses(
+    width: number,
+    height: number,
+    offsetX: number,
+    offsetY: number
+  ): void {
     const ctx = this.ctx;
     const { size, color, lineWidth } = this.options;
     const crossSize = 4;
@@ -141,5 +162,3 @@ export class Grid {
     }
   }
 }
-
-export default Grid;

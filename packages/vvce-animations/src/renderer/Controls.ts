@@ -3,11 +3,28 @@
  * 提供滑块、按钮、信息面板等 UI 组件
  */
 
-/**
- * Slider - 滑块控件
- */
+// ============= Slider =============
+
+export interface SliderOptions {
+  label?: string;
+  min?: number;
+  max?: number;
+  value?: number;
+  step?: number;
+  showValue?: boolean;
+  valueFormatter?: (v: number) => string;
+  onChange?: ((value: number) => void) | null;
+}
+
 export class Slider {
-  constructor(container, options = {}) {
+  private container: HTMLElement;
+  private options: Required<SliderOptions>;
+  private element: HTMLDivElement | null = null;
+  private inputElement: HTMLInputElement | null = null;
+  private valueElement: HTMLSpanElement | null = null;
+  private _value: number;
+
+  constructor(container: HTMLElement, options: SliderOptions = {}) {
     this.container = container;
     this.options = {
       label: '',
@@ -20,16 +37,11 @@ export class Slider {
       onChange: null,
       ...options,
     };
-
-    this.element = null;
-    this.inputElement = null;
-    this.valueElement = null;
     this._value = this.options.value;
-
     this._createElement();
   }
 
-  _createElement() {
+  private _createElement(): void {
     const { label, min, max, value, step, showValue } = this.options;
 
     this.element = document.createElement('div');
@@ -56,10 +68,10 @@ export class Slider {
     this.inputElement = document.createElement('input');
     this.inputElement.type = 'range';
     this.inputElement.className = 'vvce-slider';
-    this.inputElement.min = min;
-    this.inputElement.max = max;
-    this.inputElement.value = value;
-    this.inputElement.step = step;
+    this.inputElement.min = String(min);
+    this.inputElement.max = String(max);
+    this.inputElement.value = String(value);
+    this.inputElement.step = String(step);
     this.inputElement.style.cssText = `
       width: 200px;
       height: 4px;
@@ -72,6 +84,7 @@ export class Slider {
     `;
 
     this.inputElement.addEventListener('input', () => {
+      if (!this.inputElement) return;
       this._value = parseFloat(this.inputElement.value);
       this._updateValueDisplay();
       if (this.options.onChange) {
@@ -98,50 +111,62 @@ export class Slider {
     this.container.appendChild(this.element);
   }
 
-  _updateValueDisplay() {
+  private _updateValueDisplay(): void {
     if (this.valueElement) {
       this.valueElement.textContent = this.options.valueFormatter(this._value);
     }
   }
 
-  get value() {
+  get value(): number {
     return this._value;
   }
 
-  set value(v) {
+  set value(v: number) {
     this._value = v;
-    this.inputElement.value = v;
+    if (this.inputElement) {
+      this.inputElement.value = String(v);
+    }
     this._updateValueDisplay();
   }
 
-  destroy() {
+  destroy(): void {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
   }
 }
 
-/**
- * Button - 按钮控件
- */
+// ============= Button =============
+
+export interface ButtonOptions {
+  text?: string;
+  icon?: string | null;
+  variant?: 'primary' | 'secondary';
+  active?: boolean;
+  onClick?: ((button: Button) => void) | null;
+}
+
 export class Button {
-  constructor(container, options = {}) {
+  private container: HTMLElement;
+  private options: Required<ButtonOptions>;
+  private element: HTMLButtonElement | null = null;
+  private _active: boolean;
+
+  constructor(container: HTMLElement, options: ButtonOptions = {}) {
     this.container = container;
     this.options = {
       text: 'Button',
       icon: null,
-      variant: 'primary', // 'primary' | 'secondary'
+      variant: 'primary',
       active: false,
       onClick: null,
       ...options,
     };
-
-    this.element = null;
     this._active = this.options.active;
     this._createElement();
   }
 
-  _createElement() {
+  private _createElement(): void {
     const { text, icon, variant } = this.options;
 
     this.element = document.createElement('button');
@@ -159,7 +184,7 @@ export class Button {
       color: #fff;
     `;
 
-    const variantStyles = {
+    const variantStyles: Record<string, string> = {
       primary: `
         background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
       `,
@@ -181,57 +206,75 @@ export class Button {
     this.container.appendChild(this.element);
   }
 
-  _updateActiveState() {
+  private _updateActiveState(): void {
+    if (!this.element) return;
     if (this._active) {
       this.element.style.background = 'rgba(78, 205, 196, 0.3)';
       this.element.style.borderColor = '#4ecdc4';
     }
   }
 
-  get active() {
+  get active(): boolean {
     return this._active;
   }
 
-  set active(v) {
+  set active(v: boolean) {
     this._active = v;
     this._updateActiveState();
   }
 
-  setText(text) {
-    this.element.textContent = text;
+  setText(text: string): void {
+    if (this.element) {
+      this.element.textContent = text;
+    }
   }
 
-  destroy() {
+  destroy(): void {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
   }
 }
 
-/**
- * InfoPanel - 信息面板
- */
+// ============= InfoPanel =============
+
+export interface InfoPanelOptions {
+  title?: string;
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+}
+
+export interface InfoPanelData {
+  [key: string]: { label: string; value: string | number };
+}
+
+interface InfoRow extends HTMLDivElement {
+  _valueEl: HTMLSpanElement;
+}
+
 export class InfoPanel {
-  constructor(container, options = {}) {
+  private container: HTMLElement;
+  private options: Required<InfoPanelOptions>;
+  private element: HTMLDivElement | null = null;
+  private contentEl: HTMLDivElement | null = null;
+  private rows = new Map<string, InfoRow>();
+
+  constructor(container: HTMLElement, options: InfoPanelOptions = {}) {
     this.container = container;
     this.options = {
       title: '',
       position: 'top-left',
       ...options,
     };
-
-    this.element = null;
-    this.rows = new Map();
     this._createElement();
   }
 
-  _createElement() {
+  private _createElement(): void {
     const { title, position } = this.options;
 
     this.element = document.createElement('div');
     this.element.className = 'vvce-info-panel';
 
-    const positionStyles = {
+    const positionStyles: Record<string, string> = {
       'top-left': 'top: 12px; left: 12px;',
       'top-right': 'top: 12px; right: 12px;',
       'bottom-left': 'bottom: 12px; left: 12px;',
@@ -274,11 +317,13 @@ export class InfoPanel {
   /**
    * 设置一行数据
    */
-  setRow(key, label, value) {
+  setRow(key: string, label: string, value: string | number): void {
+    if (!this.contentEl) return;
+
     let row = this.rows.get(key);
 
     if (!row) {
-      row = document.createElement('div');
+      row = document.createElement('div') as InfoRow;
       row.className = 'vvce-info-row';
       row.style.cssText = `
         display: flex;
@@ -313,17 +358,15 @@ export class InfoPanel {
   /**
    * 批量更新
    */
-  update(data) {
+  update(data: InfoPanelData): void {
     for (const [key, { label, value }] of Object.entries(data)) {
       this.setRow(key, label, value);
     }
   }
 
-  destroy() {
+  destroy(): void {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
   }
 }
-
-export default { Slider, Button, InfoPanel };

@@ -11,42 +11,78 @@
    - `course.dsl.json` - 课程DSL（引用已有动画）
    - `extensions.json` - 扩展动画定义（如果需要新动画）
 
-## 2. 架构设计
+## 2. 架构设计（已实现）
+
+核心渲染代码已迁移到 `packages/vvce-animations` npm 包中。
+
+### 2.1 NPM 包结构 (`packages/vvce-animations/`)
 
 ```
-animation-packs/
-├── _core/                           # 🔧 核心渲染库（运行时基础设施）
-│   ├── manifest.json
-│   └── lib/
-│       ├── CanvasRenderer.js        # Canvas 渲染器
-│       ├── CoordinateSystem.js      # 坐标系
-│       ├── Grid.js                  # 网格
-│       ├── Point.js                 # 可拖拽点
-│       ├── Curve.js                 # 曲线绘制
-│       ├── Tooltip.js               # 提示框
-│       ├── Controls.js              # UI控件（滑块、按钮）
-│       └── utils/                   # 数学工具
-│           ├── bezier.js            # 贝塞尔算法
-│           ├── interpolation.js     # 插值/缓动
-│           └── vector.js            # 向量运算
+packages/vvce-animations/
+├── src/
+│   ├── math/                        # 数学工具
+│   │   ├── vector.ts                # Vec2, 向量运算
+│   │   ├── bezier.ts                # 贝塞尔算法
+│   │   └── interpolation.ts         # 插值/缓动函数
+│   │
+│   ├── renderer/                    # 渲染基础设施
+│   │   ├── CanvasRenderer.ts        # Canvas 渲染器基类
+│   │   ├── CoordinateSystem.ts      # 坐标系绘制
+│   │   ├── Grid.ts                  # 网格绘制
+│   │   ├── Tooltip.ts               # 提示框
+│   │   └── Controls.ts              # UI控件（Slider, Button, InfoPanel）
+│   │
+│   ├── primitives/                  # 图形基元
+│   │   ├── Point.ts                 # 可拖拽点
+│   │   └── Curve.ts                 # 曲线绘制
+│   │
+│   └── index.ts                     # 统一导出
 │
-├── keyframes/                       # 🎬 关键帧动画库（CSS动画，JSON定义）
+└── dist/                            # 编译输出
+    ├── index.js                     # CommonJS
+    ├── index.mjs                    # ESM
+    └── index.d.ts                   # TypeScript 声明
+```
+
+### 2.2 内容包结构 (`scene-viewer/content-packs/`)
+
+```
+scene-viewer/content-packs/
+├── effects/                         # 🎬 关键帧动画（CSS动画，JSON定义）
 │   ├── _index.json                  # 索引清单
 │   ├── basic.json                   # 基础：fadeIn, bounce, shake...
 │   ├── math.json                    # 数学：drawLine, countUp...
 │   └── science.json                 # 科学：pulse, wave...
 │
-├── interactive/                     # 🎮 交互式动画库（Canvas/JS）
+├── visualizations/                  # 🎮 交互式可视化（Canvas/JS）
 │   ├── _index.json                  # 索引清单
 │   └── math/                        # 数学学科
-│       ├── bezier-curve/            # 贝塞尔曲线
-│       │   ├── manifest.json        # 动画元数据
-│       │   ├── renderer.js          # 渲染逻辑
-│       │   └── styles.css           # 样式
-│       ├── function-graph/          # 函数图像（未来）
-│       └── geometry-transform/      # 几何变换（未来）
+│       └── bezier-curve/            # 贝塞尔曲线
+│           ├── manifest.json        # 元数据
+│           ├── renderer.js          # 渲染逻辑（使用 npm 包）
+│           └── styles.css           # 样式
 │
 └── manifest.json                    # 📋 总清单
+```
+
+## 2.3 TODO: 浏览器集成
+
+当前 `renderer.js` 仍使用旧的动态 import 路径。需要：
+
+1. 配置 `vvce-animations` 构建输出 UMD 格式
+2. 在 `scene-runner/index.html` 中通过 `<script>` 加载 UMD bundle
+3. 更新 `renderer.js` 使用全局 `window.VVCEAnimations`
+
+或者使用 importmap 方案：
+
+```html
+<script type="importmap">
+  {
+    "imports": {
+      "@vv-education/vvce-animations": "/packages/vvce-animations/dist/index.mjs"
+    }
+  }
+</script>
 ```
 
 ## 3. 两类动画的区别

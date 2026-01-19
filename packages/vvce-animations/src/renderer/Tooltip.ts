@@ -2,8 +2,22 @@
  * Tooltip - 悬停提示框
  * 显示坐标、参数值等信息
  */
+
+import type { Point2D } from '../math/vector';
+
+export interface TooltipOptions {
+  className?: string;
+  offset?: Point2D;
+}
+
+export type TooltipContent = string | Record<string, string | number>;
+
 export class Tooltip {
-  constructor(container, options = {}) {
+  private container: HTMLElement;
+  private options: Required<TooltipOptions>;
+  private element: HTMLDivElement | null = null;
+
+  constructor(container: HTMLElement, options: TooltipOptions = {}) {
     this.container = container;
     this.options = {
       className: 'vvce-tooltip',
@@ -11,14 +25,13 @@ export class Tooltip {
       ...options,
     };
 
-    this.element = null;
     this._createElement();
   }
 
   /**
    * 创建 DOM 元素
    */
-  _createElement() {
+  private _createElement(): void {
     this.element = document.createElement('div');
     this.element.className = this.options.className;
     this.element.style.cssText = `
@@ -44,7 +57,9 @@ export class Tooltip {
   /**
    * 显示提示框
    */
-  show(x, y, content) {
+  show(x: number, y: number, content: TooltipContent): void {
+    if (!this.element) return;
+
     const { offset } = this.options;
 
     if (typeof content === 'string') {
@@ -66,14 +81,16 @@ export class Tooltip {
   /**
    * 隐藏提示框
    */
-  hide() {
+  hide(): void {
+    if (!this.element) return;
     this.element.style.display = 'none';
   }
 
   /**
    * 更新位置
    */
-  updatePosition(x, y) {
+  updatePosition(x: number, y: number): void {
+    if (!this.element) return;
     const { offset } = this.options;
     this.element.style.left = `${x + offset.x}px`;
     this.element.style.top = `${y + offset.y}px`;
@@ -82,11 +99,9 @@ export class Tooltip {
   /**
    * 销毁
    */
-  destroy() {
+  destroy(): void {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
   }
 }
-
-export default Tooltip;

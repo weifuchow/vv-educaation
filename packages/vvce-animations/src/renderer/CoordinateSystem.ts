@@ -2,41 +2,49 @@
  * CoordinateSystem - 坐标系绘制
  * 支持笛卡尔坐标系、极坐标系，可配置轴线、刻度、标签
  */
+
+import type { Point2D } from '../math/vector';
+
+export interface CoordinateSystemOptions {
+  type?: 'cartesian' | 'polar';
+  origin?: Point2D;
+  xRange?: [number, number];
+  yRange?: [number, number];
+  scale?: Point2D;
+  axisColor?: string;
+  axisWidth?: number;
+  showTicks?: boolean;
+  tickSize?: number;
+  tickInterval?: Point2D;
+  showLabels?: boolean;
+  labelFont?: string;
+  labelColor?: string;
+  showArrows?: boolean;
+  arrowSize?: number;
+}
+
 export class CoordinateSystem {
-  constructor(ctx, options = {}) {
+  private ctx: CanvasRenderingContext2D;
+  private options: Required<CoordinateSystemOptions>;
+
+  constructor(ctx: CanvasRenderingContext2D, options: CoordinateSystemOptions = {}) {
     this.ctx = ctx;
     this.options = {
-      // 坐标系类型
-      type: 'cartesian', // 'cartesian' | 'polar'
-
-      // 原点位置（相对于 canvas）
+      type: 'cartesian',
       origin: { x: 0, y: 0 },
-
-      // 坐标范围
       xRange: [-10, 10],
       yRange: [-10, 10],
-
-      // 缩放（像素/单位）
       scale: { x: 1, y: 1 },
-
-      // 轴线样式
       axisColor: 'rgba(255, 255, 255, 0.6)',
       axisWidth: 2,
-
-      // 刻度
       showTicks: true,
       tickSize: 6,
       tickInterval: { x: 1, y: 1 },
-
-      // 标签
       showLabels: true,
       labelFont: '11px sans-serif',
       labelColor: 'rgba(255, 255, 255, 0.8)',
-
-      // 箭头
       showArrows: true,
       arrowSize: 8,
-
       ...options,
     };
   }
@@ -44,21 +52,21 @@ export class CoordinateSystem {
   /**
    * 设置原点
    */
-  setOrigin(x, y) {
+  setOrigin(x: number, y: number): void {
     this.options.origin = { x, y };
   }
 
   /**
    * 设置缩放
    */
-  setScale(scaleX, scaleY = scaleX) {
+  setScale(scaleX: number, scaleY = scaleX): void {
     this.options.scale = { x: scaleX, y: scaleY };
   }
 
   /**
    * 世界坐标转屏幕坐标
    */
-  worldToScreen(wx, wy) {
+  worldToScreen(wx: number, wy: number): Point2D {
     const { origin, scale } = this.options;
     return {
       x: origin.x + wx * scale.x,
@@ -69,7 +77,7 @@ export class CoordinateSystem {
   /**
    * 屏幕坐标转世界坐标
    */
-  screenToWorld(sx, sy) {
+  screenToWorld(sx: number, sy: number): Point2D {
     const { origin, scale } = this.options;
     return {
       x: (sx - origin.x) / scale.x,
@@ -80,9 +88,8 @@ export class CoordinateSystem {
   /**
    * 绘制坐标系
    */
-  draw(width, height) {
+  draw(width: number, height: number): void {
     const ctx = this.ctx;
-    const { origin, xRange, yRange, scale } = this.options;
 
     ctx.save();
 
@@ -98,9 +105,9 @@ export class CoordinateSystem {
   /**
    * 绘制单个轴
    */
-  _drawAxis(axis, width, height) {
+  private _drawAxis(axis: 'x' | 'y', width: number, height: number): void {
     const ctx = this.ctx;
-    const { origin, axisColor, axisWidth, showArrows, arrowSize } = this.options;
+    const { origin, axisColor, axisWidth, showArrows } = this.options;
 
     ctx.strokeStyle = axisColor;
     ctx.lineWidth = axisWidth;
@@ -109,23 +116,19 @@ export class CoordinateSystem {
     ctx.beginPath();
 
     if (axis === 'x') {
-      // X 轴：从左到右
       ctx.moveTo(0, origin.y);
       ctx.lineTo(width, origin.y);
     } else {
-      // Y 轴：从下到上
       ctx.moveTo(origin.x, height);
       ctx.lineTo(origin.x, 0);
     }
 
     ctx.stroke();
 
-    // 绘制箭头
     if (showArrows) {
       this._drawArrow(axis, width, height);
     }
 
-    // 绘制刻度
     if (this.options.showTicks) {
       this._drawTicks(axis, width, height);
     }
@@ -134,7 +137,7 @@ export class CoordinateSystem {
   /**
    * 绘制箭头
    */
-  _drawArrow(axis, width, height) {
+  private _drawArrow(axis: 'x' | 'y', width: number, _height: number): void {
     const ctx = this.ctx;
     const { origin, axisColor, arrowSize } = this.options;
 
@@ -142,12 +145,10 @@ export class CoordinateSystem {
     ctx.beginPath();
 
     if (axis === 'x') {
-      // X 轴箭头（右侧）
       ctx.moveTo(width, origin.y);
       ctx.lineTo(width - arrowSize, origin.y - arrowSize / 2);
       ctx.lineTo(width - arrowSize, origin.y + arrowSize / 2);
     } else {
-      // Y 轴箭头（顶部）
       ctx.moveTo(origin.x, 0);
       ctx.lineTo(origin.x - arrowSize / 2, arrowSize);
       ctx.lineTo(origin.x + arrowSize / 2, arrowSize);
@@ -160,7 +161,7 @@ export class CoordinateSystem {
   /**
    * 绘制刻度
    */
-  _drawTicks(axis, width, height) {
+  private _drawTicks(axis: 'x' | 'y', width: number, height: number): void {
     const ctx = this.ctx;
     const { origin, scale, tickSize, tickInterval, labelColor, labelFont, showLabels } =
       this.options;
@@ -233,5 +234,3 @@ export class CoordinateSystem {
     }
   }
 }
-
-export default CoordinateSystem;
