@@ -504,7 +504,422 @@
       import { VVCERuntime } from '../../packages/vvce-core/dist/index.mjs';
       import { webAnimationRegistry } from '../../packages/vvce-animations/dist/index.mjs';
 
-      // Scene loader
+      // ============================================
+      // Animation Pack System (Keyframe-based)
+      // ============================================
+
+      /**
+       * KeyframeAnimationRegistry - Stores loaded animation pack definitions
+       */
+      class KeyframeAnimationRegistry {
+        constructor() {
+          this.packs = new Map();      // packName -> AnimationPack
+          this.animations = new Map(); // fullId -> AnimationTemplate
+        }
+
+        /**
+         * Register an animation pack
+         */
+        registerPack(pack) {
+          this.packs.set(pack.name, pack);
+
+          // Index all animations with full IDs
+          for (const [animName, animDef] of Object.entries(pack.animations)) {
+            // Support both "@vvce/science/orbit" and "@science/orbit" formats
+            const fullId = `${pack.name}/${animName}`;
+            const shortId = pack.name.replace('@vvce/', '@') + '/' + animName;
+            this.animations.set(fullId, animDef);
+            this.animations.set(shortId, animDef);
+          }
+
+          console.log(`📦 Registered animation pack: ${pack.name} (${Object.keys(pack.animations).length} animations)`);
+        }
+
+        /**
+         * Resolve animation reference
+         * @param {string} ref - Animation reference like "@science/orbit" or "fadeIn"
+         * @returns {object|undefined} Animation definition
+         */
+        resolve(ref) {
+          // Direct lookup
+          if (this.animations.has(ref)) {
+            return this.animations.get(ref);
+          }
+
+          // Try with @vvce prefix
+          const fullRef = ref.replace(/^@(\w+)\//, '@vvce/$1/');
+          if (this.animations.has(fullRef)) {
+            return this.animations.get(fullRef);
+          }
+
+          // Search in basic pack for non-prefixed refs (built-in)
+          const basicPack = this.packs.get('@vvce/basic');
+          if (basicPack && basicPack.animations[ref]) {
+            return basicPack.animations[ref];
+          }
+
+          return undefined;
+        }
+
+        has(ref) {
+          return this.resolve(ref) !== undefined;
+        }
+
+        getLoadedPacks() {
+          return Array.from(this.packs.keys());
+        }
+      }
+
+      /**
+       * AnimationPackLoader - Loads animation packs from JSON files
+       */
+      class AnimationPackLoader {
+        constructor(registry, basePath = '../animation-packs') {
+          this.registry = registry;
+          this.basePath = basePath;
+          this.loadedPacks = new Set();
+          this.manifest = null;
+        }
+
+        /**
+         * Load the manifest file
+         */
+        async loadManifest() {
+          if (this.manifest) return this.manifest;
+
+          try {
+            const response = await fetch(`${this.basePath}/manifest.json`);
+            if (!response.ok) throw new Error('Manifest not found');
+            this.manifest = await response.json();
+            return this.manifest;
+          } catch (error) {
+            console.warn('⚠️ Animation pack manifest not found, using defaults');
+            this.manifest = { packs: [] };
+            return this.manifest;
+          }
+        }
+
+        /**
+         * Load a single animation pack by name
+         */
+        async loadPack(packName) {
+          if (this.loadedPacks.has(packName)) {
+            return; // Already loaded
+          }
+
+          await this.loadManifest();
+
+          // Find pack info in manifest
+          const packInfo = this.manifest.packs.find(p => p.id === packName);
+          const fileName = packInfo?.file || packName.replace('@vvce/', '') + '.json';
+
+          try {
+            const response = await fetch(`${this.basePath}/${fileName}`);
+            if (!response.ok) {
+              throw new Error(`Pack file not found: ${fileName}`);
+            }
+
+            const pack = await response.json();
+            this.registry.registerPack(pack);
+            this.loadedPacks.add(packName);
+          } catch (error) {
+            console.error(`❌ Failed to load animation pack ${packName}:`, error);
+            throw error;
+          }
+        }
+
+        /**
+         * Load multiple packs from DSL imports
+         */
+        async loadImports(imports) {
+          if (!imports || imports.length === 0) return;
+
+          const results = { success: [], failed: [] };
+
+          for (const imp of imports) {
+            const packName = typeof imp === 'string' ? imp : imp.pack;
+            try {
+              await this.loadPack(packName);
+              results.success.push(packName);
+            } catch (error) {
+              results.failed.push({ pack: packName, error: error.message });
+            }
+          }
+
+          if (results.success.length > 0) {
+            console.log(`✅ Loaded animation packs: ${results.success.join(', ')}`);
+          }
+          if (results.failed.length > 0) {
+            console.warn(`⚠️ Failed to load: ${results.failed.map(f => f.pack).join(', ')}`);
+          }
+
+          return results;
+        }
+
+        /**
+         * Preload built-in packs (basic)
+         */
+        async preloadBuiltins() {
+          await this.loadPack('@vvce/basic');
+        }
+      }
+
+      /**
+       * ParamInterpolator - Interpolates parameters in animation keyframes
+       */
+      class ParamInterpolator {
+        /**
+         * Interpolate animation template with parameters
+         */
+        interpolate(template, params = {}) {
+          // Merge with defaults
+          const mergedParams = {};
+          if (template.params) {
+            for (const paramDef of template.params) {
+              mergedParams[paramDef.name] = params[paramDef.name] ?? paramDef.default;
+            }
+          }
+
+          // Interpolate keyframes
+          const keyframes = template.keyframes.map(kf => ({
+            offset: kf.offset,
+            properties: this.interpolateProperties(kf.properties, mergedParams)
+          }));
+
+          // Interpolate duration if it's a template
+          let duration = template.duration;
+          if (typeof duration === 'string') {
+            duration = this.evaluateExpression(duration, mergedParams);
+          }
+
+          return {
+            keyframes,
+            duration: params.duration || duration,
+            easing: params.easing || template.easing || 'ease',
+            iterations: params.iterations ?? template.iterations ?? 1,
+            direction: params.direction || template.direction || 'normal',
+            fillMode: params.fillMode || template.fillMode || 'none',
+            delay: params.delay || 0
+          };
+        }
+
+        interpolateProperties(properties, params) {
+          const result = {};
+          for (const [key, value] of Object.entries(properties)) {
+            result[key] = this.interpolateValue(value, params);
+          }
+          return result;
+        }
+
+        interpolateValue(value, params) {
+          if (typeof value !== 'string') return value;
+
+          // Check for ${...} expression
+          const match = value.match(/^\$\{(.+)\}$/);
+          if (!match) return value;
+
+          return this.evaluateExpression(match[1], params);
+        }
+
+        evaluateExpression(expression, params) {
+          // Replace parameter names with values
+          let expr = expression;
+          for (const [name, value] of Object.entries(params)) {
+            expr = expr.replace(new RegExp(`\\b${name}\\b`, 'g'), JSON.stringify(value));
+          }
+
+          // Safe evaluation (only math operations)
+          try {
+            // Simple expression evaluation
+            return Function(`"use strict"; return (${expr})`)();
+          } catch (error) {
+            console.warn(`Failed to evaluate expression: ${expression}`, error);
+            return 0;
+          }
+        }
+      }
+
+      /**
+       * KeyframeAnimationEngine - Applies CSS animations to DOM elements
+       */
+      class KeyframeAnimationEngine {
+        constructor(registry) {
+          this.registry = registry;
+          this.interpolator = new ParamInterpolator();
+          this.activeAnimations = new Map(); // elementId -> Animation
+          this.styleSheet = this.createStyleSheet();
+          this.animationCounter = 0;
+        }
+
+        createStyleSheet() {
+          const style = document.createElement('style');
+          style.id = 'vvce-keyframe-animations';
+          document.head.appendChild(style);
+          return style.sheet;
+        }
+
+        /**
+         * Play animation on an element
+         */
+        play(element, animationRef, params = {}) {
+          // Resolve animation
+          const template = this.registry.resolve(animationRef);
+          if (!template) {
+            console.warn(`Animation not found: ${animationRef}`);
+            return null;
+          }
+
+          // Interpolate with params
+          const animDef = this.interpolator.interpolate(template, params);
+
+          // Generate unique animation name
+          const animName = `vvce-anim-${++this.animationCounter}`;
+
+          // Create CSS keyframes
+          this.createKeyframes(animName, animDef.keyframes);
+
+          // Apply animation to element
+          const animationValue = [
+            animName,
+            `${animDef.duration}ms`,
+            animDef.easing,
+            `${animDef.delay}ms`,
+            animDef.iterations === -1 ? 'infinite' : animDef.iterations,
+            animDef.direction,
+            animDef.fillMode
+          ].join(' ');
+
+          element.style.animation = animationValue;
+
+          // Store reference
+          const animInstance = {
+            name: animName,
+            element,
+            definition: animDef,
+            stop: () => this.stop(element),
+            pause: () => { element.style.animationPlayState = 'paused'; },
+            resume: () => { element.style.animationPlayState = 'running'; }
+          };
+
+          this.activeAnimations.set(element.id || element, animInstance);
+
+          return animInstance;
+        }
+
+        /**
+         * Create CSS @keyframes rule
+         */
+        createKeyframes(name, keyframes) {
+          const frames = keyframes.map(kf => {
+            const props = this.propertiesToCSS(kf.properties);
+            return `${kf.offset}% { ${props} }`;
+          }).join('\n');
+
+          const rule = `@keyframes ${name} {\n${frames}\n}`;
+
+          try {
+            this.styleSheet.insertRule(rule, this.styleSheet.cssRules.length);
+          } catch (error) {
+            console.warn('Failed to insert keyframe rule:', error);
+          }
+        }
+
+        /**
+         * Convert animation properties to CSS
+         */
+        propertiesToCSS(properties) {
+          const cssProps = [];
+
+          for (const [key, value] of Object.entries(properties)) {
+            switch (key) {
+              case 'translateX':
+              case 'translateY':
+              case 'translateZ':
+              case 'scale':
+              case 'scaleX':
+              case 'scaleY':
+              case 'rotate':
+              case 'rotateX':
+              case 'rotateY':
+              case 'rotateZ':
+              case 'skewX':
+              case 'skewY':
+                // Collect transform properties
+                break;
+              case 'opacity':
+                cssProps.push(`opacity: ${value}`);
+                break;
+              case 'backgroundColor':
+                cssProps.push(`background-color: ${value}`);
+                break;
+              case 'boxShadow':
+                cssProps.push(`box-shadow: ${value}`);
+                break;
+              case 'width':
+              case 'height':
+                cssProps.push(`${key}: ${typeof value === 'number' ? value + 'px' : value}`);
+                break;
+              default:
+                cssProps.push(`${this.camelToKebab(key)}: ${value}`);
+            }
+          }
+
+          // Build transform property
+          const transforms = [];
+          if ('translateX' in properties) transforms.push(`translateX(${properties.translateX}px)`);
+          if ('translateY' in properties) transforms.push(`translateY(${properties.translateY}px)`);
+          if ('translateZ' in properties) transforms.push(`translateZ(${properties.translateZ}px)`);
+          if ('scale' in properties) transforms.push(`scale(${properties.scale})`);
+          if ('scaleX' in properties) transforms.push(`scaleX(${properties.scaleX})`);
+          if ('scaleY' in properties) transforms.push(`scaleY(${properties.scaleY})`);
+          if ('rotate' in properties) transforms.push(`rotate(${properties.rotate}deg)`);
+          if ('rotateX' in properties) transforms.push(`rotateX(${properties.rotateX}deg)`);
+          if ('rotateY' in properties) transforms.push(`rotateY(${properties.rotateY}deg)`);
+          if ('skewX' in properties) transforms.push(`skewX(${properties.skewX}deg)`);
+          if ('skewY' in properties) transforms.push(`skewY(${properties.skewY}deg)`);
+
+          if (transforms.length > 0) {
+            cssProps.push(`transform: ${transforms.join(' ')}`);
+          }
+
+          return cssProps.join('; ');
+        }
+
+        camelToKebab(str) {
+          return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+        }
+
+        /**
+         * Stop animation on element
+         */
+        stop(element) {
+          element.style.animation = '';
+          this.activeAnimations.delete(element.id || element);
+        }
+
+        /**
+         * Stop all animations
+         */
+        stopAll() {
+          this.activeAnimations.forEach(anim => anim.stop());
+          this.activeAnimations.clear();
+        }
+      }
+
+      // Global instances
+      const keyframeRegistry = new KeyframeAnimationRegistry();
+      const packLoader = new AnimationPackLoader(keyframeRegistry);
+      const keyframeEngine = new KeyframeAnimationEngine(keyframeRegistry);
+
+      // Expose to window for debugging
+      window.keyframeRegistry = keyframeRegistry;
+      window.packLoader = packLoader;
+      window.keyframeEngine = keyframeEngine;
+
+      // ============================================
+      // Scene Loader
+      // ============================================
+
       async function loadScene(sceneName) {
         const response = await fetch(`../scenes/${sceneName}.json`);
         if (!response.ok) {
@@ -729,13 +1144,15 @@
           // Clear previous animations
           this.activeAnimations.forEach((anim) => anim.destroy && anim.destroy());
           this.activeAnimations.clear();
+          keyframeEngine.stopAll();
 
           const html = scene.nodes.map((node) => this.renderer.renderNode(node)).join('');
           this.sceneContainer.innerHTML = html;
 
           // Create and initialize animation instances
           setTimeout(() => {
-            scene.nodes.forEach((node) => {
+            scene.nodes.forEach((node, index) => {
+              // Handle complex Animation components (webAnimationRegistry)
               if (node.type === 'Animation') {
                 const container = document.getElementById(`animation-${node.id}`);
                 if (container) {
@@ -754,6 +1171,52 @@
                     this.activeAnimations.set(node.id, animation);
                     animation.initialize();
                   }
+                }
+              }
+
+              // Handle keyframe animations on any node (enterAnimation, animation)
+              const nodeElement = this.sceneContainer.querySelector(`[data-node-id="${node.id}"]`);
+              if (nodeElement) {
+                const hasEnterAnimation = !!node.enterAnimation;
+                const hasContinuousAnimation = !!node.animation;
+
+                // Function to start continuous animation
+                const startContinuousAnimation = () => {
+                  if (hasContinuousAnimation) {
+                    const animRef = node.animation.type;
+                    const params = {
+                      ...node.animation.params,
+                      duration: node.animation.duration,
+                      delay: node.animation.delay,
+                      easing: node.animation.easing,
+                      iterations: node.animation.iterations ?? -1, // Loop by default
+                    };
+                    keyframeEngine.play(nodeElement, animRef, params);
+                  }
+                };
+
+                // Enter animation
+                if (hasEnterAnimation) {
+                  const animRef = node.enterAnimation.type;
+                  const params = {
+                    ...node.enterAnimation.params,
+                    duration: node.enterAnimation.duration,
+                    delay: node.enterAnimation.delay || (index * 100), // Stagger by default
+                    easing: node.enterAnimation.easing,
+                  };
+                  keyframeEngine.play(nodeElement, animRef, params);
+
+                  // If both enter and continuous animations exist, sequence them
+                  if (hasContinuousAnimation) {
+                    nodeElement.addEventListener('animationend', function onAnimEnd(e) {
+                      // Only trigger once for this element
+                      nodeElement.removeEventListener('animationend', onAnimEnd);
+                      startContinuousAnimation();
+                    });
+                  }
+                } else {
+                  // No enter animation, start continuous immediately
+                  startContinuousAnimation();
                 }
               }
             });
@@ -822,6 +1285,11 @@
 
           // Load scene JSON
           const courseDSL = await loadScene(sceneName);
+
+          // Load animation packs from imports
+          if (courseDSL.imports) {
+            await packLoader.loadImports(courseDSL.imports);
+          }
 
           // Initialize runtime
           runtime = new VVCERuntime({
@@ -905,8 +1373,21 @@
         }
       }
 
-      // Initialize: load manifest first
-      loadSceneManifest();
+      // Initialize
+      async function initialize() {
+        // Preload built-in animation packs
+        await packLoader.preloadBuiltins();
+        console.log('📦 Built-in animation packs loaded');
+
+        // Load scene manifest
+        await loadSceneManifest();
+
+        console.log('🎓 VVCE Scene Runner initialized!');
+        console.log('📦 Animation packs available:', keyframeRegistry.getLoadedPacks());
+        console.log('Click a scene card above to start.');
+      }
+
+      initialize();
 
       // Scene selector (using event delegation for dynamically loaded cards)
       document.getElementById('scene-grid').addEventListener('click', (e) => {
@@ -922,9 +1403,6 @@
         // Run scene
         runScene(sceneName);
       });
-
-      console.log('🎓 VVCE Scene Runner initialized!');
-      console.log('Click a scene card above to start.');
     </script>
   </body>
 </html>
