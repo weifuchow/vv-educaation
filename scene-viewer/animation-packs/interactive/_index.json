@@ -1,0 +1,14 @@
+{
+  "id": "interactive",
+  "name": "交互式动画库",
+  "version": "1.0.0",
+  "description": "基于 Canvas/WebGL 的交互式动画，支持用户交互和复杂可视化",
+  "subjects": {
+    "math": {
+      "id": "math",
+      "name": "数学",
+      "path": "./math/",
+      "animations": ["bezier-curve"]
+    }
+  }
+}

@@ -97,7 +97,7 @@ export class BezierCurveAnimation {
    * 动态加载核心库
    */
   async _loadCore() {
-    const corePath = '../../_core/lib';
+    const corePath = '../../../_core/lib';
 
     // 加载模块
     const [
@@ -115,7 +115,7 @@ export class BezierCurveAnimation {
       import(`${corePath}/Curve.js`),
       import(`${corePath}/Tooltip.js`),
       import(`${corePath}/Controls.js`),
-      import(`${corePath}/math/bezier.js`),
+      import(`${corePath}/utils/bezier.js`),
     ]);
 
     CanvasRenderer = canvasModule.CanvasRenderer;

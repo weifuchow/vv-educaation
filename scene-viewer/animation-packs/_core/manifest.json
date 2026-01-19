@@ -12,9 +12,9 @@
     "Curve": "./lib/Curve.js",
     "Tooltip": "./lib/Tooltip.js",
     "Controls": "./lib/Controls.js",
-    "math/bezier": "./lib/math/bezier.js",
-    "math/interpolation": "./lib/math/interpolation.js",
-    "math/vector": "./lib/math/vector.js"
+    "utils/bezier": "./lib/utils/bezier.js",
+    "utils/interpolation": "./lib/utils/interpolation.js",
+    "utils/vector": "./lib/utils/vector.js"
   },
   "styles": ["./styles/core.css"]
 }

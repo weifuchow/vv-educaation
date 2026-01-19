@@ -923,26 +923,34 @@
 
         /**
          * Load an interactive animation
-         * @param {string} animationType - Animation type (e.g., 'maths.bezier-curve')
+         * @param {string} animationType - Animation type (e.g., 'interactive/math.bezier-curve')
          * @param {HTMLElement} container - Container element
          * @param {object} params - Animation parameters
          */
         async load(animationType, container, params = {}) {
           // Parse animation type
-          // Format: 'maths.bezier-curve' or '@vvce/maths/bezier-curve'
+          // Format: 'interactive/math.bezier-curve' or 'math.bezier-curve' (legacy)
           let subject, animName;
 
-          if (animationType.startsWith('@vvce/')) {
+          if (animationType.startsWith('interactive/')) {
+            // New format: 'interactive/math.bezier-curve'
+            const rest = animationType.replace('interactive/', '');
+            const parts = rest.split('.');
+            subject = parts[0];
+            animName = parts[1];
+          } else if (animationType.startsWith('@vvce/')) {
+            // Package format: '@vvce/math/bezier-curve'
             const parts = animationType.replace('@vvce/', '').split('/');
             subject = parts[0];
             animName = parts[1];
           } else {
+            // Legacy format: 'math.bezier-curve' or 'maths.bezier-curve'
             const parts = animationType.split('.');
-            subject = parts[0];
+            subject = parts[0] === 'maths' ? 'math' : parts[0]; // Normalize maths -> math
             animName = parts[1];
           }
 
-          const animPath = `${this.basePath}/${subject}/${animName}`;
+          const animPath = `${this.basePath}/interactive/${subject}/${animName}`;
 
           try {
             // Load styles first
@@ -1088,7 +1096,14 @@
           const { type, autoplay, params } = node.props;
 
           // Check if this is an interactive animation from animation-packs
-          const isInteractive = type && (type.startsWith('maths.') || type.startsWith('@vvce/maths/'));
+          // Supports: 'interactive/math.bezier-curve', 'math.bezier-curve', 'maths.bezier-curve', '@vvce/math/bezier-curve'
+          const isInteractive = type && (
+            type.startsWith('interactive/') ||
+            type.startsWith('math.') ||
+            type.startsWith('maths.') ||
+            type.startsWith('@vvce/math/') ||
+            type.startsWith('@vvce/maths/')
+          );
 
           if (isInteractive) {
             // Interactive animation - container only, JS will load it
@@ -1279,7 +1294,14 @@
                 const container = document.getElementById(`animation-${node.id}`);
                 if (container) {
                   const animationType = node.props.type;
-                  const isInteractive = animationType && (animationType.startsWith('maths.') || animationType.startsWith('@vvce/maths/'));
+                  // Supports: 'interactive/math.bezier-curve', 'math.bezier-curve', 'maths.bezier-curve'
+                  const isInteractive = animationType && (
+                    animationType.startsWith('interactive/') ||
+                    animationType.startsWith('math.') ||
+                    animationType.startsWith('maths.') ||
+                    animationType.startsWith('@vvce/math/') ||
+                    animationType.startsWith('@vvce/maths/')
+                  );
 
                   if (isInteractive) {
                     // Load interactive animation from animation-packs
@@ -1362,7 +1384,7 @@
                   startContinuousAnimation();
                 }
               }
-            });
+            }
           }, 100);
         }
 

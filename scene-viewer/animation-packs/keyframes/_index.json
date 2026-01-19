@@ -1,0 +1,20 @@
+{
+  "id": "keyframes",
+  "name": "关键帧动画库",
+  "version": "1.0.0",
+  "description": "基于 CSS Animation 的关键帧动画，使用 JSON 定义",
+  "packs": {
+    "basic": {
+      "file": "basic.json",
+      "description": "基础动画：fadeIn, fadeOut, bounce, shake 等"
+    },
+    "math": {
+      "file": "math.json",
+      "description": "数学动画：drawLine, countUp 等"
+    },
+    "science": {
+      "file": "science.json",
+      "description": "科学动画：orbit, wave, vibrate 等"
+    }
+  }
+}

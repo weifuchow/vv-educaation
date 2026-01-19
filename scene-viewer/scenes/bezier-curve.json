@@ -8,7 +8,10 @@
     "description": "探索贝塞尔曲线的生成原理，通过交互式动画理解 de Casteljau 算法",
     "category": "math"
   },
-  "imports": [{ "pack": "@vvce/math" }, { "pack": "@vvce/maths", "type": "interactive" }],
+  "imports": [
+    { "pack": "keyframes/math" },
+    { "pack": "interactive/math", "type": "interactive" }
+  ],
   "globals": {
     "vars": {
       "score": 0,
@@ -200,7 +203,7 @@
           "id": "bezier-animation",
           "type": "Animation",
           "props": {
-            "type": "maths.bezier-curve",
+            "type": "interactive/math.bezier-curve",
             "autoplay": false,
             "params": {
               "showGrid": true,
