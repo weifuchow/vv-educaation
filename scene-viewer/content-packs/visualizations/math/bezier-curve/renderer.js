@@ -2,16 +2,34 @@
  * Bezier Curve Interactive Animation Renderer
  * 贝塞尔曲线交互式动画渲染器
  *
- * 使用 @vvce/core 核心库构建，展示：
+ * 使用 @vv-education/vvce-animations 核心库构建，展示：
  * - 贝塞尔曲线生成过程
  * - de Casteljau 算法可视化
  * - 可拖拽控制点
  * - 悬停显示 t 值和坐标
  */
 
-// 导入核心库（运行时动态加载）
-let CanvasRenderer, Grid, PointManager, Curve, Tooltip, Slider, Button, InfoPanel;
-let bezierMath;
+// Import from global vvce-animations package (loaded via script tag)
+const {
+  Grid,
+  PointManager,
+  Curve,
+  Tooltip,
+  Slider,
+  Button,
+  InfoPanel,
+  // Bezier math functions
+  bezierPoint,
+  deCasteljauLevels,
+  findClosestT,
+} = window.VVCEAnimations;
+
+// Create bezierMath compatible object for backward compatibility
+const bezierMath = {
+  bezierPoint,
+  deCasteljauLevels,
+  findClosestT,
+};
 
 /**
  * 贝塞尔曲线动画类
@@ -66,12 +84,9 @@ export class BezierCurveAnimation {
   }
 
   /**
-   * 初始化（异步加载核心库）
+   * 初始化
    */
   async initialize() {
-    // 动态加载核心库
-    await this._loadCore();
-
     // 创建 DOM 结构
     this._createDOM();
 
@@ -91,42 +106,6 @@ export class BezierCurveAnimation {
     if (this.params.autoplay) {
       setTimeout(() => this.start(), 500);
     }
-  }
-
-  /**
-   * 动态加载核心库
-   */
-  async _loadCore() {
-    const corePath = '../../../_core/lib';
-
-    // 加载模块
-    const [
-      canvasModule,
-      gridModule,
-      pointModule,
-      curveModule,
-      tooltipModule,
-      controlsModule,
-      bezierModule,
-    ] = await Promise.all([
-      import(`${corePath}/CanvasRenderer.js`),
-      import(`${corePath}/Grid.js`),
-      import(`${corePath}/Point.js`),
-      import(`${corePath}/Curve.js`),
-      import(`${corePath}/Tooltip.js`),
-      import(`${corePath}/Controls.js`),
-      import(`${corePath}/utils/bezier.js`),
-    ]);
-
-    CanvasRenderer = canvasModule.CanvasRenderer;
-    Grid = gridModule.Grid;
-    PointManager = pointModule.PointManager;
-    Curve = curveModule.Curve;
-    Tooltip = tooltipModule.Tooltip;
-    Slider = controlsModule.Slider;
-    Button = controlsModule.Button;
-    InfoPanel = controlsModule.InfoPanel;
-    bezierMath = bezierModule;
   }
 
   /**

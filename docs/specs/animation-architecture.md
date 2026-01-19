@@ -41,55 +41,64 @@ packages/vvce-animations/
 └── dist/                            # 编译输出
     ├── index.js                     # CommonJS
     ├── index.mjs                    # ESM
-    └── index.d.ts                   # TypeScript 声明
+    ├── index.d.ts                   # TypeScript 声明
+    └── browser/
+        └── index.global.js          # IIFE 浏览器 bundle
 ```
 
 ### 2.2 内容包结构 (`scene-viewer/content-packs/`)
 
 ```
 scene-viewer/content-packs/
-├── effects/                         # 🎬 关键帧动画（CSS动画，JSON定义）
+├── effects/                         # 关键帧动画（CSS动画，JSON定义）
 │   ├── _index.json                  # 索引清单
 │   ├── basic.json                   # 基础：fadeIn, bounce, shake...
 │   ├── math.json                    # 数学：drawLine, countUp...
 │   └── science.json                 # 科学：pulse, wave...
 │
-├── visualizations/                  # 🎮 交互式可视化（Canvas/JS）
-│   ├── _index.json                  # 索引清单
+├── visualizations/                  # 交互式可视化（Canvas/JS）
 │   └── math/                        # 数学学科
 │       └── bezier-curve/            # 贝塞尔曲线
-│           ├── manifest.json        # 元数据
 │           ├── renderer.js          # 渲染逻辑（使用 npm 包）
 │           └── styles.css           # 样式
 │
-└── manifest.json                    # 📋 总清单
+└── manifest.json                    # 总清单
 ```
 
-## 2.3 TODO: 浏览器集成
+### 2.3 浏览器集成（已完成）
 
-当前 `renderer.js` 仍使用旧的动态 import 路径。需要：
+renderer.js 通过全局 `window.VVCEAnimations` 使用 npm 包导出。
 
-1. 配置 `vvce-animations` 构建输出 UMD 格式
-2. 在 `scene-runner/index.html` 中通过 `<script>` 加载 UMD bundle
-3. 更新 `renderer.js` 使用全局 `window.VVCEAnimations`
-
-或者使用 importmap 方案：
+**scene-runner/index.html 加载方式:**
 
 ```html
-<script type="importmap">
-  {
-    "imports": {
-      "@vv-education/vvce-animations": "/packages/vvce-animations/dist/index.mjs"
-    }
-  }
-</script>
+<!-- 加载 IIFE bundle -->
+<script src="../../packages/vvce-animations/dist/browser/index.global.js"></script>
+```
+
+**renderer.js 使用方式:**
+
+```javascript
+// 从全局对象获取组件
+const {
+  Grid,
+  PointManager,
+  Curve,
+  Tooltip,
+  Slider,
+  Button,
+  InfoPanel,
+  bezierPoint,
+  deCasteljauLevels,
+  findClosestT,
+} = window.VVCEAnimations;
 ```
 
 ## 3. 两类动画的区别
 
 ### 3.1 关键帧动画（Keyframe）
 
-- **存储**: 纯 JSON
+- **存储**: 纯 JSON (`content-packs/effects/`)
 - **运行**: CSS Animation API
 - **复杂度**: 低
 - **可扩展**: 用户可直接提供 JSON
@@ -109,7 +118,8 @@ scene-viewer/content-packs/
 
 ### 3.2 交互式动画（Interactive）
 
-- **存储**: JSON manifest + JS renderer
+- **存储**: `content-packs/visualizations/` (JS + CSS)
+- **依赖**: `@vv-education/vvce-animations` npm 包
 - **运行**: Canvas API / WebGL
 - **复杂度**: 高
 - **可扩展**: 需要 JS 代码，通常需要开发者介入
@@ -120,7 +130,6 @@ scene-viewer/content-packs/
   "id": "math.bezier-curve",
   "type": "interactive",
   "renderer": "./renderer.js",
-  "dependencies": ["@core/CanvasRenderer", "@core/CoordinateSystem"],
   "params": {
     "controlPoints": { "type": "array", "default": [...] }
   }
@@ -195,7 +204,7 @@ scene-viewer/content-packs/
       ]
     }
   ],
-  "extensions": ["./extensions.json"] // 引用扩展
+  "extensions": ["./extensions.json"]
 }
 ```
 
@@ -278,17 +287,29 @@ class AnimationLoader {
 
 ## 7. 这套方案的优势
 
-1. **清晰分层**: 核心库 → 动画库 → 课程DSL
+1. **清晰分层**: NPM 包（基础设施） → 内容包（动画数据） → 课程DSL
 2. **两种复杂度**: 简单用 JSON，复杂用 JS
 3. **可扩展**: 用户可以添加新动画到数据库
 4. **双输出**: 课程创建时同时生成 DSL 和扩展
 5. **热加载**: 所有动画都可以动态加载
 6. **AI友好**: JSON 格式便于 AI 生成
+7. **TypeScript支持**: 核心库提供完整类型定义
 
-## 8. 下一步行动
+## 8. 完成事项
 
-1. [ ] 重命名 `maths/` → `interactive/math/`
-2. [ ] 移动 `math.json` → `keyframes/math.json`
-3. [ ] 重命名 `_core/lib/math/` → `_core/lib/utils/`
-4. [ ] 更新 scene-runner 加载逻辑
-5. [ ] 创建 `extensions.schema.json` 验证扩展格式
+- [x] 迁移 `_core/lib` 到 `packages/vvce-animations` npm 包
+- [x] 将 JS 转换为 TypeScript 并添加类型定义
+- [x] 重命名 `animation-packs/` → `content-packs/`
+- [x] 重命名 `keyframes/` → `effects/`
+- [x] 重命名 `interactive/` → `visualizations/`
+- [x] 配置 IIFE 浏览器 bundle 输出
+- [x] 更新 scene-runner 加载逻辑
+- [x] 更新 renderer.js 使用全局 `window.VVCEAnimations`
+- [x] 更新 manifest.json 反映新结构
+
+## 9. 后续计划
+
+- [ ] 创建 `extensions.schema.json` 验证扩展格式
+- [ ] 添加更多交互式可视化（函数图像、物理模拟等）
+- [ ] 实现数据库存储和管理界面
+- [ ] 添加动画包版本管理

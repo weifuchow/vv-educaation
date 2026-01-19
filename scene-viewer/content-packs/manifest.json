@@ -1,34 +1,31 @@
 {
   "version": "2.0.0",
-  "description": "VVCE Animation Packs - Keyframe animations and interactive animations for AI-generated courses",
-  "core": {
-    "id": "@vvce/core",
-    "path": "./_core/",
-    "description": "Core animation library: Canvas renderer, primitives, math utilities"
-  },
-  "keyframes": {
-    "path": "./keyframes/",
+  "description": "VVCE Content Packs - Keyframe effects and interactive visualizations for AI-generated courses",
+  "effects": {
+    "path": "./effects/",
+    "description": "Keyframe-based CSS animations defined in JSON",
     "packs": [
       {
-        "id": "basic",
+        "id": "@vvce/basic",
         "file": "basic.json",
         "description": "Basic entrance, exit, and attention animations",
         "builtIn": true
       },
       {
-        "id": "science",
+        "id": "@vvce/science",
         "file": "science.json",
         "description": "Science animations: orbit, wave, vibrate, etc."
       },
       {
-        "id": "math",
+        "id": "@vvce/math",
         "file": "math.json",
         "description": "Math keyframe animations: draw, count, transform, etc."
       }
     ]
   },
-  "interactive": {
-    "path": "./interactive/",
+  "visualizations": {
+    "path": "./visualizations/",
+    "description": "Interactive Canvas/JS visualizations using @vv-education/vvce-animations",
     "subjects": [
       {
         "id": "math",

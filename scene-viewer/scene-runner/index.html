@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VVCE 场景运行器 - Scene Runner</title>
+    <!-- Load vvce-animations for interactive visualizations -->
+    <script src="../../packages/vvce-animations/dist/browser/index.global.js"></script>
     <style>
       * {
         margin: 0;
@@ -574,7 +576,7 @@
        * AnimationPackLoader - Loads animation packs from JSON files
        */
       class AnimationPackLoader {
-        constructor(registry, basePath = '../animation-packs') {
+        constructor(registry, basePath = '../content-packs') {
           this.registry = registry;
           this.basePath = basePath;
           this.loadedPacks = new Set();
@@ -594,7 +596,7 @@
             return this.manifest;
           } catch (error) {
             console.warn('⚠️ Animation pack manifest not found, using defaults');
-            this.manifest = { packs: [] };
+            this.manifest = { effects: { packs: [] } };
             return this.manifest;
           }
         }
@@ -609,12 +611,14 @@
 
           await this.loadManifest();
 
-          // Find pack info in manifest
-          const packInfo = this.manifest.packs.find(p => p.id === packName);
+          // Find pack info in manifest.effects.packs
+          const packs = this.manifest.effects?.packs || [];
+          const packInfo = packs.find(p => p.id === packName);
           const fileName = packInfo?.file || packName.replace('@vvce/', '') + '.json';
+          const effectsPath = this.manifest.effects?.path || './effects/';
 
           try {
-            const response = await fetch(`${this.basePath}/${fileName}`);
+            const response = await fetch(`${this.basePath}/${effectsPath}${fileName}`);
             if (!response.ok) {
               throw new Error(`Pack file not found: ${fileName}`);
             }
@@ -911,11 +915,11 @@
       // ============================================
 
       /**
-       * InteractiveAnimationLoader - Loads animations from animation-packs
+       * InteractiveAnimationLoader - Loads animations from content-packs
        * Supports dynamic loading of JS modules with dependencies
        */
       class InteractiveAnimationLoader {
-        constructor(basePath = '../animation-packs') {
+        constructor(basePath = '../content-packs') {
           this.basePath = basePath;
           this.loadedModules = new Map();
           this.loadedStyles = new Set();
@@ -950,14 +954,11 @@
             animName = parts[1];
           }
 
-          const animPath = `${this.basePath}/interactive/${subject}/${animName}`;
+          const animPath = `${this.basePath}/visualizations/${subject}/${animName}`;
 
           try {
             // Load styles first
             await this.loadStyles(`${animPath}/styles.css`);
-
-            // Load core styles
-            await this.loadStyles(`${this.basePath}/_core/styles/core.css`);
 
             // Load the animation module
             const module = await import(`${animPath}/renderer.js`);
