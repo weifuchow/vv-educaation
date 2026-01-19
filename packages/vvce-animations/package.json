@@ -6,8 +6,9 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "build:browser": "tsup src/index.ts --format iife --global-name VVCEAnimations --outDir dist/browser --minify",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [

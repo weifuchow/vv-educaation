@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VVCE 场景运行器 - Scene Runner</title>
+    <!-- Load vvce-animations for interactive visualizations -->
+    <script src="../../packages/vvce-animations/dist/browser/index.global.js"></script>
     <style>
       * {
         margin: 0;
@@ -574,7 +576,7 @@
        * AnimationPackLoader - Loads animation packs from JSON files
        */
       class AnimationPackLoader {
-        constructor(registry, basePath = '../animation-packs') {
+        constructor(registry, basePath = '../content-packs') {
           this.registry = registry;
           this.basePath = basePath;
           this.loadedPacks = new Set();
@@ -594,7 +596,7 @@
             return this.manifest;
           } catch (error) {
             console.warn('⚠️ Animation pack manifest not found, using defaults');
-            this.manifest = { packs: [] };
+            this.manifest = { effects: { packs: [] } };
             return this.manifest;
           }
         }
@@ -609,12 +611,14 @@
 
           await this.loadManifest();
 
-          // Find pack info in manifest
-          const packInfo = this.manifest.packs.find(p => p.id === packName);
+          // Find pack info in manifest.effects.packs
+          const packs = this.manifest.effects?.packs || [];
+          const packInfo = packs.find(p => p.id === packName);
           const fileName = packInfo?.file || packName.replace('@vvce/', '') + '.json';
+          const effectsPath = this.manifest.effects?.path || './effects/';
 
           try {
-            const response = await fetch(`${this.basePath}/${fileName}`);
+            const response = await fetch(`${this.basePath}/${effectsPath}${fileName}`);
             if (!response.ok) {
               throw new Error(`Pack file not found: ${fileName}`);
             }
@@ -906,10 +910,114 @@
         }
       }
 
+      // ============================================
+      // Interactive Animation Loader (New Architecture)
+      // ============================================
+
+      /**
+       * InteractiveAnimationLoader - Loads animations from content-packs
+       * Supports dynamic loading of JS modules with dependencies
+       */
+      class InteractiveAnimationLoader {
+        constructor(basePath = '../content-packs') {
+          this.basePath = basePath;
+          this.loadedModules = new Map();
+          this.loadedStyles = new Set();
+        }
+
+        /**
+         * Load an interactive animation
+         * @param {string} animationType - Animation type (e.g., 'interactive/math.bezier-curve')
+         * @param {HTMLElement} container - Container element
+         * @param {object} params - Animation parameters
+         */
+        async load(animationType, container, params = {}) {
+          // Parse animation type
+          // Format: 'interactive/math.bezier-curve' or 'math.bezier-curve' (legacy)
+          let subject, animName;
+
+          if (animationType.startsWith('interactive/')) {
+            // New format: 'interactive/math.bezier-curve'
+            const rest = animationType.replace('interactive/', '');
+            const parts = rest.split('.');
+            subject = parts[0];
+            animName = parts[1];
+          } else if (animationType.startsWith('@vvce/')) {
+            // Package format: '@vvce/math/bezier-curve'
+            const parts = animationType.replace('@vvce/', '').split('/');
+            subject = parts[0];
+            animName = parts[1];
+          } else {
+            // Legacy format: 'math.bezier-curve' or 'maths.bezier-curve'
+            const parts = animationType.split('.');
+            subject = parts[0] === 'maths' ? 'math' : parts[0]; // Normalize maths -> math
+            animName = parts[1];
+          }
+
+          const animPath = `${this.basePath}/visualizations/${subject}/${animName}`;
+
+          try {
+            // Load styles first
+            await this.loadStyles(`${animPath}/styles.css`);
+
+            // Load the animation module
+            const module = await import(`${animPath}/renderer.js`);
+
+            // Create animation instance
+            let animation;
+            if (module.create) {
+              animation = module.create(container, params);
+            } else if (module.default) {
+              animation = new module.default(container, params);
+            } else if (module.BezierCurveAnimation) {
+              animation = new module.BezierCurveAnimation(container, params);
+            }
+
+            if (animation && animation.initialize) {
+              await animation.initialize();
+            }
+
+            console.log(`✅ Loaded interactive animation: ${animationType}`);
+            return animation;
+          } catch (error) {
+            console.error(`❌ Failed to load animation ${animationType}:`, error);
+            throw error;
+          }
+        }
+
+        /**
+         * Load CSS styles
+         */
+        async loadStyles(stylePath) {
+          if (this.loadedStyles.has(stylePath)) return;
+
+          try {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = stylePath;
+
+            await new Promise((resolve, reject) => {
+              link.onload = resolve;
+              link.onerror = () => {
+                // Silently ignore missing style files
+                console.warn(`Style not found: ${stylePath}`);
+                resolve();
+              };
+              document.head.appendChild(link);
+            });
+
+            this.loadedStyles.add(stylePath);
+          } catch (error) {
+            console.warn(`Failed to load styles: ${stylePath}`, error);
+          }
+        }
+      }
+
       // Global instances
       const keyframeRegistry = new KeyframeAnimationRegistry();
       const packLoader = new AnimationPackLoader(keyframeRegistry);
       const keyframeEngine = new KeyframeAnimationEngine(keyframeRegistry);
+      const interactiveAnimationLoader = new InteractiveAnimationLoader();
 
       // Expose to window for debugging
       window.keyframeRegistry = keyframeRegistry;
@@ -986,9 +1094,37 @@
         }
 
         renderAnimation(node) {
-          const { type, autoplay } = node.props;
+          const { type, autoplay, params } = node.props;
 
-          // Get animation HTML from registry
+          // Check if this is an interactive animation from animation-packs
+          // Supports: 'interactive/math.bezier-curve', 'math.bezier-curve', 'maths.bezier-curve', '@vvce/math/bezier-curve'
+          const isInteractive = type && (
+            type.startsWith('interactive/') ||
+            type.startsWith('math.') ||
+            type.startsWith('maths.') ||
+            type.startsWith('@vvce/math/') ||
+            type.startsWith('@vvce/maths/')
+          );
+
+          if (isInteractive) {
+            // Interactive animation - container only, JS will load it
+            return `
+              <div class="node anim-component interactive-animation"
+                   data-node-id="${node.id}"
+                   data-animation-type="${type}"
+                   data-autoplay="${autoplay || false}"
+                   data-params='${JSON.stringify(params || {})}'>
+                <div class="animation-container" id="animation-${node.id}">
+                  <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>加载动画中...</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+
+          // Legacy: Get animation HTML from webAnimationRegistry
           const animationHtml = webAnimationRegistry.getHtml(type);
 
           return `
@@ -1150,26 +1286,56 @@
           this.sceneContainer.innerHTML = html;
 
           // Create and initialize animation instances
-          setTimeout(() => {
-            scene.nodes.forEach((node, index) => {
-              // Handle complex Animation components (webAnimationRegistry)
+          setTimeout(async () => {
+            for (let index = 0; index < scene.nodes.length; index++) {
+              const node = scene.nodes[index];
+
+              // Handle Animation components
               if (node.type === 'Animation') {
                 const container = document.getElementById(`animation-${node.id}`);
                 if (container) {
-                  const animation = webAnimationRegistry.create(node.props.type, {
-                    container,
-                    autoplay: node.props.autoplay,
-                    onResult: (result) => {
-                      console.log('Animation result:', result);
-                    },
-                    onInteract: (interaction) => {
-                      console.log('Animation interaction:', interaction);
-                    },
-                  });
+                  const animationType = node.props.type;
+                  // Supports: 'interactive/math.bezier-curve', 'math.bezier-curve', 'maths.bezier-curve'
+                  const isInteractive = animationType && (
+                    animationType.startsWith('interactive/') ||
+                    animationType.startsWith('math.') ||
+                    animationType.startsWith('maths.') ||
+                    animationType.startsWith('@vvce/math/') ||
+                    animationType.startsWith('@vvce/maths/')
+                  );
 
-                  if (animation) {
-                    this.activeAnimations.set(node.id, animation);
-                    animation.initialize();
+                  if (isInteractive) {
+                    // Load interactive animation from animation-packs
+                    try {
+                      const animation = await interactiveAnimationLoader.load(animationType, container, {
+                        ...node.props.params,
+                        autoplay: node.props.autoplay,
+                      });
+
+                      if (animation) {
+                        this.activeAnimations.set(node.id, animation);
+                      }
+                    } catch (error) {
+                      console.error(`Failed to load interactive animation: ${animationType}`, error);
+                      container.innerHTML = `<div class="loading"><p style="color: red;">❌ 加载动画失败: ${error.message}</p></div>`;
+                    }
+                  } else {
+                    // Use webAnimationRegistry for legacy animations
+                    const animation = webAnimationRegistry.create(animationType, {
+                      container,
+                      autoplay: node.props.autoplay,
+                      onResult: (result) => {
+                        console.log('Animation result:', result);
+                      },
+                      onInteract: (interaction) => {
+                        console.log('Animation interaction:', interaction);
+                      },
+                    });
+
+                    if (animation) {
+                      this.activeAnimations.set(node.id, animation);
+                      animation.initialize();
+                    }
                   }
                 }
               }
@@ -1219,7 +1385,7 @@
                   startContinuousAnimation();
                 }
               }
-            });
+            }
           }, 100);
         }
 

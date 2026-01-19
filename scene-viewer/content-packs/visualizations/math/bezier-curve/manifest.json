@@ -1,0 +1,88 @@
+{
+  "id": "maths.bezier-curve",
+  "name": "贝塞尔曲线",
+  "version": "1.0.0",
+  "description": "交互式贝塞尔曲线可视化，展示 de Casteljau 算法，支持拖拽控制点",
+  "author": "VV Education",
+  "type": "interactive",
+  "category": "geometry",
+  "tags": ["bezier", "curve", "geometry", "interactive", "math", "de-casteljau"],
+
+  "dependencies": ["@vvce/core"],
+
+  "entry": "./renderer.js",
+  "styles": ["./styles.css"],
+
+  "params": {
+    "controlPoints": {
+      "type": "array",
+      "itemType": "point",
+      "description": "控制点数组，支持 2-7 个点",
+      "default": null
+    },
+    "duration": {
+      "type": "number",
+      "description": "动画周期（毫秒）",
+      "default": 3000,
+      "min": 500,
+      "max": 10000
+    },
+    "showGrid": {
+      "type": "boolean",
+      "description": "显示背景网格",
+      "default": true
+    },
+    "showControlLines": {
+      "type": "boolean",
+      "description": "显示控制线",
+      "default": true
+    },
+    "showConstruction": {
+      "type": "boolean",
+      "description": "显示 de Casteljau 构造过程",
+      "default": true
+    },
+    "showMovingPoint": {
+      "type": "boolean",
+      "description": "显示运动点",
+      "default": true
+    },
+    "curveColor": {
+      "type": "color",
+      "description": "曲线颜色",
+      "default": "#4ecdc4"
+    },
+    "controlPointColor": {
+      "type": "color",
+      "description": "控制点颜色",
+      "default": "#ff6b6b"
+    },
+    "gridSize": {
+      "type": "number",
+      "description": "网格大小（像素）",
+      "default": 50
+    },
+    "autoplay": {
+      "type": "boolean",
+      "description": "自动播放",
+      "default": false
+    }
+  },
+
+  "events": ["pointDrag", "tChange", "play", "pause", "reset"],
+
+  "outputs": {
+    "t": {
+      "type": "number",
+      "description": "当前参数 t 值"
+    },
+    "curvePoint": {
+      "type": "point",
+      "description": "当前曲线上的点"
+    },
+    "order": {
+      "type": "number",
+      "description": "曲线阶数"
+    }
+  }
+}
